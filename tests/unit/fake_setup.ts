@@ -11,7 +11,7 @@ type fakeSourceData = {
   matches?: Match[];
 };
 
-export const DEFAULT_FAKE_SOURCE_TEAMS: Team[] = [{ name: 'fake-team-1' }, { name: 'fake-team-2' }];
+export const DEFAULT_FAKE_SOURCE_TEAMS: Team[] = [{ name: 'fake-team-1', elo:1000 }, { name: 'fake-team-2',elo:1200 }];
 
 export class FakeSource implements Source {
   constructor(private fakeData: fakeSourceData) {}
