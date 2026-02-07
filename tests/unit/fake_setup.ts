@@ -11,12 +11,12 @@ type fakeSourceData = {
   matches?: Match[];
 };
 
-export const DEFAULT_FAKE_SOURCE_TEAMS: Team[] = [{ name: 'fake-team-1', elo:1000 }, { name: 'fake-team-2',elo:1200 }];
+export const DEFAULT_FAKE_TEAMS: Team[] = [{ name: 'fake-team-1', elo:1000 }, { name: 'fake-team-2',elo:1200 }];
 
 export class FakeSource implements Source {
   constructor(private fakeData: fakeSourceData) {}
   teams = vi.fn(async () => {
-    return this.fakeData.teams ?? DEFAULT_FAKE_SOURCE_TEAMS;
+    return this.fakeData.teams ?? DEFAULT_FAKE_TEAMS;
   });
   matches = vi.fn(
     async (_start: Date, _end?: Date): Promise<Match[]> =>
@@ -33,7 +33,7 @@ export class FakeLeague implements League {
   add = vi.fn(async (_name: string, _start: Date) => {});
   record = vi.fn(async (_match: Match, _ruleset: Ruleset): Promise<void> => {});
   teams = vi.fn(async (): Promise<Team[]> => {
-    return this.fakeData.teams ?? [{ name: 'default-test-1' }, { name: 'default-test-2' }];
+    return this.fakeData.teams ?? DEFAULT_FAKE_TEAMS;
   });
 }
 
