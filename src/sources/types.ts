@@ -8,10 +8,14 @@ export type JsonData = {
     homeId: string;
     awayId: string;
     score: string;
-    date: Date;
+    date: string;
   }[];
 };
 
 export interface Match {
   id: number|string;
+}
+
+export interface SourceTeam {
+  name: string;
 }

@@ -1,33 +1,38 @@
-import type { Team } from '../leagues/teams';
-import type { Match, JsonData} from './types';
+import type { Match, JsonData, SourceTeam } from './types';
 import { readFile } from 'fs/promises';
 
 export interface Source {
-  teams(): Promise<Team[]>;
-  matches(start: Date, end?: Date): Promise<Match[]>;
+  teams(): Promise<SourceTeam[]>;
+  matches(start: Date, end: Date): Promise<Match[]>;
 }
 
 export class JsonSource implements Source {
-  private cache: CachedFromJsonSource;
+  private cache: CachedFromJson;
   constructor(filepath: string) {
-    this.cache = new CachedFromJsonSource(filepath)
+    this.cache = new CachedFromJson(filepath)
   }
-  async matches(start: Date, end?:Date):Promise<Match[]>{
-    const data = await this.cache.parse(start, end) as JsonData;
-    return data.fixtures.map(fixture => ({id:fixture.matchId}))
+  async matches(start: Date, end:Date):Promise<Match[]>{
+    const data = await this.cache.parse() as JsonData;
+    return data.fixtures
+      .filter((fixture) => fixture.date >= start.toISOString() && fixture.date <= end.toISOString())
+      .map(fixture => ({id:fixture.matchId}))
+  }
+  async teams(): Promise<SourceTeam[]>{
+    const data = await this.cache.parse() as JsonData;
+    return data.teams
+      .map((team)=> ({name:team.name}))
   }
 }
 
 
 
-class CachedFromJsonSource {
+class CachedFromJson {
   private data: JsonData | null = null;
   constructor(private filepath: string) {}
-  public async parse(start: Date, end?: Date) {
-    if (this.data !== null ) {
-      return this.data;
+  public async parse() {
+    if (this.data === null) {
+      this.data = JSON.parse(await readFile(this.filepath, 'utf8'));
     }
-    this.data = JSON.parse(await readFile(this.filepath, 'utf8'));
     return this.data;
   }
 
