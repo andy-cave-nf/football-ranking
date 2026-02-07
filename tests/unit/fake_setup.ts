@@ -4,6 +4,7 @@ import type { Team } from '../../src/leagues/teams';
 import type { Match, Source } from '../../src/sources/sources';
 import type { League } from '../../src/leagues/leagues';
 import type { Result } from '../../src/leagues/types';
+import type { Rankings } from '../../src/rankings';
 
 type fakeSourceData = {
   teams?: Team[];
@@ -51,4 +52,9 @@ export class FakeRuleset implements Ruleset {
       away: elo.away + this.scale * (2 * (1 - result.homeWin) - 1),
     };
   });
+}
+
+export class ErroredRanking implements Rankings {
+  run = vi.fn(async (_start: Date, _end: Date) => {throw new Error('run errors')});
+  print = vi.fn(async (_page: Page) => {throw new Error('print errors')});
 }

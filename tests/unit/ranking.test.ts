@@ -3,10 +3,10 @@ import {
   DefaultRankings,
   RankingError,
   type Rankings,
-  RankingsWithStrictDates,
+  RankingsWithStrictDates, SafeRankings,
 } from '../../src/rankings';
 import type {Ruleset} from "../../src/rulesets/rulesets";
-import { FakeLeague, FakePage, FakeRuleset, FakeSource } from './fake_setup';
+import { ErroredRanking, FakeLeague, FakePage, FakeRuleset, FakeSource } from './fake_setup';
 import type {Page} from "../../src/pages/pages";
 import type {Team} from "../../src/leagues/teams";
 import type { Match, Source } from '../../src/sources/sources';
@@ -91,6 +91,24 @@ describe('test strict rankings throws errors', async () => {
       new Date(2020,1,1),
       new Date(1970,1,1,))
     ).rejects.toThrowError(RankingError)
+  })
+})
+
+describe('tests error handling of safe rankings', async () => {
+  let safeRankings: Rankings
+  beforeEach(async () => {
+    safeRankings = new SafeRankings(new ErroredRanking())
+  })
+  it('tests run raises a ranking error', async() => {
+    await expect(safeRankings.run(
+      dates.start,
+      dates.end,
+    )).rejects.toThrowError(RankingError)
+  })
+  it('tests page raises a ranking error', async() => {
+    await expect(safeRankings.print(
+      new FakePage()
+    )).rejects.toThrowError(RankingError)
   })
 })
 
