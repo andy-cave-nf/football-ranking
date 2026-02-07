@@ -1,0 +1,39 @@
+import {pgConnection} from "./db_set_up";
+import {DefaultLeagues} from "../../src/leagues/leagues";
+import {DefaultRuleset} from "../../src/rulesets/rulesets";
+import type {Connection} from "../../src/leagues/connections/connections";
+import type {Team} from "../../src/teams";
+import { DefaultRankings, type Rankings } from '../../src/rankings';
+import {readFile} from 'fs/promises'
+
+
+describe("Single Season rankings of premier league 24/25", () => {
+    let storageConnection: Connection
+    let apiConnection: ApiConnection
+    let rankings: Rankings
+    let allElos: number[]
+    let page: JsonPage
+
+    beforeEach(async () => {
+        storageConnection = pgConnection
+        apiConnection = apiConnection
+        rankings = new DefaultRankings(
+            new DefaultLeague(storageConnection),
+            new DefaultSource(apiConnection),
+            new DefaultRuleset(16,400)
+        )
+        page = new JsonPage('single_season.json')
+        await rankings.run(new Date(2024,8,16), new Date(2025,5,25))
+        await rankings.print(page)
+        const raw = await readFile('single_season.json', 'utf-8')
+        const elos = JSON.parse(raw) as Record<string,number>
+        allElos = Object.values(elos)
+
+    })
+
+    it.todo('tests that the average elo remains the same across the league', async () =>{
+        const averageElo = allElos.reduce((a, b) =>  a + b,0) / allElos.length;
+        expect(averageElo).toBe(apiConnection.startingElo)
+    })
+
+})
