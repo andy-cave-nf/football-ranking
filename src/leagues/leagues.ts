@@ -1,6 +1,6 @@
-import type { Match } from '../sources/sources';
 import type { Ruleset } from '../rulesets/rulesets';
 import type { Team } from './teams';
+import type { Match } from '../sources/types';
 
 export interface League {
   add(name: string, start: Date): Promise<void>;

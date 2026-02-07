@@ -9,7 +9,8 @@ import type {Ruleset} from "../../src/rulesets/rulesets";
 import { ErroredRanking, FakeLeague, FakePage, FakeRuleset, FakeSource } from './fake_setup';
 import type {Page} from "../../src/pages/pages";
 import type {Team} from "../../src/leagues/teams";
-import type { Match, Source } from '../../src/sources/sources';
+import type { Source } from '../../src/sources/sources';
+import type { Match } from '../../src/sources/types';
 
 let rankings: Rankings
 let league: League

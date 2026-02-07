@@ -7,9 +7,9 @@ import { DefaultRankings, type Rankings } from '../../src/rankings';
 import {readFile} from 'fs/promises'
 
 
-describe("Single Season rankings of premier league 24/25", () => {
-    let storageConnection: Connection
-    let apiConnection: ApiConnection
+describe("Single Season rankings of a fake league of five teams from a json file", () => {
+    let storageConnection: Connection //This should be a json connection as well.
+    let apiConnection: ApiConnection //This should be a json connection.
     let rankings: Rankings
     let allElos: number[]
     let page: JsonPage

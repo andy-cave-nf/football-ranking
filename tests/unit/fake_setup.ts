@@ -1,10 +1,11 @@
 import type { Elo, Ruleset } from '../../src/rulesets/rulesets';
 import type { Page } from '../../src/pages/pages';
 import type { Team } from '../../src/leagues/teams';
-import type { Match, Source } from '../../src/sources/sources';
+import type { Source } from '../../src/sources/sources';
 import type { League } from '../../src/leagues/leagues';
 import type { Result } from '../../src/leagues/types';
 import type { Rankings } from '../../src/rankings';
+import type { Match } from '../../src/sources/types';
 
 type fakeSourceData = {
   teams?: Team[];
