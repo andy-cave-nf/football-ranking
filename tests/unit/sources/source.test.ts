@@ -46,9 +46,9 @@ describe('tests that safe sources handle errors throw correct errors', async () 
   let erroredSource: Source
   let safeSource: Source
   beforeEach(() => {
-    erroredSource =  class implements Source {
-      teams = vi.fn(async() => {throw new Error('teams throws an error')})
-      matches = vi.fn(async(_start:Date,_end:Date) => {throw new Error('matches raises an error')})
+    erroredSource =  {
+      teams: vi.fn(async() => {throw new Error('teams throws an error')}),
+      matches: vi.fn(async(_start:Date,_end:Date) => {throw new Error('matches raises an error')}),
     }
     safeSource = new SafeSource(erroredSource)
   })
