@@ -41,7 +41,7 @@ describe('Ranking makes correct calls on running', async () => {
 
     it('tests the teams are added', async () => {
         teams.forEach(team => {
-            expect(league.add).toBeCalledWith(team.name, dates.start)
+            expect(league.add).toBeCalledWith(team.name)
         })
     })
 

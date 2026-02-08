@@ -6,7 +6,6 @@ import {
   StrictSourceDates,
 } from '../../../src/sources/sources';
 import * as path from 'node:path';
-import type { Page } from '../../../src/pages/pages';
 
 let source: Source
 beforeEach(() => {
