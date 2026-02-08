@@ -1,25 +1,26 @@
 import {pgConnection} from "./db_set_up";
-import {DefaultLeagues} from "../../src/leagues/leagues";
+import { DefaultLeague, type League } from '../../src/leagues/leagues';
 import {DefaultRuleset} from "../../src/rulesets/rulesets";
 import type {Connection} from "../../src/leagues/connections/connections";
-import type {Team} from "../../src/teams";
 import { DefaultRankings, type Rankings } from '../../src/rankings';
 import {readFile} from 'fs/promises'
+import { JsonSource } from '../../src/sources/sources';
+import path from 'node:path';
 
 
 describe("Single Season rankings of a fake league of five teams from a json file", () => {
     let storageConnection: Connection //This should be a json connection as well.
-    let apiConnection: ApiConnection //This should be a json connection.
     let rankings: Rankings
     let allElos: number[]
     let page: JsonPage
+    let league: League
 
     beforeEach(async () => {
         storageConnection = pgConnection
-        apiConnection = apiConnection
+        league = new InMemoryLeague()
         rankings = new DefaultRankings(
-            new DefaultLeague(storageConnection),
-            new DefaultSource(apiConnection),
+            new league,
+            new JsonSource(path.resolve(process.cwd(), 'tests', 'fixtures.json')),
             new DefaultRuleset(16,400)
         )
         page = new JsonPage('single_season.json')
@@ -33,7 +34,7 @@ describe("Single Season rankings of a fake league of five teams from a json file
 
     it.todo('tests that the average elo remains the same across the league', async () =>{
         const averageElo = allElos.reduce((a, b) =>  a + b,0) / allElos.length;
-        expect(averageElo).toBe(apiConnection.startingElo)
+        expect(averageElo).toBe(league.startingElo)
     })
 
 })
