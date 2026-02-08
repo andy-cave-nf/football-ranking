@@ -17,17 +17,17 @@ export class DefaultRankings implements Rankings {
     private ruleset: Ruleset
   ) {}
   async run(from: Date, to: Date): Promise<void> {
-    await this.initialiseTeams(from);
+    await this.initialiseTeams();
     const matches = await this.source.matches(from, to);
     matches.forEach((match) => this.league.record(match, this.ruleset));
   }
-  private async initialiseTeams(from: Date): Promise<void> {
+  private async initialiseTeams(): Promise<void> {
     const teamInfo: SourceTeam[] = await this.source.teams();
-    teamInfo.map(async (team) => await this.league.add(team.name, from));
+    teamInfo.map(async (team) => await this.league.add(team.name));
   }
 
   async print(page: Page): Promise<void> {
-    this.printTeams(await this.league.teams(), page);
+    this.printTeams(this.league.teams, page);
   }
   private printTeams(teams: Team[], page:Page) {
     for (const team of teams) {

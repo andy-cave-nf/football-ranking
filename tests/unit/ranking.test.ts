@@ -11,6 +11,7 @@ import type {Page} from "../../src/pages/pages";
 import type {Team} from "../../src/leagues/teams";
 import type { Source } from '../../src/sources/sources';
 import type { Match } from '../../src/sources/types';
+import type { Mock } from 'vitest';
 
 let rankings: Rankings
 let league: League
@@ -63,12 +64,18 @@ describe('Ranking makes correct calls on running', async () => {
 
 describe('test that printing rankings call pages', async () => {
     let fakePage: Page
+    let spy: Mock<() => Team[]>
     beforeEach(async () => {
+        spy = vi.spyOn(FakeLeague.prototype,'teams','get')
         fakePage = new FakePage()
         await rankings.print(fakePage)
     })
+    afterEach(async () => {
+      vi.restoreAllMocks()
+      vi.clearAllMocks()
+    })
     it('tests that teams are called from leagues', async()=>{
-        expect(league.teams).toBeCalledTimes(1)
+        expect(spy).toBeCalledTimes(1)
     })
 
     it('Tests pages is called with method with', async() => {

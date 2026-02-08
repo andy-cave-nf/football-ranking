@@ -31,11 +31,9 @@ type fakeLeagueData = {
 
 export class FakeLeague implements League {
   constructor(private fakeData: fakeLeagueData) {}
-  add = vi.fn(async (_name: string, _start: Date) => {});
+  add = vi.fn(async (_name: string) => {});
   record = vi.fn(async (_match: Match, _ruleset: Ruleset): Promise<void> => {});
-  teams = vi.fn(async (): Promise<Team[]> => {
-    return this.fakeData.teams ?? DEFAULT_FAKE_TEAMS;
-  });
+  get teams(): Team[] { return this.fakeData.teams ?? DEFAULT_FAKE_TEAMS;}
 }
 
 export class FakePage implements Page {

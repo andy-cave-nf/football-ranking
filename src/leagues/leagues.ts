@@ -6,15 +6,11 @@ export interface League {
   add(name: string): Promise<void>;
   record(match: Match, ruleset: Ruleset): Promise<void>;
   teams: Team[];
-  startingElo: number;
 }
 
 export class InMemoryLeague implements League {
   private allTeams: Team[] = [];
   constructor(private elo: number) {}
-  get startingElo() {
-    return this.elo;
-  }
   get teams(): Team[] {
     return this.allTeams
   }
