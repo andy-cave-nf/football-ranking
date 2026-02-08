@@ -1,4 +1,9 @@
-import { JsonSource, type Source } from '../../../src/sources/sources';
+import {
+  JsonSource,
+  type Source,
+  SourceError,
+  StrictSourceDates,
+} from '../../../src/sources/sources';
 import * as path from 'node:path';
 
 let source: Source
@@ -22,5 +27,15 @@ describe('test that all teams are loaded', async () => {
   it('tests that the right number of teams are loaded', async () => {
     const teams = await source.teams()
     expect(teams.length).toBe(5)
+  })
+})
+
+describe('test that strict sources raise correctly', async () => {
+  let strictSource: Source
+  beforeEach(() => {
+    strictSource = new StrictSourceDates(source)
+  })
+  it('tests that a source error is raised for incompatible dates', async () => {
+    await expect(strictSource.matches(new Date(2026,1,1), new Date(2025,1,1))).rejects.toThrow(SourceError)
   })
 })
