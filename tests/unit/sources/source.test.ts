@@ -1,10 +1,12 @@
 import {
   JsonSource,
+  SafeSource,
   type Source,
   SourceError,
   StrictSourceDates,
 } from '../../../src/sources/sources';
 import * as path from 'node:path';
+import type { Page } from '../../../src/pages/pages';
 
 let source: Source
 beforeEach(() => {
@@ -37,5 +39,20 @@ describe('test that strict sources raise correctly', async () => {
   })
   it('tests that a source error is raised for incompatible dates', async () => {
     await expect(strictSource.matches(new Date(2026,1,1), new Date(2025,1,1))).rejects.toThrow(SourceError)
+  })
+})
+
+describe('tests that safe sources handle errors throw correct errors', async () => {
+  let erroredSource: Source
+  let safeSource: Source
+  beforeEach(() => {
+    erroredSource =  class implements Source {
+      teams = vi.fn(async() => {throw new Error('teams throws an error')})
+      matches = vi.fn(async(_start:Date,_end:Date) => {throw new Error('matches raises an error')})
+    }
+    safeSource = new SafeSource(erroredSource)
+  })
+  it('tests that teams raises a source error', async () => {
+    await expect(safeSource.teams()).rejects.toThrow(SourceError)
   })
 })

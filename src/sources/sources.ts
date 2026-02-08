@@ -45,6 +45,26 @@ export class StrictSourceDates extends StrictSource {
   }
 }
 
+export class SafeSource implements Source {
+  constructor(private origin: Source) {}
+  async matches(start: Date, end: Date): Promise<Match[]> {
+    try {
+      return await this.origin.matches(start, end);
+    }
+    catch (error) {
+      throw new SourceError('Source error in matches', {cause:error})
+    }
+  }
+  async teams(): Promise<SourceTeam[]> {
+    try {
+      return await this.origin.teams();
+    }
+    catch (error) {
+      throw new SourceError('Source error in teams', {cause:error})
+    }
+  }
+}
+
 class CachedFromJson {
   private data: JsonData | null = null;
   constructor(private filepath: string) {}
