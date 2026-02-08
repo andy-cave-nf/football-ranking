@@ -3,6 +3,7 @@ import type { Ruleset } from './rulesets/rulesets';
 import type { Source } from './sources/sources';
 import type { Page } from './pages/pages';
 import type { Team } from './leagues/teams';
+import type { SourceTeam } from './sources/types';
 
 export interface Rankings {
   run(from: Date, to?: Date): Promise<void>;
@@ -15,13 +16,13 @@ export class DefaultRankings implements Rankings {
     private source: Source,
     private ruleset: Ruleset
   ) {}
-  async run(from: Date, to?: Date): Promise<void> {
+  async run(from: Date, to: Date): Promise<void> {
     await this.initialiseTeams(from);
     const matches = await this.source.matches(from, to);
     matches.forEach((match) => this.league.record(match, this.ruleset));
   }
   private async initialiseTeams(from: Date): Promise<void> {
-    const teamInfo: Team[] = await this.source.teams();
+    const teamInfo: SourceTeam[] = await this.source.teams();
     teamInfo.map(async (team) => await this.league.add(team.name, from));
   }
 
