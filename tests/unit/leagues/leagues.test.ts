@@ -52,7 +52,7 @@ describe('tests in memory leagues with two teams', async () => {
     let result: Result
     beforeEach(async () => {
       fakeRuleset = {
-        record: vi.fn((result:Result, elo:Elo) => ({
+        record: vi.fn((result:Result, elo:Elo): Elo => ({
           home: elo.home+8*(2*result.homeWin-1),
           away: elo.away-8*(1-2*result.homeWin),
         }))
@@ -65,12 +65,12 @@ describe('tests in memory leagues with two teams', async () => {
       }
       league.record(result, fakeRuleset)
     })
-    it.todo('tests that record calls the ruleset', async () => {
-      expect(fakeRuleset.record).toHaveBeenCalledWith(result, startingElo)
+    it('tests that record calls the ruleset', async () => {
+      expect(fakeRuleset.record).toHaveBeenCalledWith(result, {home: startingElo, away: startingElo})
     })
 
   })
-  it('tests that a match is recorded', async () => {
+  it.todo('tests that a match is recorded', async () => {
 
   })
 })
