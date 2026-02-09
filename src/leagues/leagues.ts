@@ -21,8 +21,8 @@ export class InMemoryLeague implements League {
   }
   async record(result: Result, ruleset: Ruleset): Promise<void> {
     const newElos = ruleset.record(result, {
-      home: (this.allTeams.get(result.homeTeamId)).elo,
-      away: (this.allTeams.get(result.awayTeamId)).elo,
+      home: (this.allTeams.getOrThrow(result.homeTeamId)).elo,
+      away: (this.allTeams.getOrThrow(result.awayTeamId)).elo,
     })
   }
 }

@@ -1,8 +1,11 @@
 export class StrictMap<K, V> {
   constructor(private origin: Map<K, V>) {}
-  get(id: K): V {
+  get (key: K): V|undefined {
+    return this.origin.get(key);
+  }
+  getOrThrow(id: K): V {
     const value = this.origin.get(id);
-    if (value == undefined) {
+    if (value === undefined) {
       throw new StrictMapError(`Cannot find id:${id}`);
     }
     return value
