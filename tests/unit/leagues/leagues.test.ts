@@ -24,16 +24,16 @@ describe('test empty in memory leagues', async () => {
 })
 
 describe('tests in memory leagues with a single team', async () => {
-  let team: { id: number|string; name: string };
+  let team: SourceTeam;
   beforeEach(async () => {
     team ={id:1,name: 'test-name'}
-    await league.add(team.id,team.name);
+    await league.add(team);
   })
   it('tests a team has been added', async () => {
     expect(league.teams).toHaveLength(1)
   })
   it('tests that a team is added correctly', async () => {
-    expect(league.teams[0]).toStrictEqual({id:team.id, name:team.name, elo:startingElo})
+    expect(league.teams[0]).toStrictEqual({id:team.id.toString().trim().toLowerCase(), name:team.name, elo:startingElo})
   })
 })
 
@@ -41,7 +41,7 @@ describe('tests in memory leagues with two teams', async () => {
   let teams: SourceTeam[]
   beforeEach(async () => {
     teams = [{id:'team-1', name: 'home'},{id:'team-2', name: 'away'}]
-    for (const team of teams) {await league.add(team.id, team.name)}
+    for (const team of teams) {await league.add(team)}
   })
   it('tests there are two teams in the league', async () => {
     expect(league.teams).toHaveLength(2)
@@ -55,15 +55,15 @@ describe('tests in memory leagues with two teams', async () => {
     const strictLeague: League = new StrictLeagueAddition(league)
     await expect(
       strictLeague.add(
-        'team-1',
-        'a different_name'
+        {id:'team-1',
+        name: 'a different_name'}
       )
     ).rejects.toThrow(LeagueError)
   })
 
   it('tests that a team cant be added with the same name', async () => {
     const strictLeague: League = new StrictLeagueAddition(league);
-    await expect(strictLeague.add('team-3', 'home')).rejects.toThrow(LeagueError);
+    await expect(strictLeague.add({id:'team-3', name:'home'})).rejects.toThrow(LeagueError);
   });
 
   describe('tests a record is added to a league with two teams', async () => {

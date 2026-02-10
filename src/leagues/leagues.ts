@@ -2,9 +2,10 @@ import type { Elo, Ruleset } from '../rulesets/rulesets';
 import type { Team } from './teams';
 import type { Result } from './types';
 import { StrictMap } from '../utils';
+import type { SourceTeam } from '../sources/types';
 
 export interface League {
-  add(id: string | number, name: string): Promise<void>;
+  add(team: SourceTeam): Promise<void>;
   record(result: Result, ruleset: Ruleset): Promise<void>;
   teams: Team[];
 }
@@ -16,8 +17,10 @@ export class InMemoryLeague implements League {
   get teams(): Team[] {
     return Array.from(this.allTeams.values());
   }
-  async add(id: number | string, name: string): Promise<void> {
-    this.allTeams.set(id, { id: id, name: name, elo: this.elo });
+  async add(team: SourceTeam): Promise<void> {
+    const cleanId: string = team.id.toString().trim().toLowerCase();
+    const cleanName: string = team.name.trim();
+    this.allTeams.set(cleanId, { id: cleanId, name: cleanName, elo: this.elo });
   }
   async record(result: Result, ruleset: Ruleset): Promise<void> {
     const newElos = ruleset.record(result, {
@@ -37,8 +40,8 @@ export class InMemoryLeague implements League {
 
 abstract class StrictLeague implements League {
   protected constructor(protected origin: League) {}
-  async add(id: number | string, name: string): Promise<void> {
-    await this.origin.add(id.toString().toLowerCase().trim(), name.trim());
+  async add(team:SourceTeam): Promise<void> {
+    await this.origin.add(team);
   }
   async record(result: Result, ruleset: Ruleset): Promise<void> {
     await this.origin.record(result, ruleset);
@@ -52,18 +55,18 @@ export class StrictLeagueAddition extends StrictLeague {
   constructor(protected origin: League) {
     super(origin);
   }
-  async add(id: number | string, name: string): Promise<void> {
+  async add(team: SourceTeam): Promise<void> {
     const ids = this.teams.map((team) => team.id);
     const names = this.teams.map((team) => team.name.toLowerCase());
     if (
-      ids.includes(id.toString().trim().toLowerCase())
+      ids.includes(team.id.toString().trim().toLowerCase())
     ) {
-      throw new LeagueError(`id ${id} already exists`);
+      throw new LeagueError(`id ${team.id} already exists`);
     }
-    if (names.includes(name.trim().toLowerCase())) {
-      throw new LeagueError(`name ${name} already exists`);
+    if (names.includes(team.name.trim().toLowerCase())) {
+      throw new LeagueError(`name ${team.name} already exists`);
     }
-    await this.origin.add(id.toString(), name.trim());
+    await this.origin.add(team);
   }
 }
 
