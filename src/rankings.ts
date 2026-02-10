@@ -4,6 +4,7 @@ import type { Source } from './sources/sources';
 import type { Page } from './pages/pages';
 import type { Team } from './leagues/teams';
 import type { SourceTeam } from './sources/types';
+import type { Result } from './leagues/types';
 
 export interface Rankings {
   run(from: Date, to?: Date): Promise<void>;
@@ -18,12 +19,12 @@ export class DefaultRankings implements Rankings {
   ) {}
   async run(from: Date, to: Date): Promise<void> {
     await this.initialiseTeams();
-    const matches = await this.source.matches(from, to);
-    matches.forEach((match) => this.league.record(match, this.ruleset));
+    const results: Result[] = await this.source.results(from, to);
+    results.forEach((match) => this.league.record(match, this.ruleset));
   }
   private async initialiseTeams(): Promise<void> {
     const teamInfo: SourceTeam[] = await this.source.teams();
-    teamInfo.map(async (team) => await this.league.add(team.name));
+    teamInfo.map(async (team) => await this.league.add(team.id, team.name));
   }
 
   async print(page: Page): Promise<void> {

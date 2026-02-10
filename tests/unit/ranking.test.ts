@@ -10,23 +10,26 @@ import { ErroredRanking, FakeLeague, FakePage, FakeRuleset, FakeSource } from '.
 import type {Page} from "../../src/pages/pages";
 import type {Team} from "../../src/leagues/teams";
 import type { Source } from '../../src/sources/sources';
-import type { Match } from '../../src/sources/types';
+import type { SourceTeam } from '../../src/sources/types';
 import type { Mock } from 'vitest';
+import type { Result } from '../../src/leagues/types';
 
 let rankings: Rankings
 let league: League
 let ruleset: Ruleset
 let source: Source
 let dates: {start: Date, end: Date}
+let sourceTeams: SourceTeam[]
 let teams: Team[]
-let matches: Match[]
+let results: Result[]
 
 beforeEach(async () => {
-    teams = [{name: "team1", elo:100}, {name: "team2", elo: 200}, {name: "team3", elo: 300}];
-    matches = [{id:1},{id:2},{id:3},{id:4},{id:5},{id:6}];
+    sourceTeams = [{name: "team1", id:100}, {name: "team2", id: 200}, {name: "team3", id: 300}];
+    teams = [{name: "team1", elo: 200}, {name: "team2", elo: 300}, {name: "team3", elo: 400}];
+    results = [{id:1},{id:2},{id:3},{id:4},{id:5},{id:6}];
     league = new FakeLeague({teams:teams})
     ruleset = new FakeRuleset()
-    source = new FakeSource({teams: teams, matches})
+    source = new FakeSource({teams: sourceTeams, matches: results})
     rankings = new DefaultRankings(league, source, ruleset)
     dates = {start: new Date(2000,1,1), end: new Date(2001,1,1)}
 })
@@ -41,23 +44,19 @@ describe('Ranking makes correct calls on running', async () => {
     })
 
     it('tests the teams are added', async () => {
-        teams.forEach(team => {
-            expect(league.add).toBeCalledWith(team.name)
+        sourceTeams.forEach(team => {
+            expect(league.add).toBeCalledWith(team.id,team.name)
         })
     })
 
     it('tests matches are called from the source', async () => {
-        expect(source.matches).toBeCalledWith(dates.start,dates.end)
+        expect(source.results).toBeCalledWith(dates.start,dates.end)
     })
 
     it('tests that the matches are recorded by the league', async()=>{
-        matches.forEach(match => {
-            expect(league.record).toBeCalledWith(match, ruleset)
+        results.forEach(result => {
+            expect(league.record).toBeCalledWith(result, ruleset)
         })
-    })
-
-    it.todo('tests that teams are correct once added', async () => {
-    //     This is a test for leagues!
     })
 
 })

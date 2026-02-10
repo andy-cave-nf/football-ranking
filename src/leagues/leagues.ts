@@ -24,5 +24,14 @@ export class InMemoryLeague implements League {
       home: (this.allTeams.getOrThrow(result.homeTeamId)).elo,
       away: (this.allTeams.getOrThrow(result.awayTeamId)).elo,
     })
+    this.allTeams.set(result.homeTeamId,
+      {
+        ... this.allTeams.getOrThrow(result.homeTeamId),
+        elo: newElos.home
+      });
+    this.allTeams.set(result.awayTeamId, {
+      ... this.allTeams.getOrThrow(result.awayTeamId),
+      elo: newElos.away
+    })
   }
 }

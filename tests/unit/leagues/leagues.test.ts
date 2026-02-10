@@ -1,12 +1,13 @@
 import { InMemoryLeague, type League } from '../../../src/leagues/leagues';
 import type { Elo, Ruleset } from '../../../src/rulesets/rulesets';
 import type { Result } from '../../../src/leagues/types';
+import type { SourceTeam } from '../../../src/sources/types';
 
 let league: League;
 let startingElo: number;
 
 beforeEach(async () => {
-  startingElo = 1100
+  startingElo = 100
   league = new InMemoryLeague(startingElo);
 })
 
@@ -20,7 +21,7 @@ describe('tests in memory leagues with a single team', async () => {
   let name: string
   beforeEach(async () => {
     name = 'test-name'
-    await league.add(name)
+    await league.add(1,name)
   })
   it('tests a team has been added', async () => {
     expect(league.teams).toHaveLength(1)
@@ -31,13 +32,10 @@ describe('tests in memory leagues with a single team', async () => {
 })
 
 describe('tests in memory leagues with two teams', async () => {
-  let team1:string
-  let team2:string
+  let teams: SourceTeam[]
   beforeEach(async () => {
-    team1 = 'home'
-    team2 = 'away'
-    await league.add(team1)
-    await league.add(team2)
+    teams = [{id:'team-1', name: 'home'},{id:'team-2', name: 'away'}]
+    for (const team of teams) {await league.add(team.id, team.name)}
   })
   it('tests there are two teams in the league', async () => {
     expect(league.teams).toHaveLength(2)
@@ -54,34 +52,43 @@ describe('tests in memory leagues with two teams', async () => {
       fakeRuleset = {
         record: vi.fn((result:Result, elo:Elo): Elo => ({
           home: elo.home+8*(2*result.homeWin-1),
-          away: elo.away-8*(1-2*result.homeWin),
+          away: elo.away-8*(2*result.homeWin-1),
         }))
       }
       result = {
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
+        homeTeamId: teams[0]?.id ?? 1,
+        awayTeamId: teams[1]?.id ?? 2,
         homeWin: 1,
         date: new Date()
       }
-      league.record(result, fakeRuleset)
+      await league.record(result, fakeRuleset)
     })
     it('tests that record calls the ruleset', async () => {
       expect(fakeRuleset.record).toHaveBeenCalledWith(result, {home: startingElo, away: startingElo})
     })
 
+    it('tests that the home elos is correct after a win', async () => {
+      expect(league.teams[0]?.elo).toBe(startingElo+8)
+    })
+    it('tests that the away elo is correct after a loss', async () => {
+      expect(league.teams[1]?.elo).toBe(startingElo-8)
+    })
   })
-  it.todo('tests that a match is recorded', async () => {
+  it.todo('test that an error is raised if you try to add a record with teams that arent in the league', async () => {
 
   })
 })
 
 
-describe('tests that errors are raised correctly with strict leagues', async () => {
+describe('tests that errors are raised correctly within leagues', async () => {
 
-  it.todo('test that an error is raised if you try to add a record with teams that arent in the league', async () => {
+  it.todo('tests an empty leagues stops a record to be added with no teams', async () => {
 
   })
-  it.todo('tests strict leagues stops a record to be added with no teams', async () => {
+  it.todo('tests that a team cant be added with the same name or the same id', async () => {
+
+  })
+  it.todo('tests that an error is raised if the record added occurs before the previous fixture', async () =>{
 
   })
 })
