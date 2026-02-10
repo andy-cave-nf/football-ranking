@@ -1,7 +1,13 @@
-import { InMemoryLeague, type League } from '../../../src/leagues/leagues';
+import {
+  InMemoryLeague,
+  type League,
+  LeagueError,
+  StrictLeagueAddition,
+} from '../../../src/leagues/leagues';
 import type { Elo, Ruleset } from '../../../src/rulesets/rulesets';
 import type { Result } from '../../../src/leagues/types';
 import type { SourceTeam } from '../../../src/sources/types';
+import { StrictMapError } from '../../../src/utils';
 
 let league: League;
 let startingElo: number;
@@ -18,16 +24,16 @@ describe('test empty in memory leagues', async () => {
 })
 
 describe('tests in memory leagues with a single team', async () => {
-  let name: string
+  let team: { id: number|string; name: string };
   beforeEach(async () => {
-    name = 'test-name'
-    await league.add(1,name)
+    team ={id:1,name: 'test-name'}
+    await league.add(team.id,team.name);
   })
   it('tests a team has been added', async () => {
     expect(league.teams).toHaveLength(1)
   })
   it('tests that a team is added correctly', async () => {
-    expect(league.teams[0]).toStrictEqual({name:name, elo:startingElo})
+    expect(league.teams[0]).toStrictEqual({id:team.id, name:team.name, elo:startingElo})
   })
 })
 
@@ -45,6 +51,21 @@ describe('tests in memory leagues with two teams', async () => {
       expect(team.elo).toBe(startingElo)
     })
   })
+  it('tests that a team cant be added with the same id', async () => {
+    const strictLeague: League = new StrictLeagueAddition(league)
+    await expect(
+      strictLeague.add(
+        'team-1',
+        'a different_name'
+      )
+    ).rejects.toThrow(LeagueError)
+  })
+
+  it('tests that a team cant be added with the same name', async () => {
+    const strictLeague: League = new StrictLeagueAddition(league);
+    await expect(strictLeague.add('team-3', 'home')).rejects.toThrow(LeagueError);
+  });
+
   describe('tests a record is added to a league with two teams', async () => {
     let fakeRuleset: Ruleset
     let result: Result
@@ -73,22 +94,33 @@ describe('tests in memory leagues with two teams', async () => {
     it('tests that the away elo is correct after a loss', async () => {
       expect(league.teams[1]?.elo).toBe(startingElo-8)
     })
-  })
-  it.todo('test that an error is raised if you try to add a record with teams that arent in the league', async () => {
-
+    it('test that an error is raised if you try to add a record with a home team that isnt in the league', async () => {
+      await expect(
+        league.record({
+          ...result,
+          homeTeamId: 'not-in-league',
+        }, fakeRuleset)
+      ).rejects.toThrowError(StrictMapError)
+    })
+    it('tests that an error is raised if you try to add a record with an away team that isnt in the league', async () => {
+      await expect(
+        league.record({
+          ...result,
+          awayTeamId: 'not-in-league',
+        }, fakeRuleset)
+      ).rejects.toThrowError(StrictMapError)
+    })
   })
 })
 
 
 describe('tests that errors are raised correctly within leagues', async () => {
 
-  it.todo('tests an empty leagues stops a record to be added with no teams', async () => {
-
-  })
-  it.todo('tests that a team cant be added with the same name or the same id', async () => {
-
-  })
   it.todo('tests that an error is raised if the record added occurs before the previous fixture', async () =>{
 
   })
+})
+
+describe('safe league raises only league errors', async () => {
+
 })
