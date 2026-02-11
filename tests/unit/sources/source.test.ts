@@ -54,4 +54,7 @@ describe('tests that safe sources handle errors throw correct errors', async () 
   it('tests that teams raises a source error', async () => {
     await expect(safeSource.teams()).rejects.toThrow(SourceError)
   })
+  it('tests that results raises a source error', async () => {
+    await expect(safeSource.teams()).rejects.toThrow(SourceError)
+  })
 })

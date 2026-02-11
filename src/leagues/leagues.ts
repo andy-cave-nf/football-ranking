@@ -90,6 +90,35 @@ export class StrictLeagueRecord extends StrictLeague {
   }
 }
 
+export class SafeLeague implements League {
+  constructor(private origin: League) {}
+  async add(team: SourceTeam, initialisedDate:Date): Promise<void> {
+    try {
+      await this.origin.add(team, initialisedDate);
+    }
+    catch (error) {
+      throw new LeagueError('Unable to add team', {cause: error});
+    }
+  }
+  async record(result: Result, ruleset: Ruleset): Promise<void> {
+    try {
+      await this.origin.record(result, ruleset);
+    }
+    catch (error) {
+      throw new LeagueError('Unable to add record', {cause: error})
+    }
+  }
+  get teams() {
+    try {
+      return this.origin.teams;
+    }
+    catch (error) {
+      throw new LeagueError('Unable to get teams', {cause: error});
+    }
+  }
+}
+
+
 export class LeagueError extends Error {
   constructor(
     public message: string,
