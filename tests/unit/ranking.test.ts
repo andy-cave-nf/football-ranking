@@ -13,6 +13,7 @@ import type { Source } from '../../src/sources/sources';
 import type { SourceTeam } from '../../src/sources/types';
 import type { Mock } from 'vitest';
 import type { Result } from '../../src/leagues/types';
+import type { ReadOnlyStrictMap } from '../../src/utils';
 
 let rankings: Rankings
 let league: League
@@ -24,9 +25,9 @@ let teams: Team[]
 let results: Result[]
 
 beforeEach(async () => {
-    dates = {start: new Date(2000,1,1), end: new Date(2001,1,1)}
+    dates = {start: new Date(2000,0,1), end: new Date(2001,0,1)}
     sourceTeams = [{name: "team1", id:100}, {name: "team2", id: 200}, {name: "team3", id: 300}];
-    teams = [{id:1, name: "team1", elo: 200}, {id:2, name: "team2", elo: 300}, {id:3, name: "team3", elo: 400}];
+    teams = [{id:1, name: "team1", elo: 200, lastFixtureDate:dates.start}, {id:2, name: "team2", elo: 300, lastFixtureDate:dates.start}, {id:3, name: "team3", elo: 400, lastFixtureDate:dates.start}];
     results = [
       {homeTeamId:1, awayTeamId:2, homeWin: 1, date: new Date(dates.start)},
       {homeTeamId:2, awayTeamId:3, homeWin: 0.5, date: new Date(dates.start)},
@@ -49,7 +50,7 @@ describe('Ranking makes correct calls on running', async () => {
 
     it('tests the teams are added', async () => {
         sourceTeams.forEach(team => {
-            expect(league.add).toBeCalledWith(team.id,team.name)
+            expect(league.add).toBeCalledWith(team, dates.start)
         })
     })
 
@@ -67,7 +68,7 @@ describe('Ranking makes correct calls on running', async () => {
 
 describe('test that printing rankings call pages', async () => {
     let fakePage: Page
-    let spy: Mock<() => Team[]>
+    let spy: Mock<() => ReadOnlyStrictMap<number | string, Team>>
     beforeEach(async () => {
         spy = vi.spyOn(FakeLeague.prototype,'teams','get')
         fakePage = new FakePage()

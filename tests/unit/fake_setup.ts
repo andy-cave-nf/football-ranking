@@ -6,13 +6,15 @@ import type { League } from '../../src/leagues/leagues';
 import type { Result } from '../../src/leagues/types';
 import type { Rankings } from '../../src/rankings';
 import type { SourceTeam } from '../../src/sources/types';
+import { ReadOnlyStrictMap, StrictMap } from '../../src/utils';
 
 type fakeSourceData = {
   teams?: SourceTeam[];
   matches?: Result[];
 };
 
-export const DEFAULT_FAKE_TEAMS: Team[] = [{id:1, name: 'fake-team-1', elo:1000 }, {id:2, name: 'fake-team-2',elo:1200 }];
+
+export const DEFAULT_FAKE_TEAMS: Team[] = [{id:1, name: 'fake-team-1', elo:1000, lastFixtureDate: new Date(2000,0,1) }, {id:2, name: 'fake-team-2',elo:1200, lastFixtureDate: new Date(2000,0,1) }];
 export const DEFAULT_SOURCE_TEAMS: SourceTeam[] = [{id:1, name: 'fake-team-1'},{id:2, name: 'fake-team-2'}]
 export const DEFAULT_FAKE_RESULTS: Result[] = [{homeTeamId: 1, awayTeamId:1, homeWin:1, date:new Date(2000,0,1)}]
 
@@ -33,9 +35,12 @@ type fakeLeagueData = {
 
 export class FakeLeague implements League {
   constructor(private fakeData: fakeLeagueData) {}
-  add = vi.fn(async (_team: SourceTeam) => {});
+  add = vi.fn(async (_team: SourceTeam, _date:Date) => {});
   record = vi.fn(async (_result: Result, _ruleset: Ruleset): Promise<void> => {});
-  get teams(): Team[] { return this.fakeData.teams ?? DEFAULT_FAKE_TEAMS;}
+  get teams(): ReadOnlyStrictMap<number|string, Team> {
+    const map = new Map((this.fakeData.teams ?? DEFAULT_FAKE_TEAMS).map(team => [team.id, team])??[]);
+    return new StrictMap(map).toReadOnly()
+  }
 }
 
 export class FakePage implements Page {

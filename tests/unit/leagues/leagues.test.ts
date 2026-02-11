@@ -3,6 +3,7 @@ import {
   type League,
   LeagueError,
   StrictLeagueAddition,
+  StrictLeagueRecord,
 } from '../../../src/leagues/leagues';
 import type { Elo, Ruleset } from '../../../src/rulesets/rulesets';
 import type { Result } from '../../../src/leagues/types';
@@ -19,7 +20,7 @@ beforeEach(async () => {
 
 describe('test empty in memory leagues', async () => {
   it('tests that an empty league returns an empty array of teams', async () => {
-    expect(league.teams).toHaveLength(0)
+    expect(league.teams.size).toBe(0)
   })
 })
 
@@ -27,13 +28,18 @@ describe('tests in memory leagues with a single team', async () => {
   let team: SourceTeam;
   beforeEach(async () => {
     team ={id:1,name: 'test-name'}
-    await league.add(team);
+    await league.add(team,new Date(2000,0,1));
   })
   it('tests a team has been added', async () => {
-    expect(league.teams).toHaveLength(1)
+    expect(league.teams.size).toBe(1)
   })
   it('tests that a team is added correctly', async () => {
-    expect(league.teams[0]).toStrictEqual({id:team.id.toString().trim().toLowerCase(), name:team.name, elo:startingElo})
+    expect(league.teams.getOrThrow(team.id.toString())).toStrictEqual({
+      id: team.id.toString().trim().toLowerCase(),
+      name: team.name,
+      elo: startingElo,
+      lastFixtureDate: new Date(2000, 0, 1),
+    });
   })
 })
 
@@ -41,13 +47,13 @@ describe('tests in memory leagues with two teams', async () => {
   let teams: SourceTeam[]
   beforeEach(async () => {
     teams = [{id:'team-1', name: 'home'},{id:'team-2', name: 'away'}]
-    for (const team of teams) {await league.add(team)}
+    for (const team of teams) {await league.add(team, new Date(1999,0,1));}
   })
   it('tests there are two teams in the league', async () => {
-    expect(league.teams).toHaveLength(2)
+    expect(league.teams.size).toBe(2)
   })
   it('tests that the teams have the correct starting elo', async () => {
-    league.teams.forEach((team) => {
+    league.teams.values().forEach((team) => {
       expect(team.elo).toBe(startingElo)
     })
   })
@@ -56,38 +62,38 @@ describe('tests in memory leagues with two teams', async () => {
     await expect(
       strictLeague.add(
         {id:'team-1',
-        name: 'a different_name'}
+        name: 'a different_name'}, new Date()
       )
     ).rejects.toThrow(LeagueError)
   })
 
   it('tests that a team cant be added with the same case independent id', async () => {
     const strictLeague: League = new StrictLeagueAddition(league);
-    await expect(strictLeague.add({ id: 'TEAM-1', name: 'a different_name' })).rejects.toThrow(
+    await expect(strictLeague.add({ id: 'TEAM-1', name: 'a different_name' },new Date())).rejects.toThrow(
       LeagueError
     );
   });
 
   it('tests that a team cant be added with the same id with extra whitespace', async () => {
     const strictLeague: League = new StrictLeagueAddition(league);
-    await expect(strictLeague.add({ id: '    team-1   ', name: 'a different_name' })).rejects.toThrow(
+    await expect(strictLeague.add({ id: '    team-1   ', name: 'a different_name' },new Date())).rejects.toThrow(
       LeagueError
     );
   });
 
   it('tests that a team cant be added with the same name', async () => {
     const strictLeague: League = new StrictLeagueAddition(league);
-    await expect(strictLeague.add({id:'team-3', name:'home'})).rejects.toThrow(LeagueError);
+    await expect(strictLeague.add({id:'team-3', name:'home'}, new Date())).rejects.toThrow(LeagueError);
   });
 
   it('tests that a team cant be added with the same case independent name', async () => {
     const strictLeague: League = new StrictLeagueAddition(league);
-    await expect(strictLeague.add({id:'team-3', name:'HOME'})).rejects.toThrow(LeagueError);
+    await expect(strictLeague.add({id:'team-3', name:'HOME'}, new Date())).rejects.toThrow(LeagueError);
   });
 
   it('tests that a team cant be added with the same name with extra whitespace', async () => {
     const strictLeague: League = new StrictLeagueAddition(league);
-    await expect(strictLeague.add({ id: 'team-3', name: '    home    ' })).rejects.toThrow(LeagueError);
+    await expect(strictLeague.add({ id: 'team-3', name: '    home    ' }, new Date())).rejects.toThrow(LeagueError);
   });
 
   describe('tests a record is added to a league with two teams', async () => {
@@ -104,7 +110,7 @@ describe('tests in memory leagues with two teams', async () => {
         homeTeamId: teams[0]?.id ?? 1,
         awayTeamId: teams[1]?.id ?? 2,
         homeWin: 1,
-        date: new Date()
+        date: new Date(2000,0,1)
       }
       await league.record(result, fakeRuleset)
     })
@@ -113,10 +119,10 @@ describe('tests in memory leagues with two teams', async () => {
     })
 
     it('tests that the home elos is correct after a win', async () => {
-      expect(league.teams[0]?.elo).toBe(startingElo+8)
+      expect(league.teams.getOrThrow(result.homeTeamId).elo).toBe(startingElo+8)
     })
     it('tests that the away elo is correct after a loss', async () => {
-      expect(league.teams[1]?.elo).toBe(startingElo-8)
+      expect(league.teams.getOrThrow(result.awayTeamId).elo).toBe(startingElo-8)
     })
     it('test that an error is raised if you try to add a record with a home team that isnt in the league', async () => {
       await expect(
@@ -134,17 +140,21 @@ describe('tests in memory leagues with two teams', async () => {
         }, fakeRuleset)
       ).rejects.toThrowError(StrictMapError)
     })
+    it('tests that an error is raised if the record added occurs before the previous fixture', async () =>{
+      const earlyResult: Result = {
+        homeTeamId: teams[0]?.id ?? 1,
+        awayTeamId: teams[1]?.id ?? 2,
+        homeWin: 1,
+        date: new Date(1999,0,1),
+      };
+      const strictLeague = new StrictLeagueRecord(league)
+      await expect(strictLeague.record(earlyResult,fakeRuleset)).rejects.toThrowError(LeagueError)
+    })
   })
+
 })
 
 
-describe('tests that errors are raised correctly within leagues', async () => {
-
-  it.todo('tests that an error is raised if the record added occurs before the previous fixture', async () =>{
-
-  })
-})
-
-describe('safe league raises only league errors', async () => {
+describe.todo('safe league raises only league errors', async () => {
 
 })
