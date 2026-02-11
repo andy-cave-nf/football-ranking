@@ -66,6 +66,16 @@ describe('tests in memory leagues with two teams', async () => {
     await expect(strictLeague.add({id:'team-3', name:'home'})).rejects.toThrow(LeagueError);
   });
 
+  it('tests that a team cant be added with the same case independent name', async () => {
+    const strictLeague: League = new StrictLeagueAddition(league);
+    await expect(strictLeague.add({id:'team-3', name:'HOME'})).rejects.toThrow(LeagueError);
+  });
+
+  it('tests that a team cant be added with the same name with extra whitespace', async () => {
+    const strictLeague: League = new StrictLeagueAddition(league);
+    await expect(strictLeague.add({ id: 'team-3', name: '    home    ' })).rejects.toThrow(LeagueError);
+  });
+
   describe('tests a record is added to a league with two teams', async () => {
     let fakeRuleset: Ruleset
     let result: Result
