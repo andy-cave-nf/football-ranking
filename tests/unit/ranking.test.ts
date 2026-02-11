@@ -24,14 +24,18 @@ let teams: Team[]
 let results: Result[]
 
 beforeEach(async () => {
+    dates = {start: new Date(2000,1,1), end: new Date(2001,1,1)}
     sourceTeams = [{name: "team1", id:100}, {name: "team2", id: 200}, {name: "team3", id: 300}];
-    teams = [{name: "team1", elo: 200}, {name: "team2", elo: 300}, {name: "team3", elo: 400}];
-    results = [{id:1},{id:2},{id:3},{id:4},{id:5},{id:6}];
+    teams = [{id:1, name: "team1", elo: 200}, {id:2, name: "team2", elo: 300}, {id:3, name: "team3", elo: 400}];
+    results = [
+      {homeTeamId:1, awayTeamId:2, homeWin: 1, date: new Date(dates.start)},
+      {homeTeamId:2, awayTeamId:3, homeWin: 0.5, date: new Date(dates.start)},
+      {homeTeamId:1, awayTeamId:3, homeWin: 1, date: new Date(dates.start)},
+    ]
     league = new FakeLeague({teams:teams})
     ruleset = new FakeRuleset()
     source = new FakeSource({teams: sourceTeams, matches: results})
     rankings = new DefaultRankings(league, source, ruleset)
-    dates = {start: new Date(2000,1,1), end: new Date(2001,1,1)}
 })
 
 
