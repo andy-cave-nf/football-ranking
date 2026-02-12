@@ -1,5 +1,5 @@
 import {pgConnection} from "./db_set_up";
-import { DefaultLeague, type League } from '../../src/leagues/leagues';
+import { DefaultLeague, InMemoryLeague, type League } from '../../src/leagues/leagues';
 import {DefaultRuleset} from "../../src/rulesets/rulesets";
 import type {Connection} from "../../src/leagues/connections/connections";
 import { DefaultRankings, type Rankings } from '../../src/rankings';
@@ -9,17 +9,17 @@ import path from 'node:path';
 
 
 describe("Single Season rankings of a fake league of five teams from a json file", () => {
-    let storageConnection: Connection //This should be a json connection as well.
+    let startingElo: number
     let rankings: Rankings
     let allElos: number[]
     let page: JsonPage
     let league: League
 
     beforeEach(async () => {
-        storageConnection = pgConnection
-        league = new InMemoryLeague()
+        startingElo = 1000
+        league = new InMemoryLeague(startingElo)
         rankings = new DefaultRankings(
-            new league,
+            league,
             new JsonSource(path.resolve(process.cwd(), 'tests', 'fixtures.json')),
             new DefaultRuleset(16,400)
         )
@@ -34,7 +34,7 @@ describe("Single Season rankings of a fake league of five teams from a json file
 
     it.todo('tests that the average elo remains the same across the league', async () =>{
         const averageElo = allElos.reduce((a, b) =>  a + b,0) / allElos.length;
-        expect(averageElo).toBe(league.startingElo)
+        expect(averageElo).toBeCloseTo(1000)
     })
 
 })
