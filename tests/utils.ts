@@ -8,8 +8,9 @@ export function expectedElo(
 ): { home: number; away: number } {
   const qH = 10 ** (elo.home / scale);
   const qA = 10 ** (elo.away / scale);
+  const delta = Math.round(k * (result.homeWin - qH/(qA+qH)))
   return {
-    home: elo.home + Math.round(k * (result.homeWin - qH / (qA + qH))),
-    away: elo.away + Math.round(k * (1 - result.homeWin - qA / (qA + qH))),
+    home: elo.home + delta,
+    away: elo.away - delta,
   };
 }

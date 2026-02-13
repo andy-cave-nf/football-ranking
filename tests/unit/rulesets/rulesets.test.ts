@@ -1,24 +1,24 @@
-import { DefaultRuleset, type Elo, type Ruleset } from '../../../src/rulesets/rulesets';
+import { DefaultRuleset, type Elo} from '../../../src/rulesets/rulesets';
 import type { Result } from '../../../src/leagues/types';
 import { expectedElo } from '../../utils';
 
-let ruleset: Ruleset;
 let results: Result[];
 let scores: (0|1|0.5)[]
-const scale = 400
-const k = 16
-const randomElos = Array.from({ length: 100 }, () => ([
+const randomElos = Array.from({ length: 100 }, () => [
   Math.round(Math.random() * 1500) + 500,
   Math.round(Math.random() * 1500) + 500,
-]));
-// const eloTable = randomElos.map(elo => [elo.home, elo.away])
+  Math.round(Math.random() * 32) + 2,
+  Math.round(Math.random() * 32) * 25 + 200,
+]);
 
-const equalElosTable = Array.from({length: 100}, () => (Math.round(Math.random()*1500)+500))
-  .map(rank => [rank, rank])
+const equalElosTable = Array.from({ length: 100 }, () => [
+  Math.round(Math.random() * 1500) + 500,
+  Math.round(Math.random() * 32) + 2,
+  Math.round(Math.random() * 32) * 25 + 200,
+]);
 
 describe('test that elos are calculated as expected from Default Ruleset', ()=>{
   beforeEach(() => {
-    ruleset = new DefaultRuleset(k,scale);
     scores = [0,1,0.5]
     results = scores.map((score):Result => ({
       homeTeamId:"1",
@@ -27,24 +27,29 @@ describe('test that elos are calculated as expected from Default Ruleset', ()=>{
       date: new Date(),
     }))
   })
-  it.each(randomElos)('all possible results of pair home = %i, away = %i, (test case %#)',(home,away) => {
+  it.each(randomElos)('all possible results of pair home = %i, away = %i, k=%i, scale=%i (test case %#)',(home,away,k,scale) => {
+    const ruleset = new DefaultRuleset(k,scale);
     for (const result of results) {
       const actual = ruleset.record(result,{home,away})
       const expected: Elo = expectedElo({home, away},result,scale,k)
       expect(actual).toEqual(expected)
     }
   })
-  it.each(equalElosTable)('tests win for home team with equal elo home=%i away=%i (test case %#)',(home,away) => {
+  it.each(equalElosTable)('tests win for home team with equal elo home=%i, k=%i, scale=%i (test case %#)',(elo, k, scale) => {
+    const ruleset = new DefaultRuleset(k, scale);
+
     const result: Result = {
       homeTeamId:"1",
       awayTeamId:"2",
       homeWin: Math.round(Math.random()) as 0 | 1,
       date: new Date(),
     }
-    const actual = ruleset.record(result, {home,away})
+    const actual = ruleset.record(result, { home: elo,away: elo})
+    const delta = Math.round((k / 2) * (2 * result.homeWin - 1));
     const expected: Elo = {
-      home: home+(k/2)*(2*result.homeWin-1),
-      away: away-(k/2)*(2*result.homeWin-1)}
+      home: elo+delta,
+      away: elo-delta
+    }
     expect(actual).toEqual(expected)
   })
   it.todo('tests that for equal elos that wins change elo by half of k')

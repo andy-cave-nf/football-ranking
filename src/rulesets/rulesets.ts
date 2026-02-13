@@ -18,8 +18,8 @@ export class DefaultRuleset implements Ruleset {
   ) {}
   record(result: Result, elo: Elo): Elo {
     return {
-      home: Math.round(elo.home + this.k * (result.homeWin - this.expected(elo).home)),
-      away: Math.round(elo.away + this.k * (1 - result.homeWin - this.expected(elo).away)),
+      home: elo.home + Math.round(this.k * (result.homeWin - this.expected(elo).home)),
+      away: elo.away - Math.round(this.k * (result.homeWin - this.expected(elo).home)),
     };
   }
   private expected(elo: Elo): ExpectedScore {
