@@ -4,18 +4,25 @@ import { expectedElo } from '../../utils';
 
 let results: Result[];
 let scores: (0|1|0.5)[]
-const randomElos = Array.from({ length: 100 }, () => [
-  Math.round(Math.random() * 1500) + 500,
-  Math.round(Math.random() * 1500) + 500,
-  Math.round(Math.random() * 32) + 2,
-  Math.round(Math.random() * 32) * 25 + 200,
-]);
+const randomElos = Array.from({ length: 20 }, () => ({
+  home:Math.round(Math.random() * 1500) + 500,
+  away: Math.round(Math.random() * 1500) + 500,
+  k: Math.round(Math.random() * 32) + 2,
+  scale: Math.round(Math.random() * 32) * 25 + 200,
+}))
+  .map((generatedElo) => ([
+    generatedElo.home,generatedElo.away,generatedElo.k,generatedElo.scale,
+  ]))
+;
 
-const equalElosTable = Array.from({ length: 100 }, () => [
-  Math.round(Math.random() * 1500) + 500,
-  Math.round(Math.random() * 32) + 2,
-  Math.round(Math.random() * 32) * 25 + 200,
-]);
+const equalElosTable = Array.from({ length: 20 }, () => ({
+  elo: Math.round(Math.random() * 1500) + 500,
+  k: Math.round(Math.random() * 32) + 2,
+  scale: Math.round(Math.random() * 32) * 25 + 200,
+}))
+  .map((generatedElo) => ([
+    generatedElo.elo,generatedElo.k,generatedElo.scale
+  ]));
 
 describe('test that elos are calculated as expected from Default Ruleset', ()=>{
   beforeEach(() => {
@@ -35,7 +42,29 @@ describe('test that elos are calculated as expected from Default Ruleset', ()=>{
       expect(actual).toEqual(expected)
     }
   })
-  it.each(equalElosTable)('tests win for home team with equal elo home=%i, k=%i, scale=%i (test case %#)',(elo, k, scale) => {
+  it.each(randomElos)(
+    'tests that the sum of elos before is the same as after home = %i, away = %i, k=%i, scale=%i (test case %#)',
+    (home,away, k, scale) => {
+      const ruleset = new DefaultRuleset(k, scale);
+      for (const result of results) {
+        const actual = ruleset.record(result,{home,away})
+        expect(actual.home+actual.away).toEqual(home+away)
+      }
+    }
+  );
+  it.each(equalElosTable)('tests that draws do not change equal elos elo=%i, k=%i, scale=%i (test case %#)',(elo, k, scale) => {
+    const ruleset = new DefaultRuleset(k,scale);
+    const result: Result = {
+      homeTeamId:"1",
+      awayTeamId:"2",
+      homeWin: 0.5,
+      date: new Date()
+    }
+    const actual = ruleset.record(result, { home: elo, away: elo})
+    expect(actual).toEqual({home:elo, away:elo})
+  })
+
+  it.each(equalElosTable)('tests win for teams with equal elo elo=%i, k=%i, scale=%i (test case %#)',(elo, k, scale) => {
     const ruleset = new DefaultRuleset(k, scale);
 
     const result: Result = {
@@ -52,8 +81,5 @@ describe('test that elos are calculated as expected from Default Ruleset', ()=>{
     }
     expect(actual).toEqual(expected)
   })
-  it.todo('tests that for equal elos that wins change elo by half of k')
-  it.todo('tests that for unequal elos that elos afterwards cannot be the same as before')
-  it.todo('tests that for equal elos draws always give the same elos as before')
-  it.todo('tests that the sum of elos before is the same as after')
+
 })
