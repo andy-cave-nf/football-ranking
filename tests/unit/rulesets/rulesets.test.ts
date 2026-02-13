@@ -4,27 +4,27 @@ import { expectedElo } from '../../utils';
 
 let results: Result[];
 let scores: (0|1|0.5)[]
-const randomElos = Array.from({ length: 20 }, () => ({
-  home:Math.round(Math.random() * 1500) + 500,
-  away: Math.round(Math.random() * 1500) + 500,
-  k: Math.round(Math.random() * 32) + 2,
-  scale: Math.round(Math.random() * 32) * 25 + 200,
-}))
-  .map((generatedElo) => ([
-    generatedElo.home,generatedElo.away,generatedElo.k,generatedElo.scale,
-  ]))
-;
-
-const equalElosTable = Array.from({ length: 20 }, () => ({
-  elo: Math.round(Math.random() * 1500) + 500,
-  k: Math.round(Math.random() * 32) + 2,
-  scale: Math.round(Math.random() * 32) * 25 + 200,
-}))
-  .map((generatedElo) => ([
-    generatedElo.elo,generatedElo.k,generatedElo.scale
-  ]));
 
 describe('test that elos are calculated as expected from Default Ruleset', ()=>{
+  const randomElos = Array.from({ length: 20 }, () => ({
+    home:Math.round(Math.random() * 1500) + 500,
+    away: Math.round(Math.random() * 1500) + 500,
+    k: Math.round(Math.random() * 32) + 2,
+    scale: Math.round(Math.random() * 32) * 25 + 200,
+  }))
+    .map((generatedElo) => ([
+      generatedElo.home,generatedElo.away,generatedElo.k,generatedElo.scale,
+    ]))
+  ;
+
+  const equalElosTable = Array.from({ length: 20 }, () => ({
+    elo: Math.round(Math.random() * 1500) + 500,
+    k: Math.round(Math.random() * 32) + 2,
+    scale: Math.round(Math.random() * 32) * 25 + 200,
+  }))
+    .map((generatedElo) => ([
+      generatedElo.elo,generatedElo.k,generatedElo.scale
+    ]));
   beforeEach(() => {
     scores = [0,1,0.5]
     results = scores.map((score):Result => ({
@@ -81,5 +81,5 @@ describe('test that elos are calculated as expected from Default Ruleset', ()=>{
     }
     expect(actual).toEqual(expected)
   })
-
 })
+
