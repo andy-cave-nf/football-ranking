@@ -1,22 +1,31 @@
 import { makeTempDir } from '../../utils';
-import type { Page } from '../../../src/pages/pages';
+import { JsonPage, type Page } from '../../../src/pages/pages';
 import { join } from 'path';
-import { rmSync } from 'fs';
+import { readFileSync, rmSync } from 'fs';
+import type { Team } from '../../../src/leagues/teams';
+import { DEFAULT_FAKE_TEAMS } from '../fake_setup';
 
 
 describe('test that json page writes to a file correctly', () => {
   let dir: string
   let page: Page
   let file: string
-  beforeEach(() => {
+  let teams: Team[]
+  beforeEach(async() => {
     dir = makeTempDir('tmp')
     file = join(dir, 'json-page-test.json')
-    page = JsonPage(file)
+    page = new JsonPage(file)
+    teams = DEFAULT_FAKE_TEAMS
+    await page.print(teams)
   })
   afterEach(() => {
     rmSync(dir, { recursive: true , force: true })
   })
-//   create a tmp working directory and clean it up
-//   create data to write
-//   read data and check contents
+  it('tests the contents of the file', async () => {
+    const actual = JSON.parse(readFileSync(file, 'utf8'))
+    const expected = Object.fromEntries(
+      teams.map(team => [team.name, team.elo])
+    )
+    expect(actual).toEqual(expected)
+  })
 })

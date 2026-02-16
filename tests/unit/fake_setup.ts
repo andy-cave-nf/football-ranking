@@ -44,7 +44,7 @@ export class FakeLeague implements League {
 }
 
 export class FakePage implements Page {
-  print = vi.fn((_teams: Team[])=> {
+  print = vi.fn(async (_teams: Team[])=> {
     return
   })
 }
