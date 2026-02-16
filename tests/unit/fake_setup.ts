@@ -44,7 +44,9 @@ export class FakeLeague implements League {
 }
 
 export class FakePage implements Page {
-  with = vi.fn((_data:Record<string,string|number>)=>this)
+  print = vi.fn((_teams: Team[])=> {
+    return
+  })
 }
 
 export class FakeRuleset implements Ruleset {

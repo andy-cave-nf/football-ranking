@@ -6,7 +6,14 @@ import {
   RankingsWithStrictDates, SafeRankings,
 } from '../../src/rankings';
 import type {Ruleset} from "../../src/rulesets/rulesets";
-import { ErroredRanking, FakeLeague, FakePage, FakeRuleset, FakeSource } from './fake_setup';
+import {
+  DEFAULT_FAKE_TEAMS,
+  ErroredRanking,
+  FakeLeague,
+  FakePage,
+  FakeRuleset,
+  FakeSource,
+} from './fake_setup';
 import type {Page} from "../../src/pages/pages";
 import type {Team} from "../../src/leagues/teams";
 import type { Source } from '../../src/sources/sources';
@@ -82,14 +89,8 @@ describe('test that printing rankings call pages', async () => {
         expect(spy).toBeCalledTimes(1)
     })
 
-    it('Tests pages is called with method with', async() => {
-        expect(fakePage.with).toBeCalledTimes(teams.length)
-    })
-
-    it('tests pages is called with each team', async() => {
-      teams.forEach(team => {
-        expect(fakePage.with).toBeCalledWith({ [team.name]: team.elo });
-      })
+    it('tests print is called once', async () => {
+      expect(fakePage.print).toBeCalledWith(league.teams.values())
     })
 })
 

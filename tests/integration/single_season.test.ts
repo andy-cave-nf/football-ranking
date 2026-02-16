@@ -1,7 +1,5 @@
-import {pgConnection} from "./db_set_up";
-import { DefaultLeague, InMemoryLeague, type League } from '../../src/leagues/leagues';
+import { InMemoryLeague, type League } from '../../src/leagues/leagues';
 import {DefaultRuleset} from "../../src/rulesets/rulesets";
-import type {Connection} from "../../src/leagues/connections/connections";
 import { DefaultRankings, type Rankings } from '../../src/rankings';
 import {readFile} from 'fs/promises'
 import { JsonSource } from '../../src/sources/sources';

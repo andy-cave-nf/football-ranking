@@ -1,4 +1,7 @@
 import type { Result } from '../src/leagues/types';
+import {mkdtempSync} from 'fs'
+import { tmpdir } from 'os'
+import { join } from 'path'
 
 export function expectedElo(
   elo: { home: number, away: number },
@@ -13,4 +16,8 @@ export function expectedElo(
     home: elo.home + delta,
     away: elo.away - delta,
   };
+}
+
+export function makeTempDir(prefix:string) {
+  return mkdtempSync(join(tmpdir(), prefix));
 }

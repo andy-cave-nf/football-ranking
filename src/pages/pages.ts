@@ -1,3 +1,5 @@
+import type { Team } from '../leagues/teams';
+
 export interface Page {
-  with(data: Record<string, string | number>): Page;
+  print(teams: Team[]): void
 }
