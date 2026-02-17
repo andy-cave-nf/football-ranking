@@ -20,9 +20,7 @@ describe("Single Season rankings of a fake league of five teams from a json file
     let file: string;
     beforeEach(async () => {
         dir = makeTempDir('tmp');
-        console.log(dir);
         file = join(dir, 'single-season-test.json');
-        console.log(file)
         startingElo = 1000
         league = new InMemoryLeague(startingElo)
         rankings = new DefaultRankings(
@@ -39,12 +37,16 @@ describe("Single Season rankings of a fake league of five teams from a json file
     })
 
     afterEach(async () => {
-      // rmSync(dir, { recursive: true, force: true });
+      rmSync(dir, { recursive: true, force: true });
     })
 
     it('tests that the average elo remains the same across the league', async () =>{
         const averageElo = allElos.reduce((a, b) =>  a + b,0) / allElos.length;
-        expect(averageElo).toBeCloseTo(1000)
+        expect(averageElo).toBe(1000)
+    })
+    it('tests that all the elos are not the same', () => {
+        const setElos = new Set(allElos)
+        expect(setElos.size).not.toEqual(1)
     })
 
 })
