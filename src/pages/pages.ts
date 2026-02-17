@@ -10,7 +10,7 @@ export class JsonPage implements Page {
   async print(teams: Team[]) {
     await writeFile(this.filepath,JSON.stringify(this.printableTeams(teams),null,4), 'utf8')
   }
-  private printableTeams(teams: Team[]):{[k:string]:number} {
+  private printableTeams(teams: Team[]):Record<string,number> {
     return Object.fromEntries(
       teams.map(team => [team.name,team.elo])
     )

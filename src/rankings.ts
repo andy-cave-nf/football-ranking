@@ -28,7 +28,7 @@ export class DefaultRankings implements Rankings {
   }
 
   async print(page: Page): Promise<void> {
-    page.print(this.league.teams.values());
+    await page.print(this.league.teams.values());
   }
 }
 

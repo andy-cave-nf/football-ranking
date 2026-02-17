@@ -127,23 +127,34 @@ describe('tests in memory leagues with two teams', async () => {
     it('tests that the away elo is correct after a loss', async () => {
       expect(league.teams.getOrThrow(result.awayTeamId).elo).toBe(startingElo-8)
     })
-    it('test that an error is raised if you try to add a record with a home team that isnt in the league', async () => {
-      await expect(
+    it('tests that the record with capitalised team id in the result does not error', async () => {
+      const capitalisedResult: Result = {
+        homeTeamId: teams[0]?.id.toString().toUpperCase() ?? 1,
+        awayTeamId: teams[1]?.id.toString().toUpperCase() ?? 2,
+        homeWin: 1,
+        date: new Date(2000, 0, 1),
+      };
+      await league.record(capitalisedResult, fakeRuleset)
+      expect(fakeRuleset.record).toHaveBeenCalled()
+    })
+
+    it('test that an error is raised if you try to add a record with a home team that isnt in the league', () => {
+      expect(() =>
         league.record({
           ...result,
           homeTeamId: 'not-in-league',
         }, fakeRuleset)
-      ).rejects.toThrowError(StrictMapError)
+      ).toThrowError(StrictMapError)
     })
-    it('tests that an error is raised if you try to add a record with an away team that isnt in the league', async () => {
-      await expect(
+    it('tests that an error is raised if you try to add a record with an away team that isnt in the league', () => {
+      expect(() =>
         league.record({
           ...result,
           awayTeamId: 'not-in-league',
         }, fakeRuleset)
-      ).rejects.toThrowError(StrictMapError)
+      ).toThrowError(StrictMapError)
     })
-    it('tests that an error is raised if the record added occurs before the previous fixture', async () =>{
+    it('tests that an error is raised if the record added occurs before the previous fixture', () =>{
       const earlyResult: Result = {
         homeTeamId: teams[0]?.id ?? 1,
         awayTeamId: teams[1]?.id ?? 2,
@@ -151,7 +162,7 @@ describe('tests in memory leagues with two teams', async () => {
         date: new Date(1999,0,1),
       };
       const strictLeague = new StrictLeagueRecord(league)
-      await expect(strictLeague.record(earlyResult,fakeRuleset)).rejects.toThrowError(LeagueError)
+      expect(() => strictLeague.record(earlyResult,fakeRuleset)).toThrowError(LeagueError)
     })
   })
 
@@ -164,7 +175,7 @@ describe('safe league raises only league errors', async () => {
   beforeEach(async () => {
     erroredLeague = {
       add: vi.fn(async (_team,_date) => {throw new Error('add throws an error')}),
-      record: vi.fn(async (_result, _ruleset) => {throw new Error('records throws an error')}),
+      record: vi.fn((_result, _ruleset) => {throw new Error('records throws an error')}),
       get teams(): ReadOnlyStrictMap<number|string, Team> {throw new Error('get teams throws an error')}
     }
     safeLeague = new SafeLeague(erroredLeague)
@@ -172,15 +183,15 @@ describe('safe league raises only league errors', async () => {
   it('test that add raises a league error', async () =>{
     await expect(safeLeague.add({id:1,name:'a'}, new Date())).rejects.toThrowError(LeagueError)
   })
-  it('tests that record raises an error', async () =>{
-    await expect(
+  it('tests that record raises an error', () =>{
+    expect(() =>
       safeLeague.record({
         homeTeamId:1,
         awayTeamId:3,
         homeWin: 1,
         date: new Date(1999,0,1),
       }, new FakeRuleset())
-    ).rejects.toThrowError(LeagueError)
+    ).toThrowError(LeagueError)
   })
   it('tests that team raises an error', () =>{
     expect(() => safeLeague.teams).toThrowError(LeagueError)
