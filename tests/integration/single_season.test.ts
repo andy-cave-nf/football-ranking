@@ -1,7 +1,6 @@
 import { InMemoryLeague, type League } from '../../src/leagues/leagues';
 import {DefaultRuleset} from "../../src/rulesets/rulesets";
 import { DefaultRankings, type Rankings } from '../../src/rankings';
-import {readFile} from 'fs/promises'
 import { JsonSource } from '../../src/sources/sources';
 import path from 'node:path';
 import { JsonPage, type Page } from '../../src/pages/pages';
@@ -42,7 +41,7 @@ describe("Single Season rankings of a fake league of five teams from a json file
 
     it('tests that the average elo remains the same across the league', async () =>{
         const averageElo = allElos.reduce((a, b) =>  a + b,0) / allElos.length;
-        expect(averageElo).toBe(1000)
+        expect(averageElo).toBe(startingElo);
     })
     it('tests that all the elos are not the same', () => {
         const setElos = new Set(allElos)
