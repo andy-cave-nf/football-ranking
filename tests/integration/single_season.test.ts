@@ -55,6 +55,7 @@ describe("Single Season rankings of a fake league of five teams from a json file
 describe("Premier League season 24/25 from API Football with InMemoryLeague", () => {
   let scope:Scope
   beforeEach(async () => {
+    nock.disableNetConnect()
     scope = nock(new URL('https://v3.football.api-sports.io'), {
       reqheaders: {
         'x-apisports-key': apiEnv.API_KEY,
@@ -78,6 +79,10 @@ describe("Premier League season 24/25 from API Football with InMemoryLeague", ()
       .replyWithFile(200, 'tests/fixtures/api_football/premier-league-2024-fixtures.json', {
         'Content-Type': 'application/json',
       });
+  })
+  afterEach(async () => {
+    nock.cleanAll()
+    nock.enableNetConnect()
   })
 
   it('tests the nock response', async () => {
