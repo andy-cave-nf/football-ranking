@@ -9,7 +9,7 @@ import * as path from 'node:path';
 
 let source: Source
 beforeEach(() => {
-  const filepath = path.resolve(process.cwd(), 'tests', 'fixtures.json');
+  const filepath = path.resolve(process.cwd(), 'tests', 'fixtures','json_source.json');
   source = new JsonSource(filepath);
 })
 

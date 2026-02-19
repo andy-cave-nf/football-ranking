@@ -1,3 +1,4 @@
+import nock, { type Scope } from 'nock';
 import { InMemoryLeague, type League } from '../../src/leagues/leagues';
 import {DefaultRuleset} from "../../src/rulesets/rulesets";
 import { DefaultRankings, type Rankings } from '../../src/rankings';
@@ -7,36 +8,37 @@ import { JsonPage, type Page } from '../../src/pages/pages';
 import { makeTempDir } from '../utils';
 import { join } from 'path';
 import { readFileSync, rmSync } from 'fs';
+import { apiEnv } from '../../src/env';
 
+let dir: string
+beforeEach(() => {
+  dir = makeTempDir('tmp')
+})
+
+afterEach(() => {
+  rmSync(dir, { recursive: true, force: true });
+})
 
 describe("Single Season rankings of a fake league of five teams from a json file", () => {
     let startingElo: number
     let rankings: Rankings
     let allElos: number[]
     let page: Page
-    let league: League
-    let dir: string
     let file: string;
     beforeEach(async () => {
-        dir = makeTempDir('tmp');
         file = join(dir, 'single-season-test.json');
         startingElo = 1000
-        league = new InMemoryLeague(startingElo)
         rankings = new DefaultRankings(
-            league,
-            new JsonSource(path.resolve(process.cwd(), 'tests', 'fixtures.json')),
-            new DefaultRuleset(16,400)
-        )
+          new InMemoryLeague(startingElo),
+          new JsonSource(path.resolve(process.cwd(), 'tests', 'fixtures','json_source.json')),
+          new DefaultRuleset(16, 400)
+        );
         page = new JsonPage(file)
         await rankings.run(new Date(2025,8 ,16), new Date(2026,5,25))
         await rankings.print(page)
         const raw = readFileSync(file, 'utf-8')
         const elos = JSON.parse(raw) as Record<string,number>
         allElos = Object.values(elos)
-    })
-
-    afterEach(async () => {
-      rmSync(dir, { recursive: true, force: true });
     })
 
     it('tests that the average elo remains the same across the league', async () =>{
@@ -48,4 +50,84 @@ describe("Single Season rankings of a fake league of five teams from a json file
         expect(setElos.size).not.toEqual(1)
     })
 
+})
+
+describe("Premier League season 24/25 from API Football with InMemoryLeague", () => {
+  let scope:Scope
+  beforeEach(async () => {
+    scope = nock(new URL('https://v3.football.api-sports.io'), {
+      reqheaders: {
+        'x-apisports-key': apiEnv.API_KEY,
+      },
+    })
+      .get('/teams')
+      .query({
+        league: 39,
+        season: 2024,
+      })
+      .replyWithFile(200, 'tests/fixtures/api_football/premier-league-2024-teams.json', {
+        'Content-Type': 'application/json',
+      })
+      .get('/fixtures')
+      .query({
+        from: '2024-08-16',
+        to: '2025-05-25',
+        season: 2024,
+        league: 39,
+      })
+      .replyWithFile(200, 'tests/fixtures/api_football/premier-league-2024-fixtures.json', {
+        'Content-Type': 'application/json',
+      });
+  })
+
+  it('tests the nock response', async () => {
+    const teamResponse = await fetch(
+      apiEnv.API_URL +
+        '/teams' +
+        '?' +
+        new URLSearchParams({
+          league: '39',
+          season: '2024',
+        }).toString(),
+      {
+        method: 'GET',
+        headers: { 'x-apisports-key': apiEnv.API_KEY },
+      }
+    );
+    const fixtureResponse = await fetch(
+      apiEnv.API_URL +
+        '/fixtures' +
+        '?' +
+        new URLSearchParams({
+          from: '2024-08-16',
+          to: '2025-05-25',
+          season: '2024',
+          league: '39',
+        }).toString(),
+      {
+        method: 'GET',
+        headers: { 'x-apisports-key': apiEnv.API_KEY },
+      }
+    );
+    const fixtures = await fixtureResponse.json();
+    const teams = await teamResponse.json();
+
+
+    expect(teams).toBeDefined();
+    expect(teams).not.toEqual({})
+    expect(teams.response?.length).toBeGreaterThan(0)
+
+    expect(fixtures).toBeDefined()
+    expect(fixtures).not.toEqual({})
+    expect(fixtures.response?.length).toBeGreaterThan(0)
+
+    expect(scope.isDone()).toBe(true)
+  })
+
+  // new ApiFootballSource(
+  //   {
+  //     39: [2024]
+  //   }
+  // )
+//   ApiFootballSource needs to take an object of league and seasons
 })
