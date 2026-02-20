@@ -16,11 +16,11 @@ import {
 } from './fake_setup';
 import type {Page} from "../../src/pages/pages";
 import type {Team} from "../../src/leagues/teams";
-import type { Source } from '../../src/sources/sources';
 import type { SourceTeam } from '../../src/sources/types';
 import type { Mock } from 'vitest';
 import type { Result } from '../../src/leagues/types';
 import type { ReadOnlyStrictMap } from '../../src/utils';
+import type { Source } from '../../src/sources/base';
 
 let rankings: Rankings
 let league: League

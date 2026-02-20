@@ -1,0 +1,16 @@
+import type { FixtureQuery, TeamQuery } from '../../src/sources/api_source';
+import nock from 'nock';
+import { apiEnv } from '../../src/env';
+
+
+export function apiNock(uri:string, query: TeamQuery|FixtureQuery,responseFile: string) {
+  return nock(
+    new URL(apiEnv.API_URL),{
+      reqheaders: {
+        'x-apisports-key': apiEnv.API_KEY,
+      },
+    }
+  ).get('/'+uri)
+    .query(query)
+    .replyWithFile(200, responseFile);
+}

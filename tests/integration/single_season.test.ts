@@ -2,13 +2,15 @@ import nock, { type Scope } from 'nock';
 import { InMemoryLeague, type League } from '../../src/leagues/leagues';
 import {DefaultRuleset} from "../../src/rulesets/rulesets";
 import { DefaultRankings, type Rankings } from '../../src/rankings';
-import { JsonSource } from '../../src/sources/sources';
+import { JsonSource } from '../../src/sources/json_source';
 import path from 'node:path';
 import { JsonPage, type Page } from '../../src/pages/pages';
 import { makeTempDir } from '../utils';
 import { join } from 'path';
 import { readFileSync, rmSync } from 'fs';
 import { apiEnv } from '../../src/env';
+import { apiNock } from '../fixtures/nocks';
+import { ApiSource } from '../../src/sources/api_source';
 
 let dir: string
 let startingElo: number
@@ -53,33 +55,14 @@ describe("Single Season rankings of a fake league of five teams from a json file
 })
 
 describe("Premier League season 24/25 from API Football with InMemoryLeague", () => {
-  let scope:Scope
+  let teamScope: Scope
+  let fixtureScope: Scope
   beforeEach(async () => {
     nock.disableNetConnect()
-    scope = nock(new URL('https://v3.football.api-sports.io'), {
-      reqheaders: {
-        'x-apisports-key': apiEnv.API_KEY,
-      },
-    })
-      .get('/teams')
-      .query({
-        league: 39,
-        season: 2024,
-      })
-      .replyWithFile(200, 'tests/fixtures/api_football/premier-league-2024-teams.json', {
-        'Content-Type': 'application/json',
-      })
-      .get('/fixtures')
-      .query({
-        from: '2024-08-16',
-        to: '2025-05-25',
-        season: 2024,
-        league: 39,
-      })
-      .replyWithFile(200, 'tests/fixtures/api_football/premier-league-2024-fixtures.json', {
-        'Content-Type': 'application/json',
-      });
-
+    const teamsFile = 'tests/fixtures/api_football/premier-league-2024-teams.json';
+    const fixturesFile = 'tests/fixtures/api_football/premier-league-2024-fixtures.json';
+    teamScope = apiNock('teams',{league:39,season:2024},teamsFile)
+    fixtureScope = apiNock('fixtures',{from: '2024-08-16',to:'2025-05-25',season:2024,league:39},fixturesFile)
   })
   afterEach(async () => {
     nock.cleanAll()
@@ -127,7 +110,8 @@ describe("Premier League season 24/25 from API Football with InMemoryLeague", ()
     expect(fixtures).not.toEqual({})
     expect(fixtures.response?.length).toBeGreaterThan(0)
 
-    expect(scope.isDone()).toBe(true)
+    expect(teamScope.isDone()).toBe(true)
+    expect(fixtureScope.isDone()).toBe(true);
   })
   describe('Ranking setup and tests writing to file', () => {
     beforeEach(async () => {
@@ -148,7 +132,8 @@ describe("Premier League season 24/25 from API Football with InMemoryLeague", ()
       allElos = Object.values(elos);
     })
     it.todo('Tests that the correct calls are made of the nock', () => {
-      expect(scope.isDone()).toBe(true);
+      expect(teamScope.isDone()).toBe(true);
+      expect(fixtureScope.isDone()).toBe(true);
     })
 
     it.todo('Tests that average elo remains the same across the league', async () =>{

@@ -1,12 +1,12 @@
 import type { Elo, Ruleset } from '../../src/rulesets/rulesets';
 import type { Page } from '../../src/pages/pages';
 import type { Team } from '../../src/leagues/teams';
-import type { Source } from '../../src/sources/sources';
 import type { League } from '../../src/leagues/leagues';
 import type { Result } from '../../src/leagues/types';
 import type { Rankings } from '../../src/rankings';
 import type { SourceTeam } from '../../src/sources/types';
 import { ReadOnlyStrictMap, StrictMap } from '../../src/utils';
+import type { Source } from '../../src/sources/base';
 
 type fakeSourceData = {
   teams?: SourceTeam[];
