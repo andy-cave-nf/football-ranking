@@ -1,9 +1,9 @@
-import type { FixtureQuery, TeamQuery } from '../../src/sources/api_source';
+import type { FixtureQuery, ApiQuery } from '../../src/sources/api_source';
 import nock from 'nock';
 import { apiEnv } from '../../src/env';
 
 
-export function apiNock(uri:string, query: TeamQuery|FixtureQuery,responseFile: string) {
+export function apiNock(uri:string, query: ApiQuery|FixtureQuery, responseFile: string) {
   return nock(
     new URL(apiEnv.API_URL),{
       reqheaders: {
@@ -12,5 +12,5 @@ export function apiNock(uri:string, query: TeamQuery|FixtureQuery,responseFile: 
     }
   ).get('/'+uri)
     .query(query)
-    .replyWithFile(200, responseFile);
+    .replyWithFile(200, responseFile,{'Content-Type': 'application/json'});
 }

@@ -3,8 +3,14 @@ import { apiEnv } from '../../../src/env';
 
 import type { Source } from '../../../src/sources/base';
 import { ApiSource } from '../../../src/sources/api_source';
+import { apiNock } from '../../fixtures/nocks';
+import type { SourceTeam } from '../../../src/sources/types';
 
 let scope: Scope
+let source: Source
+let teams: SourceTeam[]
+let league: number
+let season: number
 
 beforeEach(async () => {
   nock.disableNetConnect()
@@ -15,29 +21,41 @@ afterEach(() => {
   nock.enableNetConnect();
 })
 
-describe('All teams are are called', async () => {
-  let source: Source
+describe('Tests the number of teams for premier league 2024 season', async () => {
   beforeEach(async () => {
-    scope = nock(new URL('https://v3.football.api-sports.io'), {
-      reqheaders: {
-        'x-apisports-key': apiEnv.API_KEY,
-      },
-    })
-      .get('/teams')
-      .query({
-        league: 39,
-        season: 2024,
-      })
-      .replyWithFile(200, 'tests/fixtures/api_football/premier-league-2024-teams.json', {
-        'Content-Type': 'application/json',
-      });
-
+    league = 39
+    season = 2024
+    const filepath = 'tests/fixtures/api_football/premier-league-2024-teams.json';
+    scope = apiNock('teams', { league: league, season: season }, filepath);
     source = new ApiSource({
-      39:[2024]
-    })
-    await source.teams()
+      [league]: [season],
+    });
+    teams = await source.teams();
   })
-  it.todo('tests that the nock is called properly', () => {
-    expect(scope.isDone()).toBe(true)
+
+  it('test the number of teams are called', async () => {
+    expect(teams).toHaveLength(20)
+  })
+  it('tests that the nock is called', async () => {
+    expect(scope.isDone()).toBe(true);
+  })
+})
+
+describe('Tests the number of teams for championship 2024 season', async () => {
+  beforeEach(async () => {
+    league = 40
+    season = 2024
+    const filepath = 'tests/fixtures/api_football/championship-2024-teams.json';
+    scope = apiNock('teams', { league: league, season: season }, filepath);
+    source = new ApiSource({
+      [league]: [season],
+    })
+    teams = await source.teams();
+  })
+  it('tests the number of teams are called', async () => {
+    expect(teams).toHaveLength(24)
+  })
+  it('tests that the nock is called', async () => {
+    expect(scope.isDone()).toBe(true);
   })
 })
