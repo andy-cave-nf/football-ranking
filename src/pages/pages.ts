@@ -1,5 +1,7 @@
 import { writeFile } from 'fs/promises';
-import type { Team } from '../leagues/teams';
+
+
+import type { Team } from '../leagues/types';
 
 export interface Page {
   print(teams: Team[]): Promise<void>

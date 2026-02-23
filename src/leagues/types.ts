@@ -1,6 +1,14 @@
+import type { SourceTeam } from '../sources/types';
+
 export type Result = {
-  homeTeamId: string | number;
-  awayTeamId: string|number;
+  home: SourceTeam
+  away: SourceTeam
   homeWin: 1 | 0 | 0.5;
   date: Date;
 };
+export type Team = {
+  id: number | string;
+  name: string;
+  elo: number;
+  lastFixtureDate: Date;
+}

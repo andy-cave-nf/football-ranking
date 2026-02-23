@@ -2,8 +2,9 @@ import { makeTempDir } from '../../utils';
 import { JsonPage, type Page } from '../../../src/pages/pages';
 import { join } from 'path';
 import { readFileSync, rmSync } from 'fs';
-import type { Team } from '../../../src/leagues/teams';
 import { DEFAULT_FAKE_TEAMS } from '../fake_setup';
+
+import type { Team } from '../../../src/leagues/types';
 
 
 describe('test that json page writes to a file correctly', () => {

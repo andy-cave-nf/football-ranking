@@ -61,8 +61,8 @@ describe("Premier League season 24/25 from API Football with InMemoryLeague", ()
     nock.disableNetConnect()
     const teamsFile = 'tests/fixtures/api_football/premier-league-2024-teams.json';
     const fixturesFile = 'tests/fixtures/api_football/premier-league-2024-fixtures.json';
-    teamScope = apiNock('teams',{league:39,season:2024},teamsFile)
-    fixtureScope = apiNock('fixtures',{from: '2024-08-16',to:'2025-05-25',season:2024,league:39},fixturesFile)
+    teamScope = apiNock('teams',{league:'39',season:'2024'},teamsFile)
+    fixtureScope = apiNock('fixtures',{from: '2024-08-16',to:'2025-05-25',season:'2024',league:'39'},fixturesFile)
   })
   afterEach(async () => {
     nock.cleanAll()
@@ -126,6 +126,8 @@ describe("Premier League season 24/25 from API Football with InMemoryLeague", ()
         new DefaultRuleset(16, 400)
       );
       await rankings.run(new Date(2024, 8, 16), new Date(2025, 5, 25));
+      // rankings.run should get all the games from the competitions between these two dates
+      // then if teams have not been added then they should be with a starting elo
       await rankings.print(page);
       const raw = readFileSync(file, 'utf-8');
       const elos = JSON.parse(raw) as Record<string, number>;

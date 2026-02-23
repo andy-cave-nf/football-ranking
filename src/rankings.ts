@@ -1,9 +1,8 @@
 import type { League } from './leagues/leagues';
 import type { Ruleset } from './rulesets/rulesets';
 import type { Page } from './pages/pages';
-import type { Team } from './leagues/teams';
 import type { SourceTeam } from './sources/types';
-import type { Result } from './leagues/types';
+import type { Result, Team } from './leagues/types';
 import type { Source } from './sources/base';
 
 export interface Rankings {
