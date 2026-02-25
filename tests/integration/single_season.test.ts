@@ -1,5 +1,5 @@
 import nock, { type Scope } from 'nock';
-import { InMemoryLeague, type League } from '../../src/leagues/leagues';
+import { InMemoryLeague } from '../../src/leagues/leagues';
 import {DefaultRuleset} from "../../src/rulesets/rulesets";
 import { DefaultRankings, type Rankings } from '../../src/rankings';
 import { JsonSource } from '../../src/sources/json_source';

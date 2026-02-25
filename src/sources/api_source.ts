@@ -44,7 +44,7 @@ export class ApiSource implements Source {
         headers: { 'x-apisports-key': apiEnv.API_KEY },
       }
     );
-    return await response.json() //as ApiResponse<'fixture'>;
+    return await response.json() as ApiResponse<'fixture'>;
   }
   private cleanedResults(rawResponse: ApiResponse<'fixture'>[]) {
     return rawResponse.map((response) => (this.cleanedResult(response))).flat();

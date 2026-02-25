@@ -14,7 +14,10 @@ export class JsonPage implements Page {
   }
   private printableTeams(teams: Team[]):Record<string,number> {
     return Object.fromEntries(
-      teams.map(team => [team.name,team.elo])
+      this.sortedTeams(teams).map(team => [team.name,team.elo])
     )
+  }
+  private sortedTeams(teams: Team[]): Team[] {
+    return [...teams].sort((a, b) => b.elo - a.elo)
   }
 }

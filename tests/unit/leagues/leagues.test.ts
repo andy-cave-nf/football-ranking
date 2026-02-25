@@ -7,8 +7,7 @@ import {
 } from '../../../src/leagues/leagues';
 import type { Elo, Ruleset } from '../../../src/rulesets/rulesets';
 import type { Result, Team } from '../../../src/leagues/types';
-import type { SourceTeam } from '../../../src/sources/types';
-import { ReadOnlyStrictMap, TeamMapError } from '../../../src/utils';
+import { ReadOnlyStrictMap } from '../../../src/utils';
 import { FakeRuleset } from '../fake_setup';
 
 let league: League;
@@ -87,6 +86,17 @@ describe('tests a record is added to a league with two teams', async () => {
     };
     const strictLeague = new StrictLeagueRecord(league)
     expect(() => strictLeague.record(earlyResult,fakeRuleset)).toThrowError(LeagueError)
+  })
+  it('tests that strict league correctly adds a record with new teams', () => {
+    const strictLeague = new StrictLeagueRecord(league)
+    const result: Result = {
+      home: { id: 'team-3', name: 'home-again' },
+      away: { id: 'team-4', name: 'away-again' },
+      homeWin: 1,
+      date: new Date(1999, 0, 1),
+    };
+    strictLeague.record(result, fakeRuleset)
+    expect(strictLeague.teams.size).toBe(4)
   })
 })
 

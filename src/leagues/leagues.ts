@@ -64,8 +64,8 @@ export class StrictLeagueRecord extends StrictLeague {
     super(origin);
   }
   record(result: Result, ruleset: Ruleset): void {
-    const homeDate = this.origin.teams.getOrThrow(result.home.id).lastFixtureDate ;
-    const awayDate = this.origin.teams.getOrThrow(result.home.id).lastFixtureDate;
+    const homeDate = this.origin.teams.get(result.home.id)?.lastFixtureDate ?? result.date ;
+    const awayDate = this.origin.teams.get(result.home.id)?.lastFixtureDate ?? result.date;
     if (homeDate > result.date) {
       throw new LeagueError(`Fixture played at ${result.date} occurs before last known home date ${homeDate}`);
     }

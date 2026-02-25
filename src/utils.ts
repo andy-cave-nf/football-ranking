@@ -57,6 +57,7 @@ export class SanitizeMap<K, V> extends Map<K, V> {
 }
 
 export interface ReadOnlyTeamMap<K, V> {
+  get(id: K): V | undefined
   getOrThrow(id: K): V;
   has(id: K): boolean;
   values(): V[];
@@ -78,6 +79,10 @@ export class DefaultTeamMap<K, V> implements TeamMap<K, V> {
     }
     return value;
   }
+  get(id: K): V | undefined {
+    return this.origin.get(id);
+  }
+
   has(id: K): boolean {
     return this.origin.has(id);
   }
