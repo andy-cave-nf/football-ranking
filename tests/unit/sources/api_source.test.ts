@@ -1,7 +1,7 @@
 import nock, { type Scope } from 'nock';
 import { apiEnv } from '../../../src/env';
 
-import type { Source } from '../../../src/sources/base';
+import { SortedSource, type Source } from '../../../src/sources/base';
 import { ApiSource } from '../../../src/sources/api_source';
 import { apiNock } from '../../fixtures/nocks';
 import type { SourceTeam } from '../../../src/sources/types';
@@ -20,26 +20,6 @@ beforeEach(async () => {
 afterEach(() => {
   nock.cleanAll();
   nock.enableNetConnect();
-})
-
-describe.todo('Tests the number of teams for premier league 2024 season', async () => {
-  beforeEach(async () => {
-    league = 39
-    season = 2024
-    const filepath = 'tests/fixtures/api_football/premier-league-2024-teams.json';
-    scope = apiNock('teams', { league: league.toString(), season: season.toString() }, filepath);
-    source = new ApiSource({
-      [league]: [season],
-    });
-    // teams = await source.teams();
-  })
-
-  it('test the number of teams are called', async () => {
-    expect(teams).toHaveLength(20)
-  })
-  it('tests that the nock is called', async () => {
-    expect(scope.isDone()).toBe(true);
-  })
 })
 
 describe('Tests the premier league results between 2024-01-01 and 2026-01-01', async () => {
@@ -66,7 +46,7 @@ describe('Tests the premier league results between 2024-01-01 and 2026-01-01', a
     for (const [season, filepath] of zipped) {
       scopes.push(apiNock('fixtures', {league: "39", from,to,season: season as string},filepath as string))
     }
-    source = new ApiSource(["39"])
+    source = new SortedSource(new ApiSource(["39"]))
     results = await source.results(new Date(from), new Date(to))
   })
   it('tests that all nocks are called', async () => {
@@ -75,26 +55,10 @@ describe('Tests the premier league results between 2024-01-01 and 2026-01-01', a
   it('tests that the correct number of results are pulled', async () => {
     expect(results).toHaveLength(754)
   })
-})
-
-
-
-
-describe.todo('Tests the number of teams for championship 2024 season', async () => {
-  beforeEach(async () => {
-    league = 40
-    season = 2024
-    const filepath = 'tests/fixtures/api_football/championship-2024-teams.json';
-    scope = apiNock('teams', { league: league.toString(), season: season.toString() }, filepath);
-    source = new ApiSource({
-      [league]: [season],
-    })
-    teams = await source.teams();
-  })
-  it('tests the number of teams are called', async () => {
-    expect(teams).toHaveLength(24)
-  })
-  it('tests that the nock is called', async () => {
-    expect(scope.isDone()).toBe(true);
+  it('tests that the results are sorted by date ascending', async () => {
+    const dates: Date[] = results.map(result => result.date)
+    expect(dates).toEqual([...dates].sort((a, b) => a.getTime() - b.getTime()))
   })
 })
+
+

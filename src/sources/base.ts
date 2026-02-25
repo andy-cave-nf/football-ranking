@@ -4,7 +4,7 @@ export interface Source {
   results(start: Date, end: Date): Promise<Result[]>;
 }
 
-export class SortedResults implements Source {
+export class SortedSource implements Source {
   constructor(private readonly origin: Source) {}
   async results(start: Date, end: Date): Promise<Result[]> {
     const unsorted = await this.origin.results(start, end);
