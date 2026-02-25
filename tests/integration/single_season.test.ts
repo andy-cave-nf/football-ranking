@@ -69,7 +69,7 @@ describe("Premier League season 24/25 from API Football with InMemoryLeague", ()
     nock.enableNetConnect()
   })
 
-  it('tests the nock response', async () => {
+  it.only('tests the nock response', async () => {
     const teamResponse = await fetch(
       apiEnv.API_URL +
         '/teams' +

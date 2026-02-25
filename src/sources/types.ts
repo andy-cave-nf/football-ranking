@@ -20,7 +20,7 @@ export type JsonFixtures = {
 };
 
 export interface SourceTeam {
-  id: number | string;
+  id: string;
   name: string;
 }
 

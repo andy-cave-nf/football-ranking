@@ -10,7 +10,6 @@ import {
 import type { SourceTeam } from '../sources/types';
 
 export interface League {
-  // add(team: SourceTeam, initialisedDate: Date): Promise<void>;
   record(result: Result, ruleset: Ruleset): void;
   teams: ReadOnlyTeamMap<number | string, Team>;
 }
@@ -22,11 +21,6 @@ export class InMemoryLeague implements League {
   get teams(): ReadOnlyTeamMap<number|string, Team>{
     return this.allTeams.toReadOnly()
   }
-  // async add(team: SourceTeam, initialisedDate:Date): Promise<void> {
-  //   const cleanId: string = cleanString(team.id)
-  //   const cleanName: string = team.name.trim();
-  //   this.allTeams.set(cleanId, { id: cleanId, name: cleanName, elo: this.elo, lastFixtureDate: initialisedDate });
-  // }
   record(result: Result, ruleset: Ruleset): void {
     this.addInit(result.home, result.date)
     this.addInit(result.away, result.date)
@@ -46,9 +40,9 @@ export class InMemoryLeague implements League {
     });
   }
   private addInit(team: SourceTeam, fixtureDate: Date): void {
-    this.allTeams.setInit(cleanString(team.id), {
-      id: cleanString(team.id),
-      name: cleanString(team.name),
+    this.allTeams.setInit(team.id, {
+      id: team.id,
+      name: team.name,
       elo: this.elo,
       lastFixtureDate: fixtureDate,
     });
@@ -57,9 +51,6 @@ export class InMemoryLeague implements League {
 
 abstract class StrictLeague implements League {
   protected constructor(protected origin: League) {}
-  // async add(team:SourceTeam, initialisedDate:Date): Promise<void> {
-  //   await this.origin.add(team, initialisedDate);
-  // }
   record(result: Result, ruleset: Ruleset): void {
     this.origin.record(result, ruleset);
   }
@@ -67,26 +58,6 @@ abstract class StrictLeague implements League {
     return this.origin.teams;
   }
 }
-//
-// export class StrictLeagueAddition extends StrictLeague {
-//   constructor(protected origin: League) {
-//     super(origin);
-//   }
-//   async add(team: SourceTeam, initialisedDate:Date): Promise<void> {
-//
-//     const ids = this.teams.values().map((team) => team.id);
-//     const names = this.teams.values().map((team) => team.name.toLowerCase());
-//     if (
-//       ids.includes(team.id.toString().trim().toLowerCase())
-//     ) {
-//       throw new LeagueError(`id ${team.id} already exists`);
-//     }
-//     if (names.includes(team.name.trim().toLowerCase())) {
-//       throw new LeagueError(`name ${team.name} already exists`);
-//     }
-//     await this.origin.add(team, initialisedDate);
-//   }
-// }
 
 export class StrictLeagueRecord extends StrictLeague {
   constructor(protected origin: League) {
@@ -107,14 +78,6 @@ export class StrictLeagueRecord extends StrictLeague {
 
 export class SafeLeague implements League {
   constructor(private origin: League) {}
-  async add(team: SourceTeam, initialisedDate:Date): Promise<void> {
-    try {
-      await this.origin.add(team, initialisedDate);
-    }
-    catch (error) {
-      throw new LeagueError('Unable to add team', {cause: error});
-    }
-  }
   record(result: Result, ruleset: Ruleset): void {
     try {
       this.origin.record(result, ruleset);
@@ -134,7 +97,7 @@ export class SafeLeague implements League {
 }
 
 
-function cleanString(id:string|number): string {
+export function cleanString(id:string|number): string {
   return id.toString().trim().toUpperCase();
 }
 

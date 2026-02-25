@@ -17,13 +17,8 @@ export class DefaultRankings implements Rankings {
     private ruleset: Ruleset
   ) {}
   async run(from: Date, to: Date): Promise<void> {
-    await this.initialiseTeams(from);
     const results: Result[] = await this.source.results(from, to);
     results.forEach((match) => this.league.record(match, this.ruleset));
-  }
-  private async initialiseTeams(startDate:Date): Promise<void> {
-    const teamInfo: SourceTeam[] = await this.source.teams();
-    teamInfo.map(async (team) => await this.league.add(team,startDate));
   }
 
   async print(page: Page): Promise<void> {

@@ -16,7 +16,9 @@ export class ReadOnlyStrictMap<K, V> {
   values(): V[] {
     return this.origin.values().toArray();
   }
-  get size() : number{return this.origin.size}
+  get size(): number {
+    return this.origin.size;
+  }
 }
 
 export class StrictMap<K, V> extends ReadOnlyStrictMap<K, V> {
@@ -28,44 +30,43 @@ export class StrictMap<K, V> extends ReadOnlyStrictMap<K, V> {
   }
 
   toReadOnly(): ReadOnlyStrictMap<K, V> {
-    return new ReadOnlyStrictMap<K, V>(this.origin)
+    return new ReadOnlyStrictMap<K, V>(this.origin);
   }
 }
 
-export class SanitizeMap<K,V> extends Map<K, V> {
+export class SanitizeMap<K, V> extends Map<K, V> {
   private readonly sanitize: (key: K) => K;
-  constructor(sanitize: (key: K) => K, entries?: Iterable<[K,V]>) {
+  constructor(sanitize: (key: K) => K, entries?: Iterable<[K, V]>) {
     super();
     this.sanitize = sanitize;
     if (entries) {
-      for (const [k,v] of entries) {
-        super.set(this.sanitize(k),v)
+      for (const [k, v] of entries) {
+        super.set(this.sanitize(k), v);
       }
     }
   }
-  get(key: K):V | undefined {
+  get(key: K): V | undefined {
     return super.get(this.sanitize(key));
   }
   set(key: K, value: V): this {
-    return super.set(this.sanitize(key), value)
+    return super.set(this.sanitize(key), value);
   }
-  has(key:K):boolean {
+  has(key: K): boolean {
     return super.has(this.sanitize(key));
   }
 }
 
-
 export interface ReadOnlyTeamMap<K, V> {
-  getOrThrow(id: K): V
-  has(id: K): boolean
-  values(): V[]
-  size: number
+  getOrThrow(id: K): V;
+  has(id: K): boolean;
+  values(): V[];
+  size: number;
 }
 
-export interface TeamMap<K,V> extends ReadOnlyTeamMap<K, V> {
-  set(id: K, value: V): void
-  setInit(id: K, value: V): void
-  toReadOnly(): ReadOnlyTeamMap<K, V>
+export interface TeamMap<K, V> extends ReadOnlyTeamMap<K, V> {
+  set(id: K, value: V): void;
+  setInit(id: K, value: V): void;
+  toReadOnly(): ReadOnlyTeamMap<K, V>;
 }
 
 export class DefaultTeamMap<K, V> implements TeamMap<K, V> {
@@ -95,7 +96,7 @@ export class DefaultTeamMap<K, V> implements TeamMap<K, V> {
     }
   }
   toReadOnly(): ReadOnlyTeamMap<K, V> {
-    return this
+    return this;
   }
 }
 
@@ -107,4 +108,14 @@ export class TeamMapError extends Error {
     super(message, options);
     this.name = 'StrictMapError';
   }
+}
+
+export function cartesianProduct<A, B>(a: A[], b: B[]): [A, B][];
+export function cartesianProduct<A, B, C>(a: A[], b: B[], c: C[]): [A, B, C][];
+export function cartesianProduct<T>(...inputArrays: T[][]): T[][] {
+  return inputArrays.reduce(
+    (acc, curr) =>
+      acc.flatMap((accElement) => curr.map((currElement) => [...accElement, currElement])),
+    [[]] as T[][]
+  );
 }

@@ -1,18 +1,22 @@
 import type { Result } from '../leagues/types';
-import type { SourceTeam } from './types';
 
 export interface Source {
-  teams(): Promise<SourceTeam[]>;
   results(start: Date, end: Date): Promise<Result[]>;
 }
+
+export class SortedResults implements Source {
+  constructor(private readonly origin: Source) {}
+  async results(start: Date, end: Date): Promise<Result[]> {
+    const unsorted = await this.origin.results(start, end);
+    return [...unsorted].sort((a, b) => a.date.getTime() - b.date.getTime());
+  }
+}
+
 
 abstract class StrictSource implements Source {
   protected constructor(protected origin: Source) {}
   async results(start: Date, end: Date): Promise<Result[]> {
     return this.origin.results(start, end);
-  }
-  async teams(): Promise<SourceTeam[]> {
-    return this.origin.teams();
   }
 }
 
@@ -35,13 +39,6 @@ export class SafeSource implements Source {
       return await this.origin.results(start, end);
     } catch (error) {
       throw new SourceError('Source error in results', { cause: error });
-    }
-  }
-  async teams(): Promise<SourceTeam[]> {
-    try {
-      return await this.origin.teams();
-    } catch (error) {
-      throw new SourceError('Source error in teams', { cause: error });
     }
   }
 }

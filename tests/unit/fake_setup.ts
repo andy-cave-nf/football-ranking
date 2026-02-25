@@ -1,10 +1,10 @@
 import type { Elo, Ruleset } from '../../src/rulesets/rulesets';
 import type { Page } from '../../src/pages/pages';
-import type { League } from '../../src/leagues/leagues';
+import { cleanString, type League } from '../../src/leagues/leagues';
 import type { Result, Team } from '../../src/leagues/types';
 import type { Rankings } from '../../src/rankings';
 import type { SourceTeam } from '../../src/sources/types';
-import { ReadOnlyStrictMap, StrictMap } from '../../src/utils';
+import { DefaultTeamMap, ReadOnlyStrictMap, type ReadOnlyTeamMap, SanitizeMap, StrictMap, type TeamMap } from '../../src/utils';
 import type { Source } from '../../src/sources/base';
 
 type fakeSourceData = {
@@ -14,8 +14,12 @@ type fakeSourceData = {
 
 
 export const DEFAULT_FAKE_TEAMS: Team[] = [{id:1, name: 'fake-team-1', elo:1000, lastFixtureDate: new Date(2000,0,1) }, {id:2, name: 'fake-team-2',elo:1200, lastFixtureDate: new Date(2000,0,1) }];
-export const DEFAULT_SOURCE_TEAMS: SourceTeam[] = [{id:1, name: 'fake-team-1'},{id:2, name: 'fake-team-2'}]
-export const DEFAULT_FAKE_RESULTS: Result[] = [{homeTeamId: 1, awayTeamId:1, homeWin:1, date:new Date(2000,0,1)}]
+export const DEFAULT_SOURCE_TEAMS: SourceTeam[] = [{id:"1", name: 'fake-team-1'},{id:"2", name: 'fake-team-2'}]
+export const DEFAULT_FAKE_RESULTS: Result[] = [{
+  home: {id: "1", name:'default-team-1'},
+  away: {id:"2", name:'default-team-2'},
+  homeWin:1,
+  date:new Date(2000,0,1)}]
 
 export class FakeSource implements Source {
   constructor(private fakeData: fakeSourceData) {}
@@ -33,12 +37,21 @@ type fakeLeagueData = {
 };
 
 export class FakeLeague implements League {
-  constructor(private fakeData: fakeLeagueData) {}
-  add = vi.fn(async (_team: SourceTeam, _date:Date) => {});
-  record = vi.fn(async (_result: Result, _ruleset: Ruleset): Promise<void> => {});
-  get teams(): ReadOnlyStrictMap<number|string, Team> {
-    const map = new Map((this.fakeData.teams ?? DEFAULT_FAKE_TEAMS).map(team => [team.id, team])??[]);
-    return new StrictMap(map).toReadOnly()
+  private teamMap: TeamMap<string, Team>
+  constructor(private startingElo:number) {
+    this.teamMap = new DefaultTeamMap<string, Team>(new SanitizeMap(cleanString))
+  }
+  record = vi.fn(async (result: Result, _ruleset: Ruleset): Promise<void> => {
+    this.teamMap.setInit(result.home.id,{id:result.home.id, name: result.home.name, elo:this.startingElo, lastFixtureDate: result.date})
+    this.teamMap.setInit(result.away.id, {
+      id: result.away.id,
+      name: result.away.name,
+      elo: this.startingElo,
+      lastFixtureDate: result.date,
+    });
+  });
+  get teams(): ReadOnlyTeamMap<number|string, Team> {
+    return this.teamMap.toReadOnly()
   }
 }
 

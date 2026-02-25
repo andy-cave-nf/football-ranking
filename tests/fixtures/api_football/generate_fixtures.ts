@@ -1,13 +1,18 @@
 import { apiEnv } from '../../../src/env';
+import { format } from 'date-fns'
 import * as fs from 'node:fs';
+
+// console.log(format(new Date(),'yyyy-MM-dd'));
 
 const fixtureResponse = await fetch(
   apiEnv.API_URL +
     '/fixtures' +
     '?' +
     new URLSearchParams({
-      season: '2024',
-      league: '39',
+      league: "39",
+      from:'2024-01-01',
+      to: '2026-01-01',
+      season: "2026"
     }).toString(),
   {
     method: 'GET',
@@ -15,28 +20,31 @@ const fixtureResponse = await fetch(
   }
 );
 
+// TODO: Needs to create nocks for each season call that is necessary between dates
+// TODO: say dates are between 2023-01-01 and 2026-01-01 it needs seasons 2022,23,24,25,26
+
 fs.writeFileSync(
-  'tests/fixtures/api_football/premier-league-2024-fixtures.json',
+  'tests/fixtures/api_football/pl_2024-01-01_2026-01-01_season_2026.json',
   JSON.stringify(await fixtureResponse.json(), null, 2),
 )
 
-const teamResponse = await fetch(
-  apiEnv.API_URL +
-  '/teams' +
-  '?' +
-  new URLSearchParams({
-    league: '40',
-    season: '2024'
-  }).toString(),
-  {
-    method: 'GET',
-    headers: { 'x-apisports-key': apiEnv.API_KEY },
-  }
-);
-
-fs.writeFileSync(
-  'tests/fixtures/api_football/championship-2024-teams.json',
-  JSON.stringify(await teamResponse.json(), null, 2),
-)
-
+// const teamResponse = await fetch(
+//   apiEnv.API_URL +
+//   '/teams' +
+//   '?' +
+//   new URLSearchParams({
+//     league: '40',
+//     season: '2024'
+//   }).toString(),
+//   {
+//     method: 'GET',
+//     headers: { 'x-apisports-key': apiEnv.API_KEY },
+//   }
+// );
+//
+// fs.writeFileSync(
+//   'tests/fixtures/api_football/championship-2024-teams.json',
+//   JSON.stringify(await teamResponse.json(), null, 2),
+// )
+//
 
