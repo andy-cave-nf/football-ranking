@@ -14,17 +14,13 @@ export class JsonSource implements Source {
       .filter((fixture) => fixture.date >= start.toISOString() && fixture.date <= end.toISOString())
       .map((fixture) => this.convertToResults(fixture));
   }
-  async teams(): Promise<SourceTeam[]> {
-    const data = (await this.cache.parse()) as JsonData;
-    return data.teams.map((team) => ({ id: team.id, name: team.name }));
-  }
   private convertToResults(fixture: JsonFixtures): Result {
     const [home, away]: Array<number> = fixture.score
       .split('-')
       .map((char) => parseInt(char, 10)) as [number, number];
     return {
-      homeTeamId: fixture.homeId,
-      awayTeamId: fixture.awayId,
+      home: {id: fixture.homeId,name:fixture.homeName},
+      away: {id:fixture.awayId,name:fixture.awayName},
       homeWin: home == away ? 0.5 : home > away ? 1 : 0,
       date: new Date(fixture.date),
     };

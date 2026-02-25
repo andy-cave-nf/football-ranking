@@ -1,164 +1,182 @@
 {
-  "teams": [
-    {
-      "id": "T001",
-      "name": "Avalon Rovers"
-    },
-    {
-      "id": "T002",
-      "name": "Beacon United"
-    },
-    {
-      "id": "T003",
-      "name": "Cedar City FC"
-    },
-    {
-      "id": "T004",
-      "name": "Delta Kings"
-    },
-    {
-      "id": "T005",
-      "name": "Elmwood Athletic"
-    }
-  ],
   "fixtures": [
     {
       "matchId": "M001",
       "homeId": "T001",
+      "homeName": "Avalon Rovers",
       "awayId": "T002",
+      "awayName": "Beacon United",
       "score": "0-1",
       "date": "2026-02-14T15:00:00"
     },
     {
       "matchId": "M002",
       "homeId": "T001",
+      "homeName": "Avalon Rovers",
       "awayId": "T003",
+      "awayName": "Cedar City FC",
       "score": "1-2",
       "date": "2026-02-16T17:00:00"
     },
     {
       "matchId": "M003",
       "homeId": "T001",
+      "homeName": "Avalon Rovers",
       "awayId": "T004",
+      "awayName": "Delta Kings",
       "score": "3-0",
       "date": "2026-02-18T19:00:00"
     },
     {
       "matchId": "M004",
       "homeId": "T001",
+      "homeName": "Avalon Rovers",
       "awayId": "T005",
+      "awayName": "Elmwood Athletic",
       "score": "0-1",
       "date": "2026-02-20T15:00:00"
     },
     {
       "matchId": "M005",
       "homeId": "T002",
+      "homeName": "Beacon United",
       "awayId": "T001",
+      "awayName": "Avalon Rovers",
       "score": "3-0",
       "date": "2026-02-22T17:00:00"
     },
     {
       "matchId": "M006",
       "homeId": "T002",
+      "homeName": "Beacon United",
       "awayId": "T003",
+      "awayName": "Cedar City FC",
       "score": "2-3",
       "date": "2026-02-24T19:00:00"
     },
     {
       "matchId": "M007",
       "homeId": "T002",
+      "homeName": "Beacon United",
       "awayId": "T004",
+      "awayName": "Delta Kings",
       "score": "0-1",
       "date": "2026-02-26T15:00:00"
     },
     {
       "matchId": "M008",
       "homeId": "T002",
+      "homeName": "Beacon United",
       "awayId": "T005",
+      "awayName": "Elmwood Athletic",
       "score": "1-2",
       "date": "2026-02-28T17:00:00"
     },
     {
       "matchId": "M009",
       "homeId": "T003",
+      "homeName": "Cedar City FC",
       "awayId": "T001",
+      "awayName": "Avalon Rovers",
       "score": "0-1",
       "date": "2026-03-02T19:00:00"
     },
     {
       "matchId": "M010",
       "homeId": "T003",
+      "homeName": "Cedar City FC",
       "awayId": "T002",
+      "awayName": "Beacon United",
       "score": "1-2",
       "date": "2026-03-04T15:00:00"
     },
     {
       "matchId": "M011",
       "homeId": "T003",
+      "homeName": "Cedar City FC",
       "awayId": "T004",
+      "awayName": "Delta Kings",
       "score": "0-1",
       "date": "2026-03-06T17:00:00"
     },
     {
       "matchId": "M012",
       "homeId": "T003",
+      "homeName": "Cedar City FC",
       "awayId": "T005",
+      "awayName": "Elmwood Athletic",
       "score": "2-3",
       "date": "2026-03-08T19:00:00"
     },
     {
       "matchId": "M013",
       "homeId": "T004",
+      "homeName": "Delta Kings",
       "awayId": "T001",
+      "awayName": "Avalon Rovers",
       "score": "0-1",
       "date": "2026-03-10T15:00:00"
     },
     {
       "matchId": "M014",
       "homeId": "T004",
+      "homeName": "Delta Kings",
       "awayId": "T002",
+      "awayName": "Beacon United",
       "score": "2-3",
       "date": "2026-03-12T17:00:00"
     },
     {
       "matchId": "M015",
       "homeId": "T004",
+      "homeName": "Delta Kings",
       "awayId": "T003",
+      "awayName": "Cedar City FC",
       "score": "0-1",
       "date": "2026-03-14T19:00:00"
     },
     {
       "matchId": "M016",
       "homeId": "T004",
+      "homeName": "Delta Kings",
       "awayId": "T005",
+      "awayName": "Elmwood Athletic",
       "score": "3-0",
       "date": "2026-03-16T15:00:00"
     },
     {
       "matchId": "M017",
       "homeId": "T005",
+      "homeName": "Elmwood Athletic",
       "awayId": "T001",
+      "awayName": "Avalon Rovers",
       "score": "1-2",
       "date": "2026-03-18T17:00:00"
     },
     {
       "matchId": "M018",
       "homeId": "T005",
+      "homeName": "Elmwood Athletic",
       "awayId": "T002",
+      "awayName": "Beacon United",
       "score": "3-0",
       "date": "2026-03-20T19:00:00"
     },
     {
       "matchId": "M019",
       "homeId": "T005",
+      "homeName": "Elmwood Athletic",
       "awayId": "T003",
+      "awayName": "Cedar City FC",
       "score": "0-1",
       "date": "2026-03-22T15:00:00"
     },
     {
       "matchId": "M020",
       "homeId": "T005",
+      "homeName": "Elmwood Athletic",
       "awayId": "T004",
+      "awayName": "Delta Kings",
       "score": "2-3",
       "date": "2026-03-24T17:00:00"
     }

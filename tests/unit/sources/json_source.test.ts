@@ -23,12 +23,6 @@ describe('test that all matches are loaded', async () => {
   })
 })
 
-describe('test that all teams are loaded', async () => {
-  it('tests that the right number of teams are loaded', async () => {
-    const teams = await source.teams()
-    expect(teams).toHaveLength(5)
-  })
-})
 
 describe('test that strict sources raise correctly', async () => {
   let strictSource: Source
@@ -45,15 +39,12 @@ describe('tests that safe sources handle errors throw correct errors', async () 
   let safeSource: Source
   beforeEach(() => {
     erroredSource =  {
-      teams: vi.fn(async() => {throw new Error('teams throws an error')}),
       results: vi.fn(async(_start:Date, _end:Date) => {throw new Error('matches raises an error')}),
     }
     safeSource = new SafeSource(erroredSource)
   })
-  it('tests that teams raises a source error', async () => {
-    await expect(safeSource.teams()).rejects.toThrow(SourceError)
-  })
+
   it('tests that results raises a source error', async () => {
-    await expect(safeSource.teams()).rejects.toThrow(SourceError)
+    await expect(safeSource.results(new Date(),new Date())).rejects.toThrow(SourceError)
   })
 })

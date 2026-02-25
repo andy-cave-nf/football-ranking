@@ -55,34 +55,37 @@ describe("Single Season rankings of a fake league of five teams from a json file
 })
 
 describe("Premier League season 24/25 from API Football with InMemoryLeague", () => {
-  let teamScope: Scope
-  let fixtureScope: Scope
+  let scopes: Scope[]
   beforeEach(async () => {
     nock.disableNetConnect()
-    const teamsFile = 'tests/fixtures/api_football/premier-league-2024-teams.json';
-    const fixturesFile = 'tests/fixtures/api_football/premier-league-2024-fixtures.json';
-    teamScope = apiNock('teams',{league:'39',season:'2024'},teamsFile)
-    fixtureScope = apiNock('fixtures',{from: '2024-08-16',to:'2025-05-25',season:'2024',league:'39'},fixturesFile)
+    const league = "39";
+    const from = '2024-08-16';
+    const to = '2025-05-25';
+    const seasons = ['2023', '2024', '2025'];
+    const filepaths = [
+      'tests/fixtures/api_football/pl_2024-08-16_2025-05-25_season_2023.json',
+      'tests/fixtures/api_football/pl_2024-08-16_2025_05_25_season_2024.json',
+      'tests/fixtures/api_football/pl_2024-08-16_2025-05-25_season_2025.json',
+    ];
+    const zipped = seasons.map((value, index) => [value, filepaths[index]]);
+    scopes = [];
+    for (const [season, filepath] of zipped) {
+      scopes.push(
+        apiNock(
+          'fixtures',
+          { league, from, to, season: season as string },
+          filepath as string
+        )
+      );
+    }
   })
   afterEach(async () => {
     nock.cleanAll()
     nock.enableNetConnect()
   })
 
-  it.only('tests the nock response', async () => {
-    const teamResponse = await fetch(
-      apiEnv.API_URL +
-        '/teams' +
-        '?' +
-        new URLSearchParams({
-          league: '39',
-          season: '2024',
-        }).toString(),
-      {
-        method: 'GET',
-        headers: { 'x-apisports-key': apiEnv.API_KEY },
-      }
-    );
+  it('tests the nock response', async () => {
+
     const fixtureResponse = await fetch(
       apiEnv.API_URL +
         '/fixtures' +
@@ -99,19 +102,13 @@ describe("Premier League season 24/25 from API Football with InMemoryLeague", ()
       }
     );
     const fixtures = await fixtureResponse.json();
-    const teams = await teamResponse.json();
 
-
-    expect(teams).toBeDefined();
-    expect(teams).not.toEqual({})
-    expect(teams.response?.length).toBeGreaterThan(0)
 
     expect(fixtures).toBeDefined()
     expect(fixtures).not.toEqual({})
     expect(fixtures.response?.length).toBeGreaterThan(0)
+    expect(scopes[1]?.isDone()).toBe(true)
 
-    expect(teamScope.isDone()).toBe(true)
-    expect(fixtureScope.isDone()).toBe(true);
   })
   describe('Ranking setup and tests writing to file', () => {
     beforeEach(async () => {
@@ -120,12 +117,10 @@ describe("Premier League season 24/25 from API Football with InMemoryLeague", ()
       page = new JsonPage(file);
       rankings = new DefaultRankings(
         new InMemoryLeague(startingElo),
-        new ApiSource({
-          39: [2024],
-        }),
+        new ApiSource(["39"]),
         new DefaultRuleset(16, 400)
       );
-      await rankings.run(new Date(2024, 8, 16), new Date(2025, 5, 25));
+      await rankings.run(new Date(2024, 7, 16), new Date(2025, 4, 25));
       // rankings.run should get all the games from the competitions between these two dates
       // then if teams have not been added then they should be with a starting elo
       await rankings.print(page);
@@ -133,16 +128,15 @@ describe("Premier League season 24/25 from API Football with InMemoryLeague", ()
       const elos = JSON.parse(raw) as Record<string, number>;
       allElos = Object.values(elos);
     })
-    it.todo('Tests that the correct calls are made of the nock', () => {
-      expect(teamScope.isDone()).toBe(true);
-      expect(fixtureScope.isDone()).toBe(true);
+    it('Tests that the correct calls are made of the nock', () => {
+      scopes.forEach((scope) => expect(scope.isDone()).toBe(true));
     })
 
-    it.todo('Tests that average elo remains the same across the league', async () =>{
+    it('Tests that average elo remains the same across the league', async () =>{
       const averageElo = allElos.reduce((a, b) => a + b, 0) / allElos.length;
       expect(averageElo).toBe(startingElo);
     })
-    it.todo('Tests that all elos are not the same across the league', async () =>{
+    it('Tests that all elos are not the same across the league', async () =>{
       const setElos = new Set(allElos);
       expect(setElos.size).not.toEqual(1);
     })

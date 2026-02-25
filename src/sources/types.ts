@@ -15,6 +15,8 @@ export type JsonFixtures = {
   matchId: string;
   homeId: string;
   awayId: string;
+  homeName:string;
+  awayName:string;
   score: DashedScore;
   date: string;
 };
