@@ -13,7 +13,7 @@ export interface Ruleset {
   record(result: Result, ratings: Ratings): Ratings;
 }
 
-export class DefaultEloRuleset implements Ruleset {
+export class EloRuleset implements Ruleset {
   constructor(
     private k: number,
     private scale: number
