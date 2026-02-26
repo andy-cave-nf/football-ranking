@@ -9,6 +9,7 @@ export type Result = {
 export type Team = {
   id: number | string;
   name: string;
-  elo: number;
+  rating: number;
+  uncertainty: number;
   lastFixtureDate: Date;
 }

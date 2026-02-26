@@ -1,4 +1,4 @@
-import { InMemoryLeague, type League} from "../../src/leagues/leagues";
+import { InMemoryLeague} from "../../src/leagues/in_memory";
 import {
   DefaultRankings,
   RankingError,
@@ -20,6 +20,7 @@ import type { Mock } from 'vitest';
 import type { Result, Team } from '../../src/leagues/types';
 import type { ReadOnlyStrictMap, ReadOnlyTeamMap } from '../../src/utils';
 import type { Source } from '../../src/sources/base';
+import type { League } from '../../src/leagues/base';
 
 let rankings: Rankings
 let league: League

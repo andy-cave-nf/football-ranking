@@ -1,21 +1,27 @@
 import {
   InMemoryLeague,
+
+
+} from '../../../src/leagues/in_memory';
+import type { Ratings, Ruleset } from '../../../src/rulesets/rulesets';
+import type { Result, Team } from '../../../src/leagues/types';
+import { ReadOnlyStrictMap } from '../../../src/utils';
+import { FakeRuleset } from '../fake_setup';
+import {
   type League,
   LeagueError,
   SafeLeague,
   StrictLeagueRecord,
-} from '../../../src/leagues/leagues';
-import type { Elo, Ruleset } from '../../../src/rulesets/rulesets';
-import type { Result, Team } from '../../../src/leagues/types';
-import { ReadOnlyStrictMap } from '../../../src/utils';
-import { FakeRuleset } from '../fake_setup';
+} from '../../../src/leagues/base';
 
 let league: League;
 let startingElo: number;
+let startingUncertainty: number;
 
 beforeEach(async () => {
   startingElo = 100
-  league = new InMemoryLeague(startingElo);
+  startingUncertainty = 10
+  league = new InMemoryLeague(startingElo,startingUncertainty);
 })
 
 describe('test empty in memory leagues', async () => {
@@ -29,9 +35,9 @@ describe('tests a record is added to a league with two teams', async () => {
   let result: Result
   beforeEach(async () => {
     fakeRuleset = {
-      record: vi.fn((result:Result, elo:Elo): Elo => ({
-        home: elo.home+8*(2*result.homeWin-1),
-        away: elo.away-8*(2*result.homeWin-1),
+      record: vi.fn((result:Result, ratings:Ratings): Ratings => ({
+        home: {rating: ratings.home.rating+8*(2*result.homeWin-1),uncertainty:0},
+        away: {rating: ratings.away.rating-8*(2*result.homeWin-1),uncertainty:0},
       }))
     }
     result = {
@@ -67,14 +73,14 @@ describe('tests a record is added to a league with two teams', async () => {
   })
 
   it('tests that record calls the ruleset', async () => {
-    expect(fakeRuleset.record).toHaveBeenCalledWith(result, {home: startingElo, away: startingElo})
+    expect(fakeRuleset.record).toHaveBeenCalledWith(result, {home: {rating: startingElo, uncertainty: startingUncertainty}, away: {rating:startingElo,uncertainty:startingUncertainty}})
   })
 
   it('tests that the home elos is correct after a win', async () => {
-    expect(league.teams.getOrThrow(result.home.id).elo).toBe(startingElo+8)
+    expect(league.teams.getOrThrow(result.home.id).rating).toBe(startingElo+8)
   })
   it('tests that the away elo is correct after a loss', async () => {
-    expect(league.teams.getOrThrow(result.away.id).elo).toBe(startingElo-8)
+    expect(league.teams.getOrThrow(result.away.id).rating).toBe(startingElo-8)
   })
 
   it('tests that an error is raised if the record added occurs before the previous fixture', () =>{

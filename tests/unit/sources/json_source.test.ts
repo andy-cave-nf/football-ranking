@@ -17,7 +17,7 @@ describe('test that all matches are loaded', async () => {
     const matches = await source.results(new Date(2026,1,1), new Date(2027,1,1))
     expect(matches).toHaveLength(20)
   })
-  it('tests that data is partially loaded with these datas', async () => {
+  it('tests that data is partially loaded with these dates', async () => {
     const matches = await source.results(new Date(2026,1,1), new Date(2026,1,16))
     expect(matches).toHaveLength(1)
   })

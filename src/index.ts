@@ -1,12 +1,12 @@
 import { TuiView } from './tui';
 import { DefaultRankings, SafeRankings } from './rankings';
-import { InMemoryLeague, SafeLeague, StrictLeagueRecord } from './leagues/leagues';
+import { InMemoryLeague } from './leagues/in_memory';
 import { ApiSource } from './sources/api_source';
-import { DefaultRuleset } from './rulesets/rulesets';
+import { DefaultEloRuleset } from './rulesets/rulesets';
 import { JsonPage } from './pages/pages';
 import { SafeSource, StrictSourceDates } from './sources/base';
+import { SafeLeague, StrictLeagueRecord } from './leagues/base';
 
-console.log('running')
 const view = new TuiView(
   new SafeRankings(
     new DefaultRankings(
@@ -20,9 +20,9 @@ const view = new TuiView(
           new ApiSource(["39"])
         )
       ),
-      new DefaultRuleset(16,400)
+      new DefaultEloRuleset(16,400)
     )
   ),
-  new JsonPage('results.json')
+  new JsonPage('results/pl_2020-01-01_2026-02-24.json')
 )
 await view.run().catch(console.error);

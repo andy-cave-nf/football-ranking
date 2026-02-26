@@ -1,6 +1,6 @@
 import nock, { type Scope } from 'nock';
-import { InMemoryLeague } from '../../src/leagues/leagues';
-import {DefaultRuleset} from "../../src/rulesets/rulesets";
+import { InMemoryLeague } from '../../src/leagues/in_memory';
+import {DefaultEloRuleset} from "../../src/rulesets/rulesets";
 import { DefaultRankings, type Rankings } from '../../src/rankings';
 import { JsonSource } from '../../src/sources/json_source';
 import path from 'node:path';
@@ -33,7 +33,7 @@ describe("Single Season rankings of a fake league of five teams from a json file
         rankings = new DefaultRankings(
           new InMemoryLeague(startingElo),
           new JsonSource(path.resolve(process.cwd(), 'tests', 'fixtures','json_source.json')),
-          new DefaultRuleset(16, 400)
+          new DefaultEloRuleset(16, 400)
         );
         page = new JsonPage(file)
         await rankings.run(new Date(2025,8 ,16), new Date(2026,5,25))
@@ -118,7 +118,7 @@ describe("Premier League season 24/25 from API Football with InMemoryLeague", ()
       rankings = new DefaultRankings(
         new InMemoryLeague(startingElo),
         new ApiSource(["39"]),
-        new DefaultRuleset(16, 400)
+        new DefaultEloRuleset(16, 400)
       );
       await rankings.run(new Date(2024, 7, 16), new Date(2025, 4, 25));
       // rankings.run should get all the games from the competitions between these two dates

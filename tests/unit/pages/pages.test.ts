@@ -25,7 +25,7 @@ describe('test that json page writes to a file correctly', () => {
   it('tests the contents of the file', async () => {
     const actual = JSON.parse(readFileSync(file, 'utf8'))
     const expected = Object.fromEntries(
-      teams.map(team => [team.name, team.elo])
+      teams.map(team => [team.name, team.rating])
     )
     expect(actual).toEqual(expected)
   })
