@@ -5,7 +5,7 @@ export type Ratings = {
   away: TeamRating;
 };
 
-type TeamRating = {rating: number, uncertainty: number};
+export type TeamRating = {rating: number, uncertainty: number};
 
 type EloRating = {home:number, away:number};
 
