@@ -11,15 +11,10 @@ describe.todo('tests on empty db leagues', () => {
       host: apiEnv.TEST_DB_HOST,
       database: apiEnv.TEST_DB_NAME,
     });
-    connection = new DbConnection(
-      new PgPoolQueryRunner(
-        new Pool(pgPool)
-      )
-    )
-    league = new PgLeague(connection)
-  })
+    connection = new DbConnection(new PgPoolQueryRunner(new Pool(pgPool)));
+    league = new PgLeague(connection);
+  });
   it('tests that there are no teams', async () => {
     await expect(league.teams.size).toBe(0);
-  })
-
-})
+  });
+});

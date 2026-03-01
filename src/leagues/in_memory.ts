@@ -7,7 +7,10 @@ import { cleanString, type League } from './base';
 export class InMemoryLeague implements League {
   private allTeams = new DefaultTeamMap(new SanitizeMap<number | string, Team>(cleanString));
 
-  constructor(private initialRating: number, private initialUncertainty: number) {}
+  constructor(
+    private initialRating: number,
+    private initialUncertainty: number
+  ) {}
   get teams(): ReadOnlyTeamMap<number | string, Team> {
     return this.allTeams.toReadOnly();
   }
@@ -16,13 +19,13 @@ export class InMemoryLeague implements League {
     this.addInit(result.away, result.date);
     const newElos = ruleset.record(result, {
       home: {
-        rating:this.allTeams.getOrThrow(result.home.id).rating,
-        uncertainty: this.allTeams.getOrThrow(result.home.id).uncertainty
+        rating: this.allTeams.getOrThrow(result.home.id).rating,
+        uncertainty: this.allTeams.getOrThrow(result.home.id).uncertainty,
       },
       away: {
         rating: this.allTeams.getOrThrow(result.away.id).rating,
-        uncertainty: this.allTeams.getOrThrow(result.away.id).uncertainty
-      }
+        uncertainty: this.allTeams.getOrThrow(result.away.id).uncertainty,
+      },
     });
     this.allTeams.set(result.home.id, {
       ...this.allTeams.getOrThrow(result.home.id),

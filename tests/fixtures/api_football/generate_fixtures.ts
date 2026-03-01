@@ -8,10 +8,10 @@ const fixtureResponse = await fetch(
     '/fixtures' +
     '?' +
     new URLSearchParams({
-      league: "39",
-      from:'2024-08-16',
+      league: '39',
+      from: '2024-08-16',
       to: '2025-05-25',
-      season: "2025"
+      season: '2025',
     }).toString(),
   {
     method: 'GET',
@@ -24,8 +24,8 @@ const fixtureResponse = await fetch(
 
 fs.writeFileSync(
   'tests/fixtures/api_football/pl_2024-08-16_2025-05-25_season_2025.json',
-  JSON.stringify(await fixtureResponse.json(), null, 2),
-)
+  JSON.stringify(await fixtureResponse.json(), null, 2)
+);
 
 // const teamResponse = await fetch(
 //   apiEnv.API_URL +
@@ -46,4 +46,3 @@ fs.writeFileSync(
 //   JSON.stringify(await teamResponse.json(), null, 2),
 // )
 //
-

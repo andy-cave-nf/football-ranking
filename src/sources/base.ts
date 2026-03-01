@@ -12,7 +12,6 @@ export class SortedSource implements Source {
   }
 }
 
-
 abstract class StrictSource implements Source {
   protected constructor(protected origin: Source) {}
   async results(start: Date, end: Date): Promise<Result[]> {

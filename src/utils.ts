@@ -57,7 +57,7 @@ export class SanitizeMap<K, V> extends Map<K, V> {
 }
 
 export interface ReadOnlyTeamMap<K, V> {
-  get(id: K): V | undefined
+  get(id: K): V | undefined;
   getOrThrow(id: K): V;
   has(id: K): boolean;
   values(): V[];

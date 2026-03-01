@@ -10,7 +10,8 @@
     "start": "tsx src/index.ts",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "format": "prettier --write '**/*.ts'"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

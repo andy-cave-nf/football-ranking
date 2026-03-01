@@ -1,8 +1,8 @@
 import type { SourceTeam } from '../sources/types';
 
 export type Result = {
-  home: SourceTeam
-  away: SourceTeam
+  home: SourceTeam;
+  away: SourceTeam;
   homeWin: 1 | 0 | 0.5;
   date: Date;
 };
@@ -12,4 +12,4 @@ export type Team = {
   rating: number;
   uncertainty: number;
   lastFixtureDate: Date;
-}
+};

@@ -20,20 +20,17 @@ export class ParseScoresOrThrow implements ParsedJson {
   constructor(private origin: ParsedJson) {}
   async parse(): Promise<JsonData> {
     const data: JsonData = await this.origin.parse();
-    const allValidScores = data.fixtures.every(fixture => isDashedScore(fixture.score))
+    const allValidScores = data.fixtures.every((fixture) => isDashedScore(fixture.score));
     if (!allValidScores) {
-      throw new JsonParseError('Unable to parse scores')
+      throw new JsonParseError('Unable to parse scores');
     }
     return data;
   }
 }
 
-
 function isDashedScore(score: string | null): score is `${number}-${number}` {
   return typeof score === 'string' && /^\d+-\d+$/.test(score);
 }
-
-
 
 export class CachedFromJson implements ParsedJson {
   private data: JsonData | null = null;

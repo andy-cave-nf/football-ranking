@@ -1,83 +1,85 @@
 import type { Result } from '../src/leagues/types';
-import {mkdtempSync} from 'fs'
-import { tmpdir } from 'os'
-import { join } from 'path'
+import { mkdtempSync } from 'fs';
+import { tmpdir } from 'os';
+import { join } from 'path';
 import type { Ratings } from '../src/rulesets/rulesets';
 import type { TrueSkillConfig } from '../src/rulesets/types';
 
 export function expectedElo(
-  elo: { home: number, away: number },
+  elo: { home: number; away: number },
   result: Result,
   scale: number,
   k: number
 ): { home: number; away: number } {
   const qH = 10 ** (elo.home / scale);
   const qA = 10 ** (elo.away / scale);
-  const delta = Math.round(k * (result.homeWin - qH/(qA+qH)))
+  const delta = Math.round(k * (result.homeWin - qH / (qA + qH)));
   return {
     home: elo.home + delta,
     away: elo.away - delta,
   };
 }
 
-export function makeTempDir(prefix:string) {
+export function makeTempDir(prefix: string) {
   return mkdtempSync(join(tmpdir(), prefix));
 }
 
-export function expectedTrueSkill(ratings: Ratings, result: Result, config: TrueSkillConfig, sigma0:number): Ratings {
-  const homeSkillMean = ratings.home.rating +  config.conservatism * ratings.home.uncertainty;
+export function expectedTrueSkill(
+  ratings: Ratings,
+  result: Result,
+  config: TrueSkillConfig,
+  sigma0: number
+): Ratings {
+  const homeSkillMean = ratings.home.rating + config.conservatism * ratings.home.uncertainty;
   const homeUncertainty = Math.sqrt(ratings.home.uncertainty ** 2 + config.driftRate ** 2);
   const awayUncertainty = Math.sqrt(ratings.away.uncertainty ** 2 + config.driftRate ** 2);
-  const awaySkillMean = ratings.away.rating +  config.conservatism * ratings.away.uncertainty;
-  const performanceVariance = 2 * config.performanceNoise ** 2 + homeUncertainty ** 2 + awayUncertainty ** 2;
-  const epsilon = drawMarginFromRate(config.drawRate, config.performanceNoise, sigma0) / Math.sqrt(performanceVariance);
-  let teamUpdates
+  const awaySkillMean = ratings.away.rating + config.conservatism * ratings.away.uncertainty;
+  const performanceVariance =
+    2 * config.performanceNoise ** 2 + homeUncertainty ** 2 + awayUncertainty ** 2;
+  const epsilon =
+    drawMarginFromRate(config.drawRate, config.performanceNoise, sigma0) /
+    Math.sqrt(performanceVariance);
+  let teamUpdates;
   if (result.homeWin == 1 || result.homeWin == 0) {
-    const performanceDiff = (2*result.homeWin - 1)*(homeSkillMean - awaySkillMean) / Math.sqrt(performanceVariance);
-    const v = vWinSafe(performanceDiff-epsilon);
-    const w = wWin(performanceDiff-epsilon);
+    const performanceDiff =
+      ((2 * result.homeWin - 1) * (homeSkillMean - awaySkillMean)) / Math.sqrt(performanceVariance);
+    const v = vWinSafe(performanceDiff - epsilon);
+    const w = wWin(performanceDiff - epsilon);
     teamUpdates = {
       home: {
         rating:
           homeSkillMean +
-          (2 * result.homeWin - 1) *
-            (homeUncertainty ** 2 / Math.sqrt(performanceVariance)) *
-            v,
+          (2 * result.homeWin - 1) * (homeUncertainty ** 2 / Math.sqrt(performanceVariance)) * v,
         uncertainty: Math.sqrt(
-          homeUncertainty ** 2 *
-            (1 - w *(homeUncertainty ** 2 / performanceVariance))
-        ),
-      },
-      away: {
-        rating: awaySkillMean - (2 * result.homeWin - 1) * (awayUncertainty ** 2 / Math.sqrt(performanceVariance)) * v,
-        uncertainty: Math.sqrt(awayUncertainty ** 2 * (1 - w *(awayUncertainty ** 2 / performanceVariance)))
-      }
-    };
-  } else {
-    const performanceDiff = (homeSkillMean - awaySkillMean) / Math.sqrt(performanceVariance);
-    const a = -performanceDiff-epsilon;
-    const b = epsilon-performanceDiff
-    const v = vDraw(a,b);
-    const w = wDraw(a,b);
-    teamUpdates = {
-      home: {
-        rating:
-          homeSkillMean +
-            (homeUncertainty ** 2 / Math.sqrt(performanceVariance)) *
-            v,
-        uncertainty: Math.sqrt(
-          homeUncertainty ** 2 *
-            (1 - w * (homeUncertainty ** 2 / performanceVariance))
+          homeUncertainty ** 2 * (1 - w * (homeUncertainty ** 2 / performanceVariance))
         ),
       },
       away: {
         rating:
           awaySkillMean -
-            (awayUncertainty ** 2 / Math.sqrt(performanceVariance)) *
-            v,
+          (2 * result.homeWin - 1) * (awayUncertainty ** 2 / Math.sqrt(performanceVariance)) * v,
         uncertainty: Math.sqrt(
-          awayUncertainty ** 2 *
-            (1 - w * (awayUncertainty ** 2 / performanceVariance))
+          awayUncertainty ** 2 * (1 - w * (awayUncertainty ** 2 / performanceVariance))
+        ),
+      },
+    };
+  } else {
+    const performanceDiff = (homeSkillMean - awaySkillMean) / Math.sqrt(performanceVariance);
+    const a = -performanceDiff - epsilon;
+    const b = epsilon - performanceDiff;
+    const v = vDraw(a, b);
+    const w = wDraw(a, b);
+    teamUpdates = {
+      home: {
+        rating: homeSkillMean + (homeUncertainty ** 2 / Math.sqrt(performanceVariance)) * v,
+        uncertainty: Math.sqrt(
+          homeUncertainty ** 2 * (1 - w * (homeUncertainty ** 2 / performanceVariance))
+        ),
+      },
+      away: {
+        rating: awaySkillMean - (awayUncertainty ** 2 / Math.sqrt(performanceVariance)) * v,
+        uncertainty: Math.sqrt(
+          awayUncertainty ** 2 * (1 - w * (awayUncertainty ** 2 / performanceVariance))
         ),
       },
     };
@@ -85,13 +87,13 @@ export function expectedTrueSkill(ratings: Ratings, result: Result, config: True
   return {
     home: {
       rating: teamUpdates.home.rating - config.conservatism * teamUpdates.home.uncertainty,
-      uncertainty: teamUpdates.home.uncertainty
+      uncertainty: teamUpdates.home.uncertainty,
     },
-    away : {
+    away: {
       rating: teamUpdates.away.rating - config.conservatism * teamUpdates.away.uncertainty,
-      uncertainty: teamUpdates.away.uncertainty
-    }
-  }
+      uncertainty: teamUpdates.away.uncertainty,
+    },
+  };
 }
 
 // Standard normal PDF
@@ -134,7 +136,9 @@ function PhiInverse(p: number): number {
     -7.784894002430293e-3, -3.223964580411365e-1, -2.400758277161838, -2.549732539343734,
     4.374664141464968, 2.938163982698783,
   ] as const;
-  const d = [7.784695709041462e-3, 3.224671290700398e-1, 2.445134137142996, 3.754408661907416] as const;
+  const d = [
+    7.784695709041462e-3, 3.224671290700398e-1, 2.445134137142996, 3.754408661907416,
+  ] as const;
 
   const pLow = 0.02425;
   const pHigh = 1 - pLow;
@@ -170,10 +174,10 @@ function drawMarginFromRate(drawRate: number, beta: number, sigma0: number): num
 }
 
 // Inverse Mills ratio: v(t) = φ(t) / Φ(t)
-function vWinSafe(t: number, delta=1e-10): number {
-  const cdf = Phi(t)
+function vWinSafe(t: number, delta = 1e-10): number {
+  const cdf = Phi(t);
   if (cdf <= delta) {
-    return -t - 1/t
+    return -t - 1 / t;
   }
   return phi(t) / cdf;
 }
@@ -184,19 +188,19 @@ function wWin(t: number): number {
   return v * (v + t);
 }
 
-function vDraw(a:number,b:number,delta=1e-10): number {
-  const denom = Phi(b)-Phi(a)
+function vDraw(a: number, b: number, delta = 1e-10): number {
+  const denom = Phi(b) - Phi(a);
   if (denom < delta) {
-    return (a+b)/2
+    return (a + b) / 2;
   }
-  return (phi(a) - phi(b))/(Phi(b)-Phi(a));
+  return (phi(a) - phi(b)) / (Phi(b) - Phi(a));
 }
-function wDraw(a:number, b:number, delta=1e-10):number {
-  const denom = Phi(b)-Phi(a)
+function wDraw(a: number, b: number, delta = 1e-10): number {
+  const denom = Phi(b) - Phi(a);
   if (denom < delta) {
-    return 1
+    return 1;
   }
   const v = vDraw(a, b);
-  const raw = v**2 - (a*phi(a)-b*phi(b))/denom
-  return Math.min(Math.max(raw,0),1)
+  const raw = v ** 2 - (a * phi(a) - b * phi(b)) / denom;
+  return Math.min(Math.max(raw, 0), 1);
 }

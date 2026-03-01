@@ -52,21 +52,18 @@ export class SafeRankings implements Rankings {
   async run(from: Date, to: Date): Promise<void> {
     try {
       await this.origin.run(from, to);
-    }
-    catch (error) {
-      throw new RankingError('Error while running ranking', {cause: error});
+    } catch (error) {
+      throw new RankingError('Error while running ranking', { cause: error });
     }
   }
   async print(page: Page): Promise<void> {
     try {
       await this.origin.print(page);
-    }
-    catch (error) {
-      throw new RankingError('Error while printing to page', {cause: error});
+    } catch (error) {
+      throw new RankingError('Error while printing to page', { cause: error });
     }
   }
 }
-
 
 export class RankingError extends Error {
   constructor(

@@ -19,8 +19,8 @@ export class JsonSource implements Source {
       .split('-')
       .map((char) => parseInt(char, 10)) as [number, number];
     return {
-      home: {id: fixture.homeId,name:fixture.homeName},
-      away: {id:fixture.awayId,name:fixture.awayName},
+      home: { id: fixture.homeId, name: fixture.homeName },
+      away: { id: fixture.awayId, name: fixture.awayName },
       homeWin: home == away ? 0.5 : home > away ? 1 : 0,
       date: new Date(fixture.date),
     };
