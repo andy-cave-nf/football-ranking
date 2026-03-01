@@ -10,7 +10,7 @@ import { SafeLeague, StrictLeagueRecord } from './leagues/base';
 const view = new TuiView(
   new SafeRankings(
     new DefaultRankings(
-      new StrictLeagueRecord(new SafeLeague(new InMemoryLeague(1000))),
+      new StrictLeagueRecord(new SafeLeague(new InMemoryLeague(1000,0))),
       new StrictSourceDates(new SafeSource(new ApiSource(['39']))),
       new EloRuleset(16, 400)
     )
