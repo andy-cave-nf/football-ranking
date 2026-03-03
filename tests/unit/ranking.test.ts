@@ -1,4 +1,3 @@
-import { InMemoryLeague } from '../../src/leagues/in_memory';
 import {
   DefaultRankings,
   RankingError,
@@ -8,37 +7,27 @@ import {
 } from '../../src/rankings';
 import type { Ruleset } from '../../src/rulesets/rulesets';
 import {
-  DEFAULT_FAKE_TEAMS,
   ErroredRanking,
   FakeLeague,
   FakePage,
-  FakeRuleset,
   FakeSource,
 } from './fake_setup';
 import type { Page } from '../../src/pages/pages';
 import type { SourceTeam } from '../../src/sources/types';
 import type { Mock } from 'vitest';
 import type { Result, Team } from '../../src/leagues/types';
-import type { ReadOnlyStrictMap, ReadOnlyTeamMap } from '../../src/utils';
+import type { ReadOnlyTeamMap } from '../../src/utils';
 import type { Source } from '../../src/sources/base';
 import type { League } from '../../src/leagues/base';
 
 let rankings: Rankings;
 let league: League;
-let ruleset: Ruleset;
 let source: Source;
 let dates: { start: Date; end: Date };
-let sourceTeams: SourceTeam[];
-let teams: Team[];
 let results: Result[];
 
 beforeEach(async () => {
   dates = { start: new Date(2000, 0, 1), end: new Date(2001, 0, 1) };
-  sourceTeams = [
-    { name: 'team-1', id: '1' },
-    { name: 'team-2', id: '2' },
-    { name: 'team-3', id: '3' },
-  ];
   results = [
     {
       home: { id: '1', name: 'team-1' },
@@ -60,8 +49,8 @@ beforeEach(async () => {
     },
   ];
 
-  league = new FakeLeague(1000);
-  source = new FakeSource({ teams: sourceTeams, matches: results });
+  league = new FakeLeague(25,25/3);
+  source = new FakeSource(results);
   rankings = new DefaultRankings(league, source);
 });
 

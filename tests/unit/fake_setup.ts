@@ -37,36 +37,31 @@ export const DEFAULT_FAKE_RESULTS: Result[] = [
 ];
 
 export class FakeSource implements Source {
-  constructor(private fakeData: fakeSourceData) {}
-  teams = vi.fn(async () => {
-    return this.fakeData.teams ?? DEFAULT_SOURCE_TEAMS;
-  });
+  constructor(private matches: Result[]) {}
   results = vi.fn(
     async (_start: Date, _end?: Date): Promise<Result[]> =>
-      this.fakeData.matches ?? DEFAULT_FAKE_RESULTS
+      this.matches ?? DEFAULT_FAKE_RESULTS
   );
 }
 
-type fakeLeagueData = {
-  teams?: Team[];
-};
-
 export class FakeLeague implements League {
   private teamMap: TeamMap<string, Team>;
-  constructor(private startingElo: number) {
+  constructor(private mu0: number, private sigma0: number) {
     this.teamMap = new DefaultTeamMap<string, Team>(new SanitizeMap(cleanString));
   }
   record = vi.fn(async (result: Result, _ruleset: Ruleset): Promise<void> => {
     this.teamMap.setInit(result.home.id, {
       id: result.home.id,
       name: result.home.name,
-      rating: this.startingElo,
+      rating: this.mu0,
+      uncertainty: this.sigma0,
       lastFixtureDate: result.date,
     });
     this.teamMap.setInit(result.away.id, {
       id: result.away.id,
       name: result.away.name,
-      rating: this.startingElo,
+      rating: this.mu0,
+      uncertainty: this.sigma0,
       lastFixtureDate: result.date,
     });
   });
@@ -88,8 +83,8 @@ export class FakeRuleset implements Ruleset {
   }
   record = vi.fn((result: Result, elo: Ratings): Ratings => {
     return {
-      home: elo.home + this.scale * (2 * result.homeWin - 1),
-      away: elo.away + this.scale * (2 * (1 - result.homeWin) - 1),
+      home: elo.home.rating + this.scale * (2 * result.homeWin - 1),
+      away: elo.away.rating + this.scale * (2 * (1 - result.homeWin) - 1),
     };
   });
 }
