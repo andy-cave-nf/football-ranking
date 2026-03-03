@@ -50,3 +50,5 @@ describe('given a single non-drawn match between two teams from a json source wh
 
   })
 })
+
+it.todo('given a single drawn match between two teams from a json source when the match is processed then both teams are stored with closer ratings than the prior')
