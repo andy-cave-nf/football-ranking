@@ -5,7 +5,6 @@ import {
   RankingsWithStrictDates,
   SafeRankings,
 } from '../../src/rankings';
-import type { Ruleset } from '../../src/rulesets/rulesets';
 import {
   ErroredRanking,
   FakeLeague,
@@ -13,7 +12,6 @@ import {
   FakeSource,
 } from './fake_setup';
 import type { Page } from '../../src/pages/pages';
-import type { SourceTeam } from '../../src/sources/types';
 import type { Mock } from 'vitest';
 import type { Result, Team } from '../../src/leagues/types';
 import type { ReadOnlyTeamMap } from '../../src/utils';

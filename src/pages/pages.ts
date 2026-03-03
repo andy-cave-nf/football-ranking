@@ -12,9 +12,9 @@ export class JsonPage implements Page {
     await writeFile(this.filepath, JSON.stringify(this.printableTeams(teams), null, 4), 'utf8');
   }
   private printableTeams(teams: Team[]): Record<string, number> {
-    return Object.fromEntries(this.sortedTeams(teams).map((team) => [team.name, team.rating]));
+    return Object.fromEntries(this.sortedTeams(teams).map((team) => [team.name, team.mu]));
   }
   private sortedTeams(teams: Team[]): Team[] {
-    return [...teams].sort((a, b) => b.rating - a.rating);
+    return [...teams].sort((a, b) => b.mu - a.mu);
   }
 }

@@ -19,24 +19,24 @@ export class InMemoryLeague implements League {
     this.addInit(result.away, result.date);
     const newElos = ruleset.record(result, {
       home: {
-        rating: this.allTeams.getOrThrow(result.home.id).rating,
-        uncertainty: this.allTeams.getOrThrow(result.home.id).uncertainty,
+        rating: this.allTeams.getOrThrow(result.home.id).mu,
+        uncertainty: this.allTeams.getOrThrow(result.home.id).sigma,
       },
       away: {
-        rating: this.allTeams.getOrThrow(result.away.id).rating,
-        uncertainty: this.allTeams.getOrThrow(result.away.id).uncertainty,
+        rating: this.allTeams.getOrThrow(result.away.id).mu,
+        uncertainty: this.allTeams.getOrThrow(result.away.id).sigma,
       },
     });
     this.allTeams.set(result.home.id, {
       ...this.allTeams.getOrThrow(result.home.id),
-      rating: newElos.home.rating,
-      uncertainty: newElos.home.uncertainty,
+      mu: newElos.home.rating,
+      sigma: newElos.home.uncertainty,
       lastFixtureDate: result.date,
     });
     this.allTeams.set(result.away.id, {
       ...this.allTeams.getOrThrow(result.away.id),
-      rating: newElos.away.rating,
-      uncertainty: newElos.away.uncertainty,
+      mu: newElos.away.rating,
+      sigma: newElos.away.uncertainty,
       lastFixtureDate: result.date,
     });
   }
@@ -44,8 +44,8 @@ export class InMemoryLeague implements League {
     this.allTeams.setInit(team.id, {
       id: team.id,
       name: team.name,
-      rating: this.initialRating,
-      uncertainty: this.initialUncertainty,
+      mu: this.initialRating,
+      sigma: this.initialUncertainty,
       lastFixtureDate: fixtureDate,
     });
   }

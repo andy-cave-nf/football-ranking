@@ -84,10 +84,10 @@ describe('tests a record is added to a league with two teams', async () => {
   });
 
   it('tests that the home elos is correct after a win', async () => {
-    expect(league.teams.getOrThrow(result.home.id).rating).toBe(startingElo + 8);
+    expect(league.teams.getOrThrow(result.home.id).mu).toBe(startingElo + 8);
   });
   it('tests that the away elo is correct after a loss', async () => {
-    expect(league.teams.getOrThrow(result.away.id).rating).toBe(startingElo - 8);
+    expect(league.teams.getOrThrow(result.away.id).mu).toBe(startingElo - 8);
   });
 
   it('tests that an error is raised if the record added occurs before the previous fixture', () => {

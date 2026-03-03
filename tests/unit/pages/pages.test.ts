@@ -23,7 +23,7 @@ describe('test that json page writes to a file correctly', () => {
   });
   it('tests the contents of the file', async () => {
     const actual = JSON.parse(readFileSync(file, 'utf8'));
-    const expected = Object.fromEntries(teams.map((team) => [team.name, team.rating]));
+    const expected = Object.fromEntries(teams.map((team) => [team.name, team.mu]));
     expect(actual).toEqual(expected);
   });
 });

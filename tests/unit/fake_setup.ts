@@ -20,8 +20,8 @@ type fakeSourceData = {
 };
 
 export const DEFAULT_FAKE_TEAMS: Team[] = [
-  { id: 1, name: 'fake-team-1', rating: 1000, lastFixtureDate: new Date(2000, 0, 1) },
-  { id: 2, name: 'fake-team-2', rating: 1200, lastFixtureDate: new Date(2000, 0, 1) },
+  { id: 1, name: 'fake-team-1', mu: 1000, lastFixtureDate: new Date(2000, 0, 1) },
+  { id: 2, name: 'fake-team-2', mu: 1200, lastFixtureDate: new Date(2000, 0, 1) },
 ];
 export const DEFAULT_SOURCE_TEAMS: SourceTeam[] = [
   { id: '1', name: 'fake-team-1' },
@@ -53,15 +53,15 @@ export class FakeLeague implements League {
     this.teamMap.setInit(result.home.id, {
       id: result.home.id,
       name: result.home.name,
-      rating: this.mu0,
-      uncertainty: this.sigma0,
+      mu: this.mu0,
+      sigma: this.sigma0,
       lastFixtureDate: result.date,
     });
     this.teamMap.setInit(result.away.id, {
       id: result.away.id,
       name: result.away.name,
-      rating: this.mu0,
-      uncertainty: this.sigma0,
+      mu: this.mu0,
+      sigma: this.sigma0,
       lastFixtureDate: result.date,
     });
   });
