@@ -32,7 +32,7 @@ describe('Single Season rankings of a fake league of five teams from a json file
     startingElo = 1000;
     rankings = new DefaultRankings(
       new InMemoryLeague(startingElo),
-      new JsonSource(path.resolve(process.cwd(), 'tests', 'fixtures', 'json_source.json')),
+      new JsonSource(path.resolve(process.cwd(), 'tests', 'fixtures', 'json_source','five_team_season.json')),
       new EloRuleset(16, 400)
     );
     page = new JsonPage(file);

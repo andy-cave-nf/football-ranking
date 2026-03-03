@@ -4,7 +4,7 @@ import { SafeSource, type Source, SourceError, StrictSourceDates } from '../../.
 
 let source: Source;
 beforeEach(() => {
-  const filepath = path.resolve(process.cwd(), 'tests', 'fixtures', 'json_source.json');
+  const filepath = path.resolve(process.cwd(), 'tests', 'fixtures', 'five_team_season.json');
   source = new JsonSource(filepath);
 });
 
