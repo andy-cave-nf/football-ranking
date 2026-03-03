@@ -1,11 +1,14 @@
 {
   "name": "football-ranking",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.0",
+  "description": "Ranks football teams according to TrueSkill algorithm",
   "license": "ISC",
   "author": "",
   "type": "module",
   "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "start": "tsx src/index.ts",
     "test": "vitest",
@@ -14,13 +17,24 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write '**/*.ts'",
     "lint": "eslint '**/*.ts'",
-    "lint:fix": "eslint --fix '**/*.ts'"
+    "lint:fix": "eslint --fix '**/*.ts'",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "**/*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.4.2",
+    "@commitlint/config-conventional": "^20.4.2",
     "@eslint/js": "^9.39.2",
     "@types/pg": "^8.16.0",
     "@vitest/eslint-plugin": "^1.6.6",
     "eslint": "^10.0.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.3.1",
     "nock": "^14.0.11",
     "prettier": "3.8.0",
     "ts-sql-codegen": "^3.8.0",
@@ -36,5 +50,15 @@
     "pg": "^8.16.3",
     "pg-promise": "^12.3.0",
     "ts-sql-query": "^1.67.0"
+  },
+  "release": {
+    "branches": [
+      "main"
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/github"
+    ]
   }
 }
