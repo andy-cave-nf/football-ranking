@@ -39,7 +39,6 @@ beforeEach(async () => {
     { name: 'team-2', id: '2' },
     { name: 'team-3', id: '3' },
   ];
-  // teams = [{id:1, name: "team1", elo: 200, lastFixtureDate:dates.start}, {id:2, name: "team2", elo: 300, lastFixtureDate:dates.start}, {id:3, name: "team3", elo: 400, lastFixtureDate:dates.start}];
   results = [
     {
       home: { id: '1', name: 'team-1' },
@@ -62,9 +61,8 @@ beforeEach(async () => {
   ];
 
   league = new FakeLeague(1000);
-  ruleset = new FakeRuleset();
   source = new FakeSource({ teams: sourceTeams, matches: results });
-  rankings = new DefaultRankings(league, source, ruleset);
+  rankings = new DefaultRankings(league, source);
 });
 
 describe('Ranking makes correct calls on running', async () => {
@@ -78,7 +76,7 @@ describe('Ranking makes correct calls on running', async () => {
 
   it('tests that the matches are recorded by the league', async () => {
     results.forEach((result) => {
-      expect(league.record).toBeCalledWith(result, ruleset);
+      expect(league.record).toBeCalledWith(result);
     });
   });
 });
