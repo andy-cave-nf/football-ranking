@@ -1,0 +1,12 @@
+echo "📝 Validating commit message..."
+npx commitlint --edit "$1"
+commitlint_status=$?
+
+if [ $commitlint_status -ne 0 ]; then
+  echo ""
+  echo "❌ Commit message invalid — commit blocked."
+  exit 1
+fi
+
+echo "✔ Commit message OK."
+exit 0
