@@ -39,8 +39,8 @@ describe('test that elos are calculated as expected from EloRuleset', () => {
       const ruleset = new EloRuleset(k, scale);
       for (const result of results) {
         const actual = ruleset.record(result, {
-          home: { rating: home, uncertainty: 0 },
-          away: { rating: away, uncertainty: 0 },
+          home: { mu: home, sigma: 0 },
+          away: { mu: away, sigma: 0 },
         });
         const expected: { home: number; away: number } = expectedElo(
           { home, away },
@@ -48,7 +48,7 @@ describe('test that elos are calculated as expected from EloRuleset', () => {
           scale,
           k
         );
-        expect({ home: actual.home.rating, away: actual.away.rating }).toEqual(expected);
+        expect({ home: actual.home.mu, away: actual.away.mu }).toEqual(expected);
       }
     }
   );
@@ -58,10 +58,10 @@ describe('test that elos are calculated as expected from EloRuleset', () => {
       const ruleset = new EloRuleset(k, scale);
       for (const result of results) {
         const actual = ruleset.record(result, {
-          home: { rating: home, uncertainty: 0 },
-          away: { rating: away, uncertainty: 0 },
+          home: { mu: home, sigma: 0 },
+          away: { mu: away, sigma: 0 },
         });
-        expect(actual.home.rating + actual.away.rating).toEqual(home + away);
+        expect(actual.home.mu + actual.away.mu).toEqual(home + away);
       }
     }
   );
@@ -76,10 +76,10 @@ describe('test that elos are calculated as expected from EloRuleset', () => {
         date: new Date(),
       };
       const actual = ruleset.record(result, {
-        home: { rating, uncertainty: 0 },
-        away: { rating, uncertainty: 0 },
+        home: { mu: rating, sigma: 0 },
+        away: { mu: rating, sigma: 0 },
       });
-      expect({ home: actual.home.rating, away: actual.home.rating }).toEqual({
+      expect({ home: actual.home.mu, away: actual.home.mu }).toEqual({
         home: rating,
         away: rating,
       });
@@ -98,15 +98,15 @@ describe('test that elos are calculated as expected from EloRuleset', () => {
         date: new Date(),
       };
       const actual = ruleset.record(result, {
-        home: { rating, uncertainty: 0 },
-        away: { rating, uncertainty: 0 },
+        home: { mu: rating, sigma: 0 },
+        away: { mu: rating, sigma: 0 },
       });
       const delta = Math.round((k / 2) * (2 * result.homeWin - 1));
       const expected = {
         home: rating + delta,
         away: rating - delta,
       };
-      expect({ home: actual.home.rating, away: actual.away.rating }).toEqual(expected);
+      expect({ home: actual.home.mu, away: actual.away.mu }).toEqual(expected);
     }
   );
 });

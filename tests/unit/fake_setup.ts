@@ -76,8 +76,8 @@ export class FakeRuleset implements Ruleset {
   }
   record = vi.fn((result: Result, elo: Ratings): Ratings => {
     return {
-      home: elo.home.rating + this.scale * (2 * result.homeWin - 1),
-      away: elo.away.rating + this.scale * (2 * (1 - result.homeWin) - 1),
+      home: elo.home.mu + this.scale * (2 * result.homeWin - 1),
+      away: elo.away.mu + this.scale * (2 * (1 - result.homeWin) - 1),
     };
   });
 }

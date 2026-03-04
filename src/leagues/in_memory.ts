@@ -19,24 +19,24 @@ export class InMemoryLeague implements League {
     this.addInit(result.away, result.date);
     const newElos = ruleset.record(result, {
       home: {
-        rating: this.allTeams.getOrThrow(result.home.id).mu,
-        uncertainty: this.allTeams.getOrThrow(result.home.id).sigma,
+        mu: this.allTeams.getOrThrow(result.home.id).mu,
+        sigma: this.allTeams.getOrThrow(result.home.id).sigma,
       },
       away: {
-        rating: this.allTeams.getOrThrow(result.away.id).mu,
-        uncertainty: this.allTeams.getOrThrow(result.away.id).sigma,
+        mu: this.allTeams.getOrThrow(result.away.id).mu,
+        sigma: this.allTeams.getOrThrow(result.away.id).sigma,
       },
     });
     this.allTeams.set(result.home.id, {
       ...this.allTeams.getOrThrow(result.home.id),
-      mu: newElos.home.rating,
-      sigma: newElos.home.uncertainty,
+      mu: newElos.home.mu,
+      sigma: newElos.home.sigma,
       lastFixtureDate: result.date,
     });
     this.allTeams.set(result.away.id, {
       ...this.allTeams.getOrThrow(result.away.id),
-      mu: newElos.away.rating,
-      sigma: newElos.away.uncertainty,
+      mu: newElos.away.mu,
+      sigma: newElos.away.sigma,
       lastFixtureDate: result.date,
     });
   }

@@ -5,7 +5,7 @@ export type Ratings = {
   away: TeamRating;
 };
 
-export type TeamRating = { rating: number; uncertainty: number };
+export type TeamRating = { mu: number; sigma: number };
 
 type EloRating = { home: number; away: number };
 
@@ -21,25 +21,25 @@ export class EloRuleset implements Ruleset {
   record(result: Result, ratings: Ratings): Ratings {
     return {
       home: {
-        rating:
-          ratings.home.rating + Math.round(this.k * (result.homeWin - this.expected(ratings).home)),
-        uncertainty: ratings.home.uncertainty,
+        mu:
+          ratings.home.mu + Math.round(this.k * (result.homeWin - this.expected(ratings).home)),
+        sigma: ratings.home.sigma,
       },
       away: {
-        rating:
-          ratings.away.rating - Math.round(this.k * (result.homeWin - this.expected(ratings).home)),
-        uncertainty: ratings.away.uncertainty,
+        mu:
+          ratings.away.mu - Math.round(this.k * (result.homeWin - this.expected(ratings).home)),
+        sigma: ratings.away.sigma,
       },
     };
   }
   private expected(ratings: Ratings): EloRating {
     return {
       home:
-        this.quotient(ratings.home.rating) /
-        (this.quotient(ratings.home.rating) + this.quotient(ratings.away.rating)),
+        this.quotient(ratings.home.mu) /
+        (this.quotient(ratings.home.mu) + this.quotient(ratings.away.mu)),
       away:
-        this.quotient(ratings.away.rating) /
-        (this.quotient(ratings.home.rating) + this.quotient(ratings.away.rating)),
+        this.quotient(ratings.away.mu) /
+        (this.quotient(ratings.home.mu) + this.quotient(ratings.away.mu)),
     };
   }
   private quotient(value: number): number {

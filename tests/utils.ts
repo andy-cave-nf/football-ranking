@@ -30,10 +30,10 @@ export function expectedTrueSkill(
   config: TrueSkillConfig,
   sigma0: number
 ): Ratings {
-  const homeSkillMean = ratings.home.rating + config.conservatism * ratings.home.uncertainty;
-  const homeUncertainty = Math.sqrt(ratings.home.uncertainty ** 2 + config.driftRate ** 2);
-  const awayUncertainty = Math.sqrt(ratings.away.uncertainty ** 2 + config.driftRate ** 2);
-  const awaySkillMean = ratings.away.rating + config.conservatism * ratings.away.uncertainty;
+  const homeSkillMean = ratings.home.mu + config.conservatism * ratings.home.sigma;
+  const homeUncertainty = Math.sqrt(ratings.home.sigma ** 2 + config.driftRate ** 2);
+  const awayUncertainty = Math.sqrt(ratings.away.sigma ** 2 + config.driftRate ** 2);
+  const awaySkillMean = ratings.away.mu + config.conservatism * ratings.away.sigma;
   const performanceVariance =
     2 * config.performanceNoise ** 2 + homeUncertainty ** 2 + awayUncertainty ** 2;
   const epsilon =
@@ -86,12 +86,12 @@ export function expectedTrueSkill(
   }
   return {
     home: {
-      rating: teamUpdates.home.rating - config.conservatism * teamUpdates.home.uncertainty,
-      uncertainty: teamUpdates.home.uncertainty,
+      mu: teamUpdates.home.rating - config.conservatism * teamUpdates.home.uncertainty,
+      sigma: teamUpdates.home.uncertainty,
     },
     away: {
-      rating: teamUpdates.away.rating - config.conservatism * teamUpdates.away.uncertainty,
-      uncertainty: teamUpdates.away.uncertainty,
+      mu: teamUpdates.away.rating - config.conservatism * teamUpdates.away.uncertainty,
+      sigma: teamUpdates.away.uncertainty,
     },
   };
 }
