@@ -85,7 +85,7 @@ describe('given a league with two existing teams, when a match is processed with
   })
 })
 
-describe('given a league with a predicatable ruleset when a match is processed', () => {
+describe('given a league with a predicatable ruleset, when a match is processed', () => {
   let result: Result;
   let fakeRuleset: Ruleset;
   let league: League;
@@ -117,8 +117,27 @@ describe('given a league with a predicatable ruleset when a match is processed',
 })
 
 describe.todo('given a league with two existing teams, when a match is processed that occurs on prior day to the previous match', () => {
+  let previousResult: Result
+  let league: League;
+  let earlyResult: Result;
+  beforeEach(async () => {
+    league = new StrictLeagueRecord(defaultInMemoryLeague());
+    previousResult = {
+      home: { id: 'team-1', name: 'home' },
+      away: { id: 'team-2', name: 'away' },
+      homeWin: 1,
+      date: new Date(2000, 0, 1),
+    };
+    earlyResult = {
+      home: { id: 'team-1', name: 'home' },
+      away: { id: 'team-2', name: 'away' },
+      homeWin: 1,
+      date: new Date(1999, 0, 1),
+    };
+    league.record(previousResult)
+  })
   it.todo('raises a League Error', () =>{
-
+    expect(() => league.record(earlyResult)).toThrowError(LeagueError)
   })
 })
 
