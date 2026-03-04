@@ -186,9 +186,9 @@ describe.todo('given a league with two existing teams, when a match is processed
     };
     league.record(previousResult)
   })
-  it.todo('does not raise a League Error', () => {
-    expect(() => league.record(earlyResult)).not.toThrowError(LeagueError);
-  });
+  it.todo('does not raise an Error', () =>{
+    expect(() => league.record(earlyResult)).not.toThrowError();
+  })
 });
 
 describe.todo('given a league with a storage that throws an unexpected error, when a match is processed', () => {
