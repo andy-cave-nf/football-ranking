@@ -134,6 +134,10 @@ describe.todo('given a league with two existing teams, when a match is processed
   it.todo('does not raise a League Error', () => {});
 });
 
+describe.todo('given a league with a storage that throws an unexpected error, when a match is processed', () => {
+  it.todo('wraps it in a League Error', () => {});
+})
+
 describe('tests a record is added to a league with two teams', async () => {
   beforeEach(async () => {
     // fakeRuleset = {
