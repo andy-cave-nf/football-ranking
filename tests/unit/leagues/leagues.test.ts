@@ -97,8 +97,8 @@ describe('given a league with a predicatable ruleset, when a match is processed'
     fakeRuleset = {
       record(_result: Result, ratings:Ratings): Ratings {
         return {
-          home:{...ratings.home, mu:10},
-          away:{...ratings.away, mu:-10 },
+          home:{...ratings.home, mu:10,sigma:1},
+          away:{...ratings.away, mu:-10,sigma:2},
         }
       }
     }
@@ -108,8 +108,8 @@ describe('given a league with a predicatable ruleset, when a match is processed'
   it('stores the teams with their new ratings', () => {
     const homeTeam = league.teams.getOrThrow(result.home.id);
     const awayTeam = league.teams.getOrThrow(result.away.id);
-    expect(homeTeam.mu).toBe(10)
-    expect(awayTeam.mu).toBe(-10)
+    expect({mu: homeTeam.mu, sigma:homeTeam.sigma}).toBe({mu:10, sigma:1})
+    expect({mu: awayTeam.mu, sigma:awayTeam.sigma}).toBe({mu:-10, sigma:2})
   })
 
 })
