@@ -6,7 +6,7 @@ import {
   SafeLeague,
   StrictLeagueRecord,
 } from '../../../src/leagues/base';
-import { defaultInMemoryLeague, InMemoryLeague } from '../../utils';
+import { defaultInMemoryLeague, inMemoryLeague } from '../../utils';
 
 test('a new league has no teams', () => {
   const league = defaultInMemoryLeague()
@@ -102,7 +102,7 @@ describe('given a league with a predicatable ruleset, when a match is processed'
         }
       }
     }
-    league = InMemoryLeague(fakeRuleset);
+    league = inMemoryLeague(fakeRuleset);
     league.record(result)
   })
   it('stores the teams with their new ratings', () => {
@@ -205,7 +205,7 @@ describe.todo('given a league with a storage that throws an unexpected error, wh
         throw new Error('errored');
       }
     }
-    league = new SafeLeague(InMemoryLeague(erroredRuleset));
+    league = new SafeLeague(inMemoryLeague(erroredRuleset));
   })
   it.todo('wraps it in a League Error', () => {
     expect(() => league.record(result)).toThrowError(LeagueError);

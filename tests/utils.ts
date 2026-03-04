@@ -13,7 +13,7 @@ export function defaultInMemoryLeague() {
   return new InMemoryLeague(fakeRuleset);
 }
 
-export function InMemoryLeague(ruleset:Ruleset) {
+export function inMemoryLeague(ruleset:Ruleset) {
   return new InMemoryLeague(ruleset)
 }
 
