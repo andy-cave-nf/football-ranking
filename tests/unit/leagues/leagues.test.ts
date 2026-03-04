@@ -13,10 +13,14 @@ import {
 let league: League;
 let startingElo: number;
 let startingUncertainty: number;
+let fakeRuleset: Ruleset;
 
 beforeEach(async () => {
   startingElo = 100;
   startingUncertainty = 10;
+  fakeRuleset = {
+    record: vi.fn((_result:Result, ratings:Ratings) => ratings)
+  }
   league = new InMemoryLeague(startingElo, startingUncertainty);
 });
 
@@ -27,17 +31,16 @@ describe('test empty in memory leagues', async () => {
 });
 
 describe('tests a record is added to a league with two teams', async () => {
-  let fakeRuleset: Ruleset;
   let result: Result;
   beforeEach(async () => {
-    fakeRuleset = {
-      record: vi.fn(
-        (result: Result, ratings: Ratings): Ratings => ({
-          home: { rating: ratings.home.rating + 8 * (2 * result.homeWin - 1), uncertainty: 0 },
-          away: { rating: ratings.away.rating - 8 * (2 * result.homeWin - 1), uncertainty: 0 },
-        })
-      ),
-    };
+    // fakeRuleset = {
+    //   record: vi.fn(
+    //     (result: Result, ratings: Ratings): Ratings => ({
+    //       home: { rating: ratings.home.rating + 8 * (2 * result.homeWin - 1), uncertainty: 0 },
+    //       away: { rating: ratings.away.rating - 8 * (2 * result.homeWin - 1), uncertainty: 0 },
+    //     })
+    //   ),
+    // };
     result = {
       home: { id: 'team-1', name: 'home' },
       away: { id: 'team-2', name: 'away' },
