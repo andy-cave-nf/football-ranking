@@ -5,23 +5,16 @@ import type { Rankings } from '../../src/rankings';
 import type { SourceTeam } from '../../src/sources/types';
 import {
   DefaultTeamMap,
-  ReadOnlyStrictMap,
   type ReadOnlyTeamMap,
   SanitizeMap,
-  StrictMap,
   type TeamMap,
 } from '../../src/utils';
 import type { Source } from '../../src/sources/base';
 import { cleanString, type League } from '../../src/leagues/base';
 
-type fakeSourceData = {
-  teams?: SourceTeam[];
-  matches?: Result[];
-};
-
 export const DEFAULT_FAKE_TEAMS: Team[] = [
-  { id: 1, name: 'fake-team-1', mu: 1000, lastFixtureDate: new Date(2000, 0, 1) },
-  { id: 2, name: 'fake-team-2', mu: 1200, lastFixtureDate: new Date(2000, 0, 1) },
+  { id: 1, name: 'fake-team-1', mu: 25, sigma:25/3,lastFixtureDate: new Date(2000, 0, 1) },
+  { id: 2, name: 'fake-team-2', mu: 25, sigma:25/3,lastFixtureDate: new Date(2000, 0, 1) },
 ];
 export const DEFAULT_SOURCE_TEAMS: SourceTeam[] = [
   { id: '1', name: 'fake-team-1' },
