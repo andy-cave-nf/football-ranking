@@ -1,7 +1,5 @@
 import type { Ratings, Ruleset } from '../../../src/rulesets/rulesets';
-import type { Result, Team } from '../../../src/leagues/types';
-import { ReadOnlyStrictMap } from '../../../src/utils';
-import { FakeRuleset } from '../fake_setup';
+import type { Result } from '../../../src/leagues/types';
 import {
   type League,
   LeagueError,
