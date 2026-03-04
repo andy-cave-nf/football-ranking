@@ -2,8 +2,20 @@ import type { Result } from '../src/leagues/types';
 import { mkdtempSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
-import type { Ratings } from '../src/rulesets/rulesets';
+import type { Ratings, Ruleset } from '../src/rulesets/rulesets';
 import type { TrueSkillConfig } from '../src/rulesets/types';
+import { InMemoryLeague } from '../src/leagues/in_memory';
+
+export function defaultInMemoryLeague() {
+  const fakeRuleset = {
+    record(_result:Result, ratings:Ratings):Ratings {return ratings}
+  }
+  return new InMemoryLeague(fakeRuleset);
+}
+
+export function InMemoryLeague(ruleset:Ruleset) {
+  return new InMemoryLeague(ruleset)
+}
 
 export function expectedElo(
   elo: { home: number; away: number },
