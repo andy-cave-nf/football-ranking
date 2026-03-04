@@ -116,7 +116,7 @@ describe('given a league with a predicatable ruleset, when a match is processed'
 
 })
 
-describe.todo('given a league with two existing teams, when a match is processed that occurs on prior day to the previous match', () => {
+describe.todo('given a league with two existing teams, when a match is processed that occurs on a prior day to the previous match of both teams', () => {
   let previousResult: Result
   let league: League;
   let earlyResult: Result;
@@ -141,13 +141,9 @@ describe.todo('given a league with two existing teams, when a match is processed
   })
 })
 
-describe.todo('given a league with two existing teams, when a match is processed that occurs before the previous match on the same day', () => {
+describe.todo('given a league with existing teams, when a match is processed with an existing team that occurs on a prior day to the previous match of that team', () => {
   it.todo('raises a League Error', () =>{})
 })
-
-describe.todo('given a league with two existing teams, when a match is processed that occurs after the previous match on the same day', () => {
-  it.todo('does not raise a League Error', () => {});
-});
 
 describe.todo('given a league with two existing teams, when a match is processed that occurs on the same day as the previous match', () => {
   it.todo('does not raise a League Error', () => {});
