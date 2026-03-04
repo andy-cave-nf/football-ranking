@@ -6,6 +6,7 @@ import { makeTempDir } from '../utils';
 import { readFileSync, rmSync } from 'fs';
 import { JsonPage } from '../../src/pages/pages';
 import { join } from 'path';
+import type { TrueSkillConfig } from '../../src/rulesets/types';
 
 let dir:string
 beforeEach(() => {
@@ -19,7 +20,7 @@ afterEach(() => {
 
 describe('given a single non-drawn match between two teams from a json source when the match is processed', () => {
   let ranking: Rankings
-  let config: RulesetConfig
+  let config: TrueSkillConfig
   beforeEach(async () => {
     config = {
       mu0: 25,
@@ -37,7 +38,12 @@ describe('given a single non-drawn match between two teams from a json source wh
     await ranking.run(new Date(2025, 8, 16), new Date(2026, 5, 25));
   })
   it.todo('stores both teams with updated ratings', async () => {
-    expect(ranking.ranking).toHaveLength(2)
+    const rankings= ranking.ranking
+    expect(rankings).toHaveLength(2)
+    for (const ranking in rankings){
+      expect(ranking.mu).not.toEqual(config.mu0);
+      expect(ranking.sigma).toBeLessThan(config.sigma0);
+    }
   })
   it.todo('writes a results file with teams sorted by rating', async () => {
     const file = join(dir, 'single-match-test.json');
