@@ -8,16 +8,15 @@ export class InMemoryLeague implements League {
   private allTeams = new DefaultTeamMap(new SanitizeMap<number | string, Team>(cleanString));
 
   constructor(
-    private initialRating: number,
-    private initialUncertainty: number
+    private ruleset: Ruleset
   ) {}
   get teams(): ReadOnlyTeamMap<number | string, Team> {
     return this.allTeams.toReadOnly();
   }
-  record(result: Result, ruleset: Ruleset): void {
+  record(result: Result): void {
     this.addInit(result.home, result.date);
     this.addInit(result.away, result.date);
-    const newElos = ruleset.record(result, {
+    const newRatings = this.ruleset.record(result, {
       home: {
         mu: this.allTeams.getOrThrow(result.home.id).mu,
         sigma: this.allTeams.getOrThrow(result.home.id).sigma,
@@ -29,14 +28,14 @@ export class InMemoryLeague implements League {
     });
     this.allTeams.set(result.home.id, {
       ...this.allTeams.getOrThrow(result.home.id),
-      mu: newElos.home.mu,
-      sigma: newElos.home.sigma,
+      mu: newRatings.home.mu,
+      sigma: newRatings.home.sigma,
       lastFixtureDate: result.date,
     });
     this.allTeams.set(result.away.id, {
       ...this.allTeams.getOrThrow(result.away.id),
-      mu: newElos.away.mu,
-      sigma: newElos.away.sigma,
+      mu: newRatings.away.mu,
+      sigma: newRatings.away.sigma,
       lastFixtureDate: result.date,
     });
   }
@@ -44,9 +43,8 @@ export class InMemoryLeague implements League {
     this.allTeams.setInit(team.id, {
       id: team.id,
       name: team.name,
-      mu: this.initialRating,
-      sigma: this.initialUncertainty,
       lastFixtureDate: fixtureDate,
+      ...this.ruleset.newRating()
     });
   }
 }
