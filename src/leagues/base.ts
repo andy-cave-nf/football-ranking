@@ -3,14 +3,14 @@ import type { Ruleset } from '../rulesets/rulesets';
 import type { ReadOnlyTeamMap } from '../utils';
 
 export interface League {
-  record(result: Result, ruleset: Ruleset): void;
+  record(result: Result): void;
   teams: ReadOnlyTeamMap<number | string, Team>;
 }
 
 abstract class StrictLeague implements League {
   protected constructor(protected origin: League) {}
-  record(result: Result, ruleset: Ruleset): void {
-    this.origin.record(result, ruleset);
+  record(result: Result): void {
+    this.origin.record(result);
   }
   get teams() {
     return this.origin.teams;
@@ -21,7 +21,7 @@ export class StrictLeagueRecord extends StrictLeague {
   constructor(protected origin: League) {
     super(origin);
   }
-  record(result: Result, ruleset: Ruleset): void {
+  record(result: Result): void {
     const homeDate = this.origin.teams.get(result.home.id)?.lastFixtureDate ?? result.date;
     const awayDate = this.origin.teams.get(result.home.id)?.lastFixtureDate ?? result.date;
     if (homeDate > result.date) {
@@ -34,15 +34,15 @@ export class StrictLeagueRecord extends StrictLeague {
         `Fixture played at ${result.date} occurs after last known home date ${homeDate}`
       );
     }
-    this.origin.record(result, ruleset);
+    this.origin.record(result);
   }
 }
 
 export class SafeLeague implements League {
   constructor(private origin: League) {}
-  record(result: Result, ruleset: Ruleset): void {
+  record(result: Result): void {
     try {
-      this.origin.record(result, ruleset);
+      this.origin.record(result);
     } catch (error) {
       throw new LeagueError('Unable to add record', { cause: error });
     }
