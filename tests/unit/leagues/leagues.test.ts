@@ -113,8 +113,8 @@ describe('given a league with a predicatable ruleset, when a match is processed'
   it('stores the teams with their new ratings', () => {
     const homeTeam = league.teams.getOrThrow(result.home.id);
     const awayTeam = league.teams.getOrThrow(result.away.id);
-    expect({mu: homeTeam.mu, sigma:homeTeam.sigma}).toBe({mu:10, sigma:1})
-    expect({mu: awayTeam.mu, sigma:awayTeam.sigma}).toBe({mu:-10, sigma:2})
+    expect({mu: homeTeam.mu, sigma:homeTeam.sigma}).toStrictEqual({mu:10, sigma:1})
+    expect({mu: awayTeam.mu, sigma:awayTeam.sigma}).toStrictEqual({mu:-10, sigma:2})
   })
 
 })
