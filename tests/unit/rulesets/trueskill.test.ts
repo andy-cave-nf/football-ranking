@@ -134,7 +134,7 @@ describe('given two teams that play many matches with alternating results, when 
   it('converges both sigma values to tau', () => {
     for (let i = 0; i < ratings.length-1; i++) {
       const before = ratings[i] as Ratings
-      const after = ratings[i] as Ratings
+      const after = ratings[i+1] as Ratings
       expect(after.home.sigma - config.tau).toBeLessThanOrEqual(before.home.sigma-config.tau);
       expect(after.away.sigma - config.tau).toBeLessThanOrEqual(before.away.sigma-config.tau);
     }
@@ -142,13 +142,45 @@ describe('given two teams that play many matches with alternating results, when 
   it('decreases both sigma values', () => {
     for (let i = 0; i < ratings.length-1; i++) {
       const before = ratings[i] as Ratings
-      const after = ratings[i] as Ratings
-      expect(after.home.sigma).toBeLessThanOrEqual(before.home.sigma);
-      expect(after.away.sigma).toBeLessThanOrEqual(before.away.sigma);
+      const after = ratings[i+1] as Ratings
+      expectDecreaseSigma(before,after)
     }
   })
 })
 
-describe.todo('given an upset result and a non-upset result between differently rated teams',() => {
-  it.todo('the upset result has a larger mu shift than the non upset result')
+describe('given an upset result and a non-upset result between differently rated teams',() => {
+  let result: Result
+  let beforeUpset: Ratings
+  let afterUpset: Ratings
+  let beforeExpected: Ratings
+  let afterExpected: Ratings
+  beforeEach(() => {
+    result = {
+      home: {id:'id-1', name: 'team-1'},
+      away: {id:'id-2', name: 'team-2'},
+      homeWin: 0,
+      date: new Date(),
+    }
+    beforeUpset = {
+      home: {mu:25,sigma:25/3},
+      away: {mu:10,sigma:25/3}
+    }
+    beforeExpected = {
+      home: {mu:10,sigma:25/3},
+      away: {mu:25,sigma:25/3}
+    }
+    afterUpset = ruleset.record(result, beforeUpset)
+    afterExpected = ruleset.record(result, beforeExpected)
+  })
+  it('the upset result has a larger mu shift for the winner than the non upset result', () => {
+    const upsetWinnerShift = Math.abs(afterUpset.away.mu - beforeUpset.away.mu)
+    const expectedWinnerShift = Math.abs(afterExpected.away.mu - beforeExpected.away.mu)
+    expect(upsetWinnerShift).toBeGreaterThan(expectedWinnerShift)
+
+  })
+  it('the upset result has a larger mu shift for the loser than the non upset result', () => {
+    const upsetLoserShift = Math.abs(afterUpset.home.mu - beforeUpset.home.mu)
+    const expectedLoserShift = Math.abs(afterExpected.home.mu - beforeExpected.home.mu)
+    expect(upsetLoserShift).toBeGreaterThan(expectedLoserShift)
+  })
 })
