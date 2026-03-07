@@ -119,7 +119,7 @@ describe('given a league with a predicatable ruleset, when a match is processed'
 
 })
 
-describe.todo('given a league with two existing teams, when a match is processed that occurs on a prior day to the previous match of both teams', () => {
+describe('given a league with two existing teams, when a match is processed that occurs on a prior day to the previous match of both teams', () => {
   let previousResult: Result
   let league: League;
   let earlyResult: Result;
@@ -139,12 +139,12 @@ describe.todo('given a league with two existing teams, when a match is processed
     };
     league.record(previousResult)
   })
-  it.todo('raises a League Error', () =>{
+  it('raises a League Error', () =>{
     expect(() => league.record(earlyResult)).toThrowError(LeagueError)
   })
 })
 
-describe.todo('given a league with existing teams, when a match is processed with an existing team that occurs on a prior day to the previous match of that team', () => {
+describe('given a league with existing teams, when a match is processed with an existing team that occurs on a prior day to the previous match of that team', () => {
   let previousResult: Result
   let league: League;
   let earlyResult: Result;
@@ -164,12 +164,12 @@ describe.todo('given a league with existing teams, when a match is processed wit
     };
     league.record(previousResult)
   })
-  it.todo('raises a League Error', () =>{
+  it('raises a League Error', () =>{
     expect(() => league.record(earlyResult)).toThrowError(LeagueError);
   })
 })
 
-describe.todo('given a league with two existing teams, when a match is processed that occurs on the same day as the previous match', () => {
+describe('given a league with two existing teams, when a match is processed that occurs on the same day as the previous match', () => {
   let previousResult: Result
   let league: League;
   let earlyResult: Result;
@@ -189,12 +189,12 @@ describe.todo('given a league with two existing teams, when a match is processed
     };
     league.record(previousResult)
   })
-  it.todo('does not raise an Error', () =>{
+  it('does not raise an Error', () =>{
     expect(() => league.record(earlyResult)).not.toThrowError();
   })
 });
 
-describe.todo('given a league with a storage that throws an unexpected error, when a match is processed', () => {
+describe('given a league with a storage that throws an unexpected error, when a match is processed', () => {
   let erroredRuleset: Ruleset;
   let league: League;
   let result: Result;
@@ -215,7 +215,7 @@ describe.todo('given a league with a storage that throws an unexpected error, wh
     };
     league = new SafeLeague(inMemoryLeague(erroredRuleset));
   })
-  it.todo('wraps it in a League Error', () => {
+  it('wraps it in a League Error', () => {
     expect(() => league.record(result)).toThrowError(LeagueError);
   });
 })
