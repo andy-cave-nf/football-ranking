@@ -108,9 +108,6 @@ describe('given two teams with a drawn result, when the result is processed', ()
   })
 })
 
-describe.todo('given two teams with an existing result, when a second result is processed', () => {
-  it.todo('produces smaller changes in mu for both teams than the first result')
-})
 
 describe.todo('given two teams that have played many matches, when a result is processed', () => {
   it.todo('converges both sigma values to tau');
