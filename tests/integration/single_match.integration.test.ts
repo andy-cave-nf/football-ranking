@@ -7,6 +7,7 @@ import { readFileSync, rmSync } from 'fs';
 import { JsonPage } from '../../src/pages/pages';
 import { join } from 'path';
 import type { TrueSkillConfig } from '../../src/rulesets/types';
+import { DefaultTrueSkill } from '../../src/rulesets/trueskill';
 
 let dir:string
 beforeEach(() => {
@@ -18,7 +19,7 @@ afterEach(() => {
 });
 
 
-describe('given a single non-drawn match between two teams from a json source when the match is processed', () => {
+describe('given a single non-drawn match between two teams from a json source, when the match is processed', () => {
   let ranking: Rankings
   let config: TrueSkillConfig
   beforeEach(async () => {
@@ -30,7 +31,7 @@ describe('given a single non-drawn match between two teams from a json source wh
       drawRate: 0.25
     }
     ranking = new DefaultRankings(
-      new InMemoryLeague(new TrueSkillRuleset(config)),
+      new InMemoryLeague(new DefaultTrueSkill(config)),
       new JsonSource(
         path.resolve(process.cwd(), 'tests', 'fixtures', 'json_source', 'single_match.json')
       )
