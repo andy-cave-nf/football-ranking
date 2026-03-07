@@ -49,8 +49,12 @@ describe('given two teams with a home win, when the result is processed', () => 
   })
   it('increases the home mu', () => {
     expect(after.home.mu).toBeGreaterThan(before.home.mu)
+    expectValidSigma(after,config)
+    expectDecreaseSigma(before,after)
   })
-  it.todo('decreases the away mu')
+  it.todo('decreases the away mu', () => {
+    expect(after.away.mu).toBeLessThan(before.away.mu)
+  })
 })
 
 describe.todo('given two teams with an away win, when the result is processed', () => {
