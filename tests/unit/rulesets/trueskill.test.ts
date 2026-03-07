@@ -52,8 +52,10 @@ describe('given two teams with a home win, when the result is processed', () => 
     expectValidSigma(after,config)
     expectDecreaseSigma(before,after)
   })
-  it.todo('decreases the away mu', () => {
+  it('decreases the away mu', () => {
     expect(after.away.mu).toBeLessThan(before.away.mu)
+    expectValidSigma(after,config)
+    expectDecreaseSigma(before,after)
   })
 })
 
