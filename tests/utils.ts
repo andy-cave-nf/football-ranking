@@ -2,14 +2,16 @@ import type { Result } from '../src/leagues/types';
 import { mkdtempSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
-import type { Ratings, Ruleset } from '../src/rulesets/rulesets';
 import type { TrueSkillConfig } from '../src/rulesets/types';
 import { InMemoryLeague } from '../src/leagues/in_memory';
+import type { Ratings, Ruleset } from '../src/rulesets/base';
 
 export function defaultInMemoryLeague() {
   const fakeRuleset = {
-    record(_result:Result, ratings:Ratings):Ratings {return ratings}
-  }
+    record(_result: Result, ratings: Ratings): Ratings {
+      return ratings;
+    },
+  };
   return new InMemoryLeague(fakeRuleset);
 }
 

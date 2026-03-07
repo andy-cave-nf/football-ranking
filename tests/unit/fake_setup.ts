@@ -1,4 +1,4 @@
-import type { Ratings, Ruleset } from '../../src/rulesets/rulesets';
+
 import type { Page } from '../../src/pages/pages';
 import type { Result, Team } from '../../src/leagues/types';
 import type { Rankings } from '../../src/rankings';
@@ -11,10 +11,11 @@ import {
 } from '../../src/utils';
 import type { Source } from '../../src/sources/base';
 import { cleanString, type League } from '../../src/leagues/base';
+import type { Ratings, Ruleset } from '../../src/rulesets/base';
 
 export const DEFAULT_FAKE_TEAMS: Team[] = [
-  { id: 1, name: 'fake-team-1', mu: 25, sigma:25/3,lastFixtureDate: new Date(2000, 0, 1) },
-  { id: 2, name: 'fake-team-2', mu: 25, sigma:25/3,lastFixtureDate: new Date(2000, 0, 1) },
+  { id: 1, name: 'fake-team-1', mu: 25, sigma: 25 / 3, lastFixtureDate: new Date(2000, 0, 1) },
+  { id: 2, name: 'fake-team-2', mu: 25, sigma: 25 / 3, lastFixtureDate: new Date(2000, 0, 1) },
 ];
 export const DEFAULT_SOURCE_TEAMS: SourceTeam[] = [
   { id: '1', name: 'fake-team-1' },

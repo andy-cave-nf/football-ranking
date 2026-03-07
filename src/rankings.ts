@@ -1,8 +1,8 @@
-import type { Ruleset } from './rulesets/rulesets';
 import type { Page } from './pages/pages';
 import type { Result } from './leagues/types';
 import type { Source } from './sources/base';
 import type { League } from './leagues/base';
+import type { Ruleset } from './rulesets/base';
 
 export interface Rankings {
   run(from: Date, to?: Date): Promise<void>;

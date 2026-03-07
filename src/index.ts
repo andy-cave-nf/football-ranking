@@ -2,7 +2,7 @@ import { TuiView } from './tui';
 import { DefaultRankings, SafeRankings } from './rankings';
 import { InMemoryLeague } from './leagues/in_memory';
 import { ApiSource } from './sources/api_source';
-import { EloRuleset } from './rulesets/rulesets';
+import { EloRuleset } from './rulesets/elo';
 import { JsonPage } from './pages/pages';
 import { SafeSource, StrictSourceDates } from './sources/base';
 import { SafeLeague, StrictLeagueRecord } from './leagues/base';

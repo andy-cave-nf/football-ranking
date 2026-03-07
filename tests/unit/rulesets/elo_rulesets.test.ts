@@ -1,4 +1,4 @@
-import { EloRuleset } from '../../../src/rulesets/rulesets';
+import { EloRuleset } from '../../../src/rulesets/elo';
 import type { Result } from '../../../src/leagues/types';
 import { expectedElo } from '../../utils';
 

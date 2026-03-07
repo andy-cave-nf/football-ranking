@@ -1,4 +1,4 @@
-import type { Ratings, Ruleset } from '../../../src/rulesets/rulesets';
+
 import type { Result } from '../../../src/leagues/types';
 import {
   type League,
@@ -7,11 +7,12 @@ import {
   StrictLeagueRecord,
 } from '../../../src/leagues/base';
 import { defaultInMemoryLeague, inMemoryLeague } from '../../utils';
+import type { Ratings, Ruleset } from '../../../src/rulesets/base';
 
 test('a new league has no teams', () => {
-  const league = defaultInMemoryLeague()
+  const league = defaultInMemoryLeague();
   expect(league.teams.size).toBe(0);
-})
+});
 
 describe('given a new league, when a match is processed', () => {
   let result: Result;

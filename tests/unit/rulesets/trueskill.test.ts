@@ -1,20 +1,55 @@
-import type { Ratings } from '../../../src/rulesets/rulesets';
 import type { TrueSkillConfig } from '../../../src/rulesets/types';
+import type { Result } from '../../../src/leagues/types';
+import type { Ratings, Ruleset } from '../../../src/rulesets/base';
+import { DefaultTrueSkill } from '../../../src/rulesets/trueskill';
 
-test.todo('a new rating has the expected mu and sigma')
-
-function expectValidSigma(ratings:Ratings,config:TrueSkillConfig) {
-  expect(ratings.home.sigma).toBeGreaterThanOrEqual(config.tau)
-  expect(ratings.away.sigma).toBeGreaterThanOrEqual(config.tau)
+function expectValidSigma(ratings: Ratings, config: TrueSkillConfig) {
+  expect(ratings.home.sigma).toBeGreaterThanOrEqual(config.tau);
+  expect(ratings.away.sigma).toBeGreaterThanOrEqual(config.tau);
 }
 
 function expectDecreaseSigma(beforeRatings:Ratings,afterRatings:Ratings) {
   expect(afterRatings.home.sigma).toBeLessThanOrEqual(beforeRatings.home.sigma)
   expect(afterRatings.away.sigma).toBeLessThanOrEqual(beforeRatings.away.sigma)
 }
+let ruleset: Ruleset;
+let config: TrueSkillConfig;
 
-describe.todo('given two teams with a home win, when the result is processed', () => {
-  it.todo('increases the home mu')
+beforeEach(() => {
+  config = {
+    mu0: 25,
+    sigma0: 25/3,
+    beta: 25/6,
+    tau: 25/300,
+    drawRate: 0.25
+  }
+  ruleset = new DefaultTrueSkill(config)
+})
+test('a new rating has the expected mu and sigma', () => {
+  const actual = ruleset.newRating()
+  expect(actual).toStrictEqual({mu:config.mu0,sigma:config.sigma0})
+})
+
+describe('given two teams with a home win, when the result is processed', () => {
+  let result: Result
+  let before: Ratings;
+  let after: Ratings;
+  beforeEach(() => {
+    result = {
+      home: {id:'id-1',name:'team-1'},
+      away: {id:'id-2',name:'team-2'},
+      homeWin: 1,
+      date: new Date(),
+    }
+    before = {
+      home: {mu: 25, sigma: 25/3},
+      away: {mu: 25, sigma: 25/3}
+    }
+    after = ruleset.record(result,before)
+  })
+  it('increases the home mu', () => {
+    expect(after.home.mu).toBeGreaterThan(before.home.mu)
+  })
   it.todo('decreases the away mu')
 })
 

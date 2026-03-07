@@ -1,8 +1,8 @@
-import type { Ruleset } from '../rulesets/rulesets';
 import type { Result, Team } from './types';
 import { DefaultTeamMap, type ReadOnlyTeamMap, SanitizeMap } from '../utils';
 import type { SourceTeam } from '../sources/types';
 import { cleanString, type League } from './base';
+import type { Ruleset } from '../rulesets/base';
 
 export class InMemoryLeague implements League {
   private allTeams = new DefaultTeamMap(new SanitizeMap<number | string, Team>(cleanString));

@@ -1,6 +1,6 @@
 import nock, { type Scope } from 'nock';
 import { InMemoryLeague } from '../../src/leagues/in_memory';
-import { EloRuleset } from '../../src/rulesets/rulesets';
+import { EloRuleset } from '../../src/rulesets/elo';
 import { DefaultRankings, type Rankings } from '../../src/rankings';
 import { JsonSource } from '../../src/sources/json_source';
 import path from 'node:path';
