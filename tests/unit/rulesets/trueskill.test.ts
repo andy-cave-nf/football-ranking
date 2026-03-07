@@ -84,8 +84,28 @@ describe('given two teams with an away win, when the result is processed', () =>
   });
 });
 
-describe.todo('given two teams with a drawn result, when the result is processed', () => {
-  it.todo('moves the mu values closer together')
+describe('given two teams with a drawn result, when the result is processed', () => {
+  let result: Result
+  let before: Ratings;
+  let after: Ratings;
+  beforeEach(() => {
+    result = {
+      home: { id: 'id-1', name: 'team-1' },
+      away: { id: 'id-2', name: 'team-2' },
+      homeWin: 0.5,
+      date: new Date(),
+    };
+    before = {
+      home: { mu: 30, sigma: 30 / 3 },
+      away: { mu: 20, sigma: 20 / 3 },
+    };
+    after = ruleset.record(result, before);
+  })
+  it('moves the mu values closer together', () => {
+    expect(after.home.mu - after.away.mu).toBeLessThan(before.home.mu-before.away.mu)
+    expectValidSigma(after, config);
+    expectDecreaseSigma(before, after);
+  })
 })
 
 describe.todo('given two teams with an existing result, when a second result is processed', () => {
