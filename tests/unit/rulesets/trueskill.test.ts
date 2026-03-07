@@ -54,14 +54,34 @@ describe('given two teams with a home win, when the result is processed', () => 
   })
   it('decreases the away mu', () => {
     expect(after.away.mu).toBeLessThan(before.away.mu)
-    expectValidSigma(after,config)
-    expectDecreaseSigma(before,after)
   })
 })
 
-describe.todo('given two teams with an away win, when the result is processed', () => {
-  it.todo('increases the away mu');
-  it.todo('decreases the home mu');
+describe('given two teams with an away win, when the result is processed', () => {
+  let result: Result
+  let before: Ratings;
+  let after: Ratings;
+  beforeEach(() => {
+    result = {
+      home: { id: 'id-1', name: 'team-1' },
+      away: { id: 'id-2', name: 'team-2' },
+      homeWin: 0,
+      date: new Date(),
+    };
+    before = {
+      home: { mu: 25, sigma: 25 / 3 },
+      away: { mu: 25, sigma: 25 / 3 },
+    };
+    after = ruleset.record(result, before);
+  })
+  it('increases the away mu', () => {
+    expect(after.away.mu).toBeGreaterThan(before.away.mu)
+    expectValidSigma(after,config)
+    expectDecreaseSigma(before,after)
+  });
+  it('decreases the home mu', () => {
+    expect(after.home.mu).toBeLessThan(before.home.mu)
+  });
 });
 
 describe.todo('given two teams with a drawn result, when the result is processed', () => {
