@@ -1,4 +1,3 @@
-
 import type { Result } from '../../../src/leagues/types';
 import {
   type League,
@@ -7,7 +6,7 @@ import {
   StrictLeagueRecord,
 } from '../../../src/leagues/base';
 import { defaultInMemoryLeague, inMemoryLeague } from '../../utils';
-import type { Ratings, Ruleset } from '../../../src/rulesets/base';
+import type { Ratings, Ruleset, TeamRating } from '../../../src/rulesets/base';
 
 test('a new league has no teams', () => {
   const league = defaultInMemoryLeague();
@@ -100,6 +99,11 @@ describe('given a league with a predicatable ruleset, when a match is processed'
         return {
           home:{...ratings.home, mu:10,sigma:1},
           away:{...ratings.away, mu:-10,sigma:2},
+        }
+      },
+      newRating():TeamRating {
+        return {
+          mu:10,sigma:1
         }
       }
     }
@@ -202,10 +206,13 @@ describe.todo('given a league with a storage that throws an unexpected error, wh
       date: new Date(2000, 0, 1),
     };
     erroredRuleset = {
-      record(_result:Result,_ratings: Ratings): Ratings {
+      record(_result: Result, _ratings: Ratings): Ratings {
         throw new Error('errored');
-      }
-    }
+      },
+      newRating(): TeamRating {
+        throw new Error('errored');
+      },
+    };
     league = new SafeLeague(inMemoryLeague(erroredRuleset));
   })
   it.todo('wraps it in a League Error', () => {
