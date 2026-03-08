@@ -42,7 +42,20 @@ describe('given a source containing multiple unsorted matches, when all the matc
 })
 
 describe.todo('given a source containing multiple matches on different dates, when the matches are read between two dates', () => {
-  it.todo('includes matches played between those dates')
+  let source: Source;
+  let actual: Result[];
+  beforeEach(async () => {
+    const filepath = path.resolve(
+      process.cwd(),
+      'tests',
+      'fixtures',
+      'json_source',
+      'multiple_unsorted_matches.json'
+    );
+    source = new SortedSource(new JsonSource(filepath));
+    actual = await source.results(new Date(2026, 1, 16), new Date(2026, 1, 28));
+  });
+  it.todo('returns only the matches within the date range, inclusive of both boundaries')
   it.todo('includes matches falling on the start date')
   it.todo('includes matches falling on the end date')
   it.todo('excludes matches outside the date range')
