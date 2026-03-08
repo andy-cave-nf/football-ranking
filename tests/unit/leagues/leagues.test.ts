@@ -179,13 +179,13 @@ describe('given a league with two existing teams, when a match is processed that
       home: { id: 'team-1', name: 'home' },
       away: { id: 'team-2', name: 'away' },
       homeWin: 1,
-      date: new Date(2000, 0, 1),
+      date: new Date(2000, 0, 1,12,0),
     };
     earlyResult = {
       home: { id: 'team-1', name: 'home' },
       away: { id: 'team-3', name: 'away' },
       homeWin: 1,
-      date: new Date(2000, 0, 1),
+      date: new Date(2000, 0, 1,12,0),
     };
     league.record(previousResult)
   })
@@ -193,6 +193,31 @@ describe('given a league with two existing teams, when a match is processed that
     expect(() => league.record(earlyResult)).not.toThrowError();
   })
 });
+
+describe('given a league with two existing teams, when a match is processed that occurs on the same day and an earlier time as the previous match', () => {
+  let previousResult: Result;
+  let league: League;
+  let earlyResult: Result;
+  beforeEach(async () => {
+    league = new StrictLeagueRecord(defaultInMemoryLeague());
+    previousResult = {
+      home: { id: 'team-1', name: 'home' },
+      away: { id: 'team-2', name: 'away' },
+      homeWin: 1,
+      date: new Date(2000, 0, 1, 12, 0),
+    };
+    earlyResult = {
+      home: { id: 'team-1', name: 'home' },
+      away: { id: 'team-3', name: 'away' },
+      homeWin: 1,
+      date: new Date(2000, 0, 1, 11, 0),
+    };
+    league.record(previousResult);
+  });
+  it('raises a league error', () => {
+    expect(() => league.record(earlyResult)).toThrowError(LeagueError);
+  });
+})
 
 describe('given a league with a storage that throws an unexpected error, when a match is processed', () => {
   let erroredRuleset: Ruleset;
