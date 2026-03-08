@@ -8,6 +8,49 @@ beforeEach(() => {
   source = new JsonSource(filepath);
 });
 
+describe.todo('given a source containing a single match, when the matches are read', () => {
+  it.todo('returns a single result with the expected teams, outcome and date')
+})
+
+describe.todo('given a source containing multiple unsorted matches, when all the matches are read', () => {
+  it.todo('returns all matches in chronological order')
+})
+
+describe.todo('given a source containing multiple matches on different dates, when the matches are read between two dates', () => {
+  it.todo('includes matches played between those dates')
+  it.todo('includes matches falling on the start date')
+  it.todo('includes matches falling on the end date')
+  it.todo('excludes matches outside the date range')
+})
+
+describe.todo('given a source containing multiple matches, when there are no matches within the specified dates', () => {
+  it.todo('returns an empty list')
+})
+
+describe.todo('given an empty source file, when the matches are read', () => {
+  it.todo('returns an empty list')
+})
+
+describe.todo('given a source with a match with an empty result', () => {
+  it.todo('raises a source error')
+})
+
+describe.todo('given a source with a match with an empty home team', () => {
+  it.todo('raises a source error')
+})
+
+describe.todo('given a source with a match with an empty away team', () => {
+  it.todo('raises a source error')
+})
+
+describe.todo('given a source containing a single match, when matches are to be read in the future', () => {
+  it.todo('raises a source error')
+} )
+
+describe.todo('given a source containing a match that has not finished, when the match is read',() => {
+  it.todo('raises a source error')
+})
+
 describe('test that all matches are loaded', async () => {
   it('tests the right number of matches are loaded between dates', async () => {
     const matches = await source.results(new Date(2026, 1, 1), new Date(2027, 1, 1));
