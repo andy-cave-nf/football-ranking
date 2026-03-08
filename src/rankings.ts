@@ -5,7 +5,7 @@ import type { League } from './leagues/base';
 import type { Ruleset } from './rulesets/base';
 
 export interface Rankings {
-  run(from: Date, to?: Date): Promise<void>;
+  run(from: Date, to: Date): Promise<void>;
   print(page: Page): Promise<void>;
 }
 
