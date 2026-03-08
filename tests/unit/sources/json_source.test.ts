@@ -1,6 +1,6 @@
 import { JsonSource } from '../../../src/sources/json_source';
 import * as path from 'node:path';
-import { SafeSource, type Source, SourceError, StrictSourceDates } from '../../../src/sources/base';
+import { SafeSource, SortedSource, type Source, SourceError, StrictSourceDates } from '../../../src/sources/base';
 import type { Result } from '../../../src/leagues/types';
 
 let source: Source;
@@ -27,8 +27,18 @@ describe('given a source containing a single match, when the matches are read', 
   })
 })
 
-describe.todo('given a source containing multiple unsorted matches, when all the matches are read', () => {
-  it.todo('returns all matches in chronological order')
+describe('given a source containing multiple unsorted matches, when all the matches are read', () => {
+  let source: Source
+  let actual: Result[];
+  beforeEach(async () => {
+    const filepath = path.resolve(process.cwd(), 'tests', 'fixtures', 'json_source','multiple_unsorted_matches.json');
+    source = new SortedSource(new JsonSource(filepath));
+    actual = await source.results(new Date(2026,1,13),new Date(2026,5,30));
+  })
+  it('returns all matches in chronological order', () => {
+    const isSorted = actual.every((match,i) => i === 0 || actual[i-1]!.date <= match.date);
+    expect(isSorted).toBe(true);
+  })
 })
 
 describe.todo('given a source containing multiple matches on different dates, when the matches are read between two dates', () => {
