@@ -1,6 +1,7 @@
 import { JsonSource } from '../../../src/sources/json_source';
 import * as path from 'node:path';
 import { SafeSource, type Source, SourceError, StrictSourceDates } from '../../../src/sources/base';
+import type { Result } from '../../../src/leagues/types';
 
 let source: Source;
 beforeEach(() => {
@@ -8,8 +9,22 @@ beforeEach(() => {
   source = new JsonSource(filepath);
 });
 
-describe.todo('given a source containing a single match, when the matches are read', () => {
-  it.todo('returns a single result with the expected teams, outcome and date')
+describe('given a source containing a single match, when the matches are read', () => {
+  let source: Source;
+  let actual: Result[];
+  beforeEach(async () => {
+    const filepath = path.resolve(process.cwd(), 'tests', 'fixtures', 'json_source','single_match.json');
+    source = new JsonSource(filepath);
+    actual = await source.results(new Date(2026,1,13),new Date(2026,1,15));
+  })
+  it('returns a single result with the expected teams, outcome and date', () => {
+    expect(actual[0]).toStrictEqual({
+      home: {id: 'T001', name: 'Avalon Rovers'},
+      away: {id: 'T002', name: 'Beacon United'},
+      homeWin: 0,
+      date: new Date(2026,1,14,15,0),
+    })
+  })
 })
 
 describe.todo('given a source containing multiple unsorted matches, when all the matches are read', () => {
