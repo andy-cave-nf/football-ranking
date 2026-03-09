@@ -41,12 +41,13 @@
     "ts-sql-codegen": "^3.8.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1",
+    "eslint-config-prettier": "^6.15.0",
     "vitest": "^4.0.16"
   },
   "dependencies": {
     "commander": "^14.0.3",
     "dotenv": "^17.3.1",
-    "eslint-config-prettier": "^6.15.0",
+    "lodash": "^4.17.23",
     "pg": "^8.16.3",
     "pg-promise": "^12.3.0",
     "ts-sql-query": "^1.67.0",
