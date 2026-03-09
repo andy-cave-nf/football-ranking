@@ -41,7 +41,7 @@ describe('given a source containing multiple unsorted matches, when all the matc
   })
 })
 
-describe.todo('given a source containing multiple matches on different dates, when the matches are read between two dates', () => {
+describe('given a source containing multiple matches on different dates, when the matches are read between two dates', () => {
   let source: Source;
   let actual: Result[];
   beforeEach(async () => {
@@ -55,7 +55,29 @@ describe.todo('given a source containing multiple matches on different dates, wh
     source = new SortedSource(new JsonSource(filepath));
     actual = await source.results(new Date(2026, 1, 16), new Date(2026, 1, 28));
   });
-  it.todo('returns only the matches within the date range, inclusive of both boundaries')
+  it('returns only the matches within the date range, inclusive of both boundaries', ()=> {
+    const expected = [
+      {
+        home: {id: 'T001', name: 'Avalon Rovers'},
+        away: {id: 'T003', name: 'Cedar City FC'},
+        homeWin: 0,
+        date: new Date(2026,1,16,17)
+      },
+      {
+        home: {id: 'T002', name: 'Beacon United'},
+        away: {id: 'T003', name: 'Cedar City FC'},
+        homeWin: 0,
+        date: new Date(2026,1,24,19)
+      },
+      {
+        home: {id: 'T002', name: 'Beacon United'},
+        away: {id: 'T005', name: 'Elmwood Athletic'},
+        homeWin: 0,
+        date: new Date(2026,1,28,17)
+      }
+    ]
+    expect(actual).toEqual(expected);
+  })
   it.todo('includes matches falling on the start date')
   it.todo('includes matches falling on the end date')
   it.todo('excludes matches outside the date range')

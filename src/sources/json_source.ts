@@ -2,6 +2,7 @@ import type { JsonData, JsonFixtures, SourceTeam } from './types';
 import type { Result } from '../leagues/types';
 import { CachedFromJson, ParseJsonOrThrow, ParseScoresOrThrow } from './json_parse';
 import type { Source } from './base';
+import { add } from 'date-fns';
 
 export class JsonSource implements Source {
   private cache: CachedFromJson;
@@ -11,7 +12,7 @@ export class JsonSource implements Source {
   async results(start: Date, end: Date): Promise<Result[]> {
     const data: JsonData = await this.cache.parse();
     return data.fixtures
-      .filter((fixture) => fixture.date >= start.toISOString() && fixture.date <= end.toISOString())
+      .filter((fixture) => fixture.date >= start.toISOString() && fixture.date <= add(end,{days:1}).toISOString())
       .map((fixture) => this.convertToResults(fixture));
   }
   private convertToResults(fixture: JsonFixtures): Result {

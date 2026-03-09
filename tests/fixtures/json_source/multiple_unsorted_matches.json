@@ -35,6 +35,15 @@
       "awayName": "Elmwood Athletic",
       "score": "1-2",
       "date": "2026-02-28T17:00:00"
+    },
+    {
+      "matchId": "M006",
+      "homeId": "T002",
+      "homeName": "Beacon United",
+      "awayId": "T003",
+      "awayName": "Cedar City FC",
+      "score": "2-3",
+      "date": "2026-02-24T19:00:00"
     }
   ]
 }
