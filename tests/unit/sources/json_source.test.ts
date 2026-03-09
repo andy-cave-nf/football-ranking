@@ -2,6 +2,7 @@ import { JsonSource } from '../../../src/sources/json_source';
 import * as path from 'node:path';
 import { SafeSource, SortedSource, type Source, SourceError, StrictSourceDates } from '../../../src/sources/base';
 import type { Result } from '../../../src/leagues/types';
+import { JsonParseError } from '../../../src/sources/json_parse';
 
 let source: Source;
 beforeEach(() => {
@@ -91,7 +92,7 @@ describe('given a source containing multiple matches, when there are no matches 
       'json_source',
       'multiple_unsorted_matches.json'
     );
-    source = new SortedSource(new JsonSource(filepath));
+    source = new JsonSource(filepath);
     actual = await source.results(new Date(2026, 0, 1), new Date(2026, 0, 2));
   })
   it('returns an empty list', ()=> {
@@ -111,7 +112,7 @@ describe('given a source file with an empty object, when the matches are read', 
       'json_source',
       'empty.json'
     );
-    source = new SortedSource(new JsonSource(filepath));
+    source = new JsonSource(filepath);
     actual = await source.results(new Date(2026, 0, 1), new Date(2026, 0, 2));
   });
   it('returns an empty list', () => {
@@ -125,7 +126,7 @@ describe('given a source file with an empty fixtures key, when the matches are r
   let actual: Result[];
   beforeEach(async () => {
     const filepath = path.resolve(process.cwd(), 'tests', 'fixtures', 'json_source', 'empty_fixtures.json');
-    source = new SortedSource(new JsonSource(filepath));
+    source = new JsonSource(filepath);
     actual = await source.results(new Date(2026, 0, 1), new Date(2026, 0, 2));
   });
   it('returns an empty list', () => {
@@ -134,8 +135,21 @@ describe('given a source file with an empty fixtures key, when the matches are r
   });
 });
 
-describe.todo('given a source with a match with an empty result', () => {
-  it.todo('raises a source error')
+describe('given an empty source file that is not a valid json file, when the matches are read', async () => {
+  let source: Source;
+  beforeEach(async () => {
+    const filepath = path.resolve(
+      process.cwd(),
+      'tests',
+      'fixtures',
+      'json_source',
+      'illegal_empty.json'
+    );
+    source = new SortedSource(new JsonSource(filepath));
+  });
+  it('raises a source error', async () => {
+    await expect(source.results(new Date(2026, 0, 1), new Date(2026, 0, 2))).rejects.toThrowError(JsonParseError);
+  })
 })
 
 describe.todo('given a source with a match with an empty home team', () => {
