@@ -145,11 +145,16 @@ describe('given an empty source file that is not a valid json file, when the mat
       'json_source',
       'illegal_empty.json'
     );
-    source = new SortedSource(new JsonSource(filepath));
+    source = new JsonSource(filepath);
   });
   it('raises a source error', async () => {
     await expect(source.results(new Date(2026, 0, 1), new Date(2026, 0, 2))).rejects.toThrowError(JsonParseError);
   })
+})
+
+
+describe.todo('given an invalid source file, when the matches are read', async () => {
+  it.todo('raises a source error');
 })
 
 describe.todo('given a source with a match with an empty home team', () => {
