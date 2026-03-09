@@ -78,17 +78,46 @@ describe('given a source containing multiple matches on different dates, when th
     ]
     expect(actual).toEqual(expected);
   })
-  it.todo('includes matches falling on the start date')
-  it.todo('includes matches falling on the end date')
-  it.todo('excludes matches outside the date range')
 })
 
-describe.todo('given a source containing multiple matches, when there are no matches within the specified dates', () => {
-  it.todo('returns an empty list')
+describe('given a source containing multiple matches, when there are no matches within the specified dates', () => {
+  let source: Source;
+  let actual: Result[];
+  beforeEach(async () => {
+    const filepath = path.resolve(
+      process.cwd(),
+      'tests',
+      'fixtures',
+      'json_source',
+      'multiple_unsorted_matches.json'
+    );
+    source = new SortedSource(new JsonSource(filepath));
+    actual = await source.results(new Date(2026, 0, 1), new Date(2026, 0, 2));
+  })
+  it('returns an empty list', ()=> {
+    const expected: Result[] = []
+    expect(actual).toEqual(expected)
+  })
 })
 
-describe.todo('given an empty source file, when the matches are read', () => {
-  it.todo('returns an empty list')
+describe('given a source file with an empty object, when the matches are read', () => {
+  let source: Source;
+  let actual: Result[];
+  beforeEach(async () => {
+    const filepath = path.resolve(
+      process.cwd(),
+      'tests',
+      'fixtures',
+      'json_source',
+      'empty.json'
+    );
+    source = new SortedSource(new JsonSource(filepath));
+    actual = await source.results(new Date(2026, 0, 1), new Date(2026, 0, 2));
+  });
+  it('returns an empty list', () => {
+    const expected: Result[] = []
+    expect(actual).toEqual(expected)
+  })
 })
 
 describe.todo('given a source with a match with an empty result', () => {
