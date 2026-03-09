@@ -120,6 +120,20 @@ describe('given a source file with an empty object, when the matches are read', 
   })
 })
 
+describe('given a source file with an empty fixtures key, when the matches are read', () => {
+  let source: Source;
+  let actual: Result[];
+  beforeEach(async () => {
+    const filepath = path.resolve(process.cwd(), 'tests', 'fixtures', 'json_source', 'empty_fixtures.json');
+    source = new SortedSource(new JsonSource(filepath));
+    actual = await source.results(new Date(2026, 0, 1), new Date(2026, 0, 2));
+  });
+  it('returns an empty list', () => {
+    const expected: Result[] = []
+    expect(actual).toEqual(expected)
+  });
+});
+
 describe.todo('given a source with a match with an empty result', () => {
   it.todo('raises a source error')
 })

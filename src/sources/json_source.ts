@@ -1,13 +1,13 @@
 import type { JsonData, JsonFixtures, SourceTeam } from './types';
 import type { Result } from '../leagues/types';
-import { CachedFromJson, ParseJsonOrThrow, ParseScoresOrThrow } from './json_parse';
+import { CachedFromJson, ParseJson, ParseScoresOrThrow, SafeParse } from './json_parse';
 import type { Source } from './base';
 import { add } from 'date-fns';
 
 export class JsonSource implements Source {
   private cache: CachedFromJson;
   constructor(filepath: string) {
-    this.cache = new CachedFromJson(new ParseScoresOrThrow(new ParseJsonOrThrow(filepath)));
+    this.cache = new CachedFromJson(new ParseScoresOrThrow(new SafeParse(new ParseJson(filepath))));
   }
   async results(start: Date, end: Date): Promise<Result[]> {
     const data: JsonData = await this.cache.parse();

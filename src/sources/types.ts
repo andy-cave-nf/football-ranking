@@ -3,7 +3,6 @@ import type { ApiQuery, FixtureQuery } from './api_source';
 export type DashedScore = `${number}-${number}`;
 
 export type JsonData = {
-  teams: JsonTeams[];
   fixtures: JsonFixtures[];
 };
 

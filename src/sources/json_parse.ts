@@ -1,20 +1,33 @@
 import type { JsonData } from './types';
 import { readFile } from 'fs/promises';
+import * as _ from 'lodash';
 
 export interface ParsedJson {
   parse(): Promise<JsonData>;
 }
 
-export class ParseJsonOrThrow implements ParsedJson {
+const EMPTY_FIXTURES: JsonData = {fixtures: []};
+
+export class ParseJson implements ParsedJson {
   constructor(private filepath: string) {}
   async parse(): Promise<JsonData> {
     const data = JSON.parse(await readFile(this.filepath, 'utf8'));
-    if (data === undefined) {
-      throw new JsonParseError('Unable to parse json');
-    }
-    return data as JsonData;
+    return _.isEmpty(data) ? EMPTY_FIXTURES : data;
   }
 }
+
+export class SafeParse implements ParsedJson {
+  constructor(private origin: ParsedJson) {}
+  async parse(): Promise<JsonData> {
+    try{
+      return await this.origin.parse();
+    }
+    catch (error) {
+      throw new JsonParseError('Unable to parse json', {cause: error});
+    }
+  }
+}
+
 
 export class ParseScoresOrThrow implements ParsedJson {
   constructor(private origin: ParsedJson) {}
