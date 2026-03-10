@@ -1,15 +1,31 @@
 import type { JsonFixtures } from '../../../../src/sources/parsers/base';
 import type { JsonData } from '../../../../src/sources/parsers/types';
 import path from 'node:path';
+import { defaultJsonFixtures } from '../../../utils';
 
 describe('given a json file containing a single match, when the file is read', () => {
-  let parser: JsonFixtures<JsonData>
+  let fixture: JsonFixtures<JsonData>
   let actual: JsonData;
-  it.todo('returns a single fixture', () => {
-    beforeEach(async () => {
-      const filepath = path.resolve(process.cwd(), 'tests', 'fixtures','json_source','single_match.json');
-      parser = new
+  beforeEach(async () => {
+    const filepath = path.resolve(process.cwd(), 'tests', 'fixtures','json_source','single_match.json');
+    fixture = defaultJsonFixtures(filepath);
+    actual = await fixture.parse()
     })
+  it('returns a single fixture', () => {
+    const expected = {
+      fixtures: [
+        {
+          matchId: 'M001',
+          homeId: 'T001',
+          homeName: 'Avalon Rovers',
+          awayId: 'T002',
+          awayName: 'Beacon United',
+          score: '0-1',
+          date: '2026-02-14T15:00:00',
+        },
+      ],
+    };
+    expect(actual).toStrictEqual(expected);
   })
 })
 
