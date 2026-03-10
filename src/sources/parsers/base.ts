@@ -11,7 +11,7 @@ export class JsonParseError extends Error {
   }
 }
 
-export class SafeParse<T> implements JsonFixtures<T> {
+export class SafeJson<T> implements JsonFixtures<T> {
   constructor(private origin: JsonFixtures<T>) {}
   async parse(): Promise<T> {
     try {

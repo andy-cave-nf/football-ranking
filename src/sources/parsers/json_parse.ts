@@ -4,14 +4,24 @@ import type { JsonData } from './types';
 import { JsonParseError, type JsonFixtures } from './base';
 
 export class DefaultJsonFixtures<T> implements JsonFixtures<T> {
-  constructor(private filepath: string, private empty:T) {}
+  constructor(private filepath: string) {}
   async parse(): Promise<T> {
-    const data = JSON.parse(await readFile(this.filepath, 'utf8'));
-    return _.isEmpty(data) ? this.empty : data;
+    return JSON.parse(await readFile(this.filepath, 'utf8'));
   }
 }
 
-export class StrictJsonScores implements JsonFixtures<JsonData> {
+export class ValidatedJsonShape implements JsonFixtures<JsonData> {
+  constructor(private origin: JsonFixtures<JsonData>) {}
+  async parse(): Promise<JsonData> {
+    const data = await this.origin.parse();
+    if (!Array.isArray(data.fixtures)) {
+      throw new JsonParseError('Invalid fixtures')
+    }
+    return data;
+  }
+}
+
+export class ValidatedJsonScores implements JsonFixtures<JsonData> {
   constructor(private origin: JsonFixtures<JsonData>) {}
   async parse(): Promise<JsonData> {
     const data: JsonData = await this.origin.parse();
