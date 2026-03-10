@@ -1,5 +1,4 @@
 import { readFile } from 'fs/promises';
-import _ from 'lodash';
 import type { JsonData } from './types';
 import { JsonParseError, type JsonFixtures } from './base';
 
