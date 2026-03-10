@@ -1,4 +1,4 @@
-import type { JsonData } from './types';
+import type { JsonData } from '../types';
 import { readFile } from 'fs/promises';
 import * as _ from 'lodash';
 

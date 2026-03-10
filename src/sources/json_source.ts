@@ -1,6 +1,6 @@
 import type { JsonData, JsonFixtures, SourceTeam } from './types';
 import type { Result } from '../leagues/types';
-import { CachedFromJson, ParseJson, ParseScoresOrThrow, SafeParse } from './json_parse';
+import { CachedFromJson, ParseJson, ParseScoresOrThrow, SafeParse } from './parsers/json_parse';
 import type { Source } from './base';
 import { add } from 'date-fns';
 
