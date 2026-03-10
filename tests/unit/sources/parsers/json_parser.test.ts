@@ -66,11 +66,11 @@ describe('given a json file containing many matches, when the file is read', () 
 })
 
 describe('given a json file with an empty object, when the file is read', () => {
-  it.todo('returns an empty list')
+  it.todo('returns an object with an empty fixtures key')
 })
 
 describe('given a json file with an empty fixtures key, when the file is read', () => {
-  it.todo('returns an empty list')
+  it.todo('returns an object with an empty fixtures key');
 })
 
 describe('given an empty invalid json file, when the file is read', () => {
