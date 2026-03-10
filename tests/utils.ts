@@ -5,6 +5,9 @@ import { join } from 'path';
 import type { TrueSkillConfig } from '../src/rulesets/types';
 import { InMemoryLeague } from '../src/leagues/in_memory';
 import type { Ratings, Ruleset, TeamRating } from '../src/rulesets/base';
+import type { JsonFixtures } from '../src/sources/parsers/base';
+import type { JsonData } from '../src/sources/parsers/types';
+import { DefaultJsonFixtures } from '../src/sources/parsers/json_parse';
 
 export function defaultInMemoryLeague() {
   const fakeRuleset: Ruleset = {
@@ -39,4 +42,8 @@ export function expectedElo(
 
 export function makeTempDir(prefix: string) {
   return mkdtempSync(join(tmpdir(), prefix));
+}
+
+export function defaultJsonFixtures(filepath:string): JsonFixtures<JsonData> {
+  return new DefaultJsonFixtures(filepath, {fixtures:[]});
 }
