@@ -3,13 +3,11 @@ import _ from 'lodash';
 import type { JsonData } from './types';
 import { JsonParseError, type JsonFixtures } from './base';
 
-const EMPTY_FIXTURES: JsonData = { fixtures: [] };
-
-export class ParseJson implements JsonFixtures<JsonData> {
-  constructor(private filepath: string) {}
-  async parse(): Promise<JsonData> {
+export class DefaultJsonFixtures<T> implements JsonFixtures<T> {
+  constructor(private filepath: string, private empty:T) {}
+  async parse(): Promise<T> {
     const data = JSON.parse(await readFile(this.filepath, 'utf8'));
-    return _.isEmpty(data) ? EMPTY_FIXTURES : data;
+    return _.isEmpty(data) ? this.empty : data;
   }
 }
 
