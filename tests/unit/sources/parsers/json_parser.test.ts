@@ -30,7 +30,39 @@ describe('given a json file containing a single match, when the file is read', (
 })
 
 describe('given a json file containing many matches, when the file is read', () => {
-  it.todo('returns all the matches')
+  let fixture: JsonFixtures<JsonData>
+  let actual: JsonData;
+  beforeEach(async () => {
+    const filepath = path.resolve(process.cwd(), 'tests', 'fixtures','json_source','two_matches.json');
+    fixture = defaultJsonFixtures(filepath);
+    actual = await fixture.parse()
+  })
+  it('returns all the matches', () => {
+    const expected = {
+      fixtures: [
+        {
+          matchId: 'M002',
+          homeId: 'T001',
+          homeName: 'Avalon Rovers',
+          awayId: 'T003',
+          awayName: 'Cedar City FC',
+          score: '1-2',
+          date: '2026-02-16T17:00:00',
+        },
+        {
+          matchId: 'M001',
+          homeId: 'T001',
+          homeName: 'Avalon Rovers',
+          awayId: 'T002',
+          awayName: 'Beacon United',
+          score: '0-1',
+          date: '2026-02-14T15:00:00',
+        },
+      ],
+    };
+    expect(actual).toStrictEqual(expected);
+
+  })
 })
 
 describe('given a json file with an empty object, when the file is read', () => {
