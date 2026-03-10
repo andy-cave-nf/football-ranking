@@ -11,7 +11,7 @@ export class DefaultJsonFixtures<T> implements JsonFixtures<T> {
   }
 }
 
-export class ParseScoresOrThrow implements JsonFixtures<JsonData> {
+export class StrictJsonScores implements JsonFixtures<JsonData> {
   constructor(private origin: JsonFixtures<JsonData>) {}
   async parse(): Promise<JsonData> {
     const data: JsonData = await this.origin.parse();

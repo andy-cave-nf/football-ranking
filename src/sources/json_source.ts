@@ -1,14 +1,14 @@
 import type { Result } from '../leagues/types';
-import { CachedFromJson, DefaultJsonFixtures, ParseScoresOrThrow } from './parsers/json_parse';
+import { CachedFromJson, DefaultJsonFixtures, StrictJsonScores } from './parsers/json_parse';
 import type { Source } from './base';
 import { add } from 'date-fns';
-import type { JsonData, JsonFixtures } from './parsers/types';
+import type { JsonData, Fixtures } from './parsers/types';
 import { SafeParse } from './parsers/base';
 
 export class JsonSource implements Source {
   private cache: CachedFromJson;
   constructor(filepath: string) {
-    this.cache = new CachedFromJson(new ParseScoresOrThrow(new SafeParse(new DefaultJsonFixtures(filepath))));
+    this.cache = new CachedFromJson(new StrictJsonScores(new SafeParse(new DefaultJsonFixtures(filepath))));
   }
   async results(start: Date, end: Date): Promise<Result[]> {
     const data: JsonData = await this.cache.parse();
@@ -19,7 +19,7 @@ export class JsonSource implements Source {
       )
       .map((fixture) => this.convertToResults(fixture));
   }
-  private convertToResults(fixture: JsonFixtures): Result {
+  private convertToResults(fixture: Fixtures): Result {
     const [home, away]: Array<number> = fixture.score
       .split('-')
       .map((char) => parseInt(char, 10)) as [number, number];

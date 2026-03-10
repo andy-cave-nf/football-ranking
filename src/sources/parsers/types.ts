@@ -1,8 +1,8 @@
 export type DashedScore = `${number}-${number}`;
 export type JsonData = {
-  fixtures: JsonFixtures[];
+  fixtures: Fixtures[];
 };
-export type JsonFixtures = {
+export type Fixtures = {
   matchId: string;
   homeId: string;
   awayId: string;
