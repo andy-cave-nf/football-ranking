@@ -1,4 +1,3 @@
-import type { SourceTeam } from './types';
 import type { Result } from '../leagues/types';
 import { CachedFromJson, ParseJson, ParseScoresOrThrow } from './parsers/json_parse';
 import type { Source } from './base';
