@@ -43,7 +43,3 @@ export function expectedElo(
 export function makeTempDir(prefix: string) {
   return mkdtempSync(join(tmpdir(), prefix));
 }
-
-export function defaultJsonFixtures(filepath:string): JsonFixtures<JsonData> {
-  return new DefaultJsonFixtures(filepath, {fixtures:[]});
-}
