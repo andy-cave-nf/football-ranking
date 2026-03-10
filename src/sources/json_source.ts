@@ -1,9 +1,10 @@
 import type { SourceTeam } from './types';
 import type { Result } from '../leagues/types';
-import { CachedFromJson, ParseJson, ParseScoresOrThrow, SafeParse } from './parsers/json_parse';
+import { CachedFromJson, ParseJson, ParseScoresOrThrow } from './parsers/json_parse';
 import type { Source } from './base';
 import { add } from 'date-fns';
 import type { JsonData, JsonFixtures } from './parsers/types';
+import { SafeParse } from './parsers/base';
 
 export class JsonSource implements Source {
   private cache: CachedFromJson;

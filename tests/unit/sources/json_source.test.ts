@@ -2,7 +2,8 @@ import { JsonSource } from '../../../src/sources/json_source';
 import * as path from 'node:path';
 import { SafeSource, SortedSource, type Source, SourceError, StrictSourceDates } from '../../../src/sources/base';
 import type { Result } from '../../../src/leagues/types';
-import { JsonParseError } from '../../../src/sources/parsers/json_parse';
+
+import { JsonParseError } from '../../../src/sources/parsers/base';
 
 let source: Source;
 beforeEach(() => {
