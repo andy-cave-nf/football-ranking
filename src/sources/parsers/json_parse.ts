@@ -2,9 +2,9 @@ import { readFile } from 'fs/promises';
 import type { JsonData } from './types';
 import { JsonParseError, type JsonFixtures } from './base';
 
-export class DefaultJsonFixtures<T> implements JsonFixtures<T> {
+export class DefaultJsonFixtures implements JsonFixtures<unknown> {
   constructor(private filepath: string) {}
-  async parse(): Promise<T> {
+  async parse(): Promise<unknown> {
     return JSON.parse(await readFile(this.filepath, 'utf8'));
   }
 }
