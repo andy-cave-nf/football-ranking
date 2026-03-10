@@ -1,6 +1,6 @@
-import type { JsonData } from '../types';
 import { readFile } from 'fs/promises';
 import * as _ from 'lodash';
+import type { JsonData } from './types';
 
 export interface ParsedJson {
   parse(): Promise<JsonData>;
