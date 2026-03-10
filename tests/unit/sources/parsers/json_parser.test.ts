@@ -1,5 +1,16 @@
+import type { JsonFixtures } from '../../../../src/sources/parsers/base';
+import type { JsonData } from '../../../../src/sources/parsers/types';
+import path from 'node:path';
+
 describe('given a json file containing a single match, when the file is read', () => {
-  it.todo('returns a single fixture')
+  let parser: JsonFixtures<JsonData>
+  let actual: JsonData;
+  it.todo('returns a single fixture', () => {
+    beforeEach(async () => {
+      const filepath = path.resolve(process.cwd(), 'tests', 'fixtures','json_source','single_match.json');
+      parser = new
+    })
+  })
 })
 
 describe('given a json file containing many matches, when the file is read', () => {

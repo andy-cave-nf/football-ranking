@@ -1,4 +1,4 @@
-export interface ParsedJson<T> {
+export interface JsonFixtures<T> {
   parse(): Promise<T>;
 }
 export class JsonParseError extends Error {
@@ -11,8 +11,8 @@ export class JsonParseError extends Error {
   }
 }
 
-export class SafeParse<T> implements ParsedJson<T> {
-  constructor(private origin: ParsedJson<T>) {}
+export class SafeParse<T> implements JsonFixtures<T> {
+  constructor(private origin: JsonFixtures<T>) {}
   async parse(): Promise<T> {
     try {
       return await this.origin.parse();
