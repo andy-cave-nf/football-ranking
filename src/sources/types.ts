@@ -6,10 +6,6 @@ export type JsonData = {
   fixtures: JsonFixtures[];
 };
 
-export type JsonTeams = {
-  id: string;
-  name: string;
-};
 export type JsonFixtures = {
   matchId: string;
   homeId: string;
