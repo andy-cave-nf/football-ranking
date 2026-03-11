@@ -74,7 +74,6 @@ describe('Validated Json Shape', () => {
   })
 
   describe('given a file containing a valid non empty structure, when the data is parsed', () => {
-    let fixture: ValidatedJsonShape
     beforeEach(async () => {
       const origin: JsonFixtures<JsonData> = {
         async parse() {
@@ -111,9 +110,8 @@ describe('Validated Json Shape', () => {
   })
 
   describe('given a json fixture that has an invalid structure, when the data is parsed', () => {
-    let fixture: ValidatedJsonShape
     beforeEach(async () => {
-      const origin: JsonFixtures<JsonData> = {
+      const origin: JsonFixtures = {
         async parse() {
           return { invalid: 'structure' };
         }
@@ -127,11 +125,11 @@ describe('Validated Json Shape', () => {
 })
 
 describe('Safe Json', () => {
-  let fixture: SafeJson<JsonData>
+  let fixture: SafeJson
   let expected: JsonData
   describe('given a json fixture that succeeds, when the data is parsed', () => {
     beforeEach(async () => {
-      const origin: JsonFixtures<JsonData> = {
+      const origin: JsonFixtures = {
         async parse(){
           return {fixtures: []}
         }
@@ -145,7 +143,7 @@ describe('Safe Json', () => {
   })
   describe('given a json fixture that throws, when the data is parsed', () => {
     beforeEach(async () => {
-      const origin: JsonFixtures<JsonData> = {
+      const origin: JsonFixtures = {
         async parse() {throw new Error('errored fixture')}
       }
       fixture = new SafeJson(origin);
@@ -162,7 +160,7 @@ describe('Validate Json Scores', () => {
   let expected: JsonData
   describe('given a json fixture that has valid scores, when the data is parsed', () => {
     beforeEach(async () => {
-      const origin: JsonFixtures<JsonData> = {
+      const origin: JsonFixtures = {
         async parse() {
           return {
             fixtures: [
@@ -188,7 +186,7 @@ describe('Validate Json Scores', () => {
   })
   describe('given a json fixture that has an invalid scores, when the data is parsed', () => {
     beforeEach(async () => {
-      const origin: JsonFixtures<JsonData> = {
+      const origin: JsonFixtures = {
         async parse() {
           return {
             fixtures: [
