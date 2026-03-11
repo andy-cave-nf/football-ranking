@@ -1,4 +1,4 @@
-import { type JsonFixtures, JsonParseError } from '../../../../src/sources/parsers/base';
+import { type JsonFixtures, JsonParseError, SafeJson } from '../../../../src/sources/parsers/base';
 import { type JsonData } from '../../../../src/sources/parsers/types';
 import path from 'node:path';
 import {
@@ -75,7 +75,6 @@ describe('Validated Json Shape', () => {
 
   describe('given a file containing a valid non empty structure, when the data is parsed', () => {
     let fixture: ValidatedJsonShape
-    let expected: JsonData
     beforeEach(async () => {
       const origin: JsonFixtures<JsonData> = {
         async parse() {
@@ -128,21 +127,89 @@ describe('Validated Json Shape', () => {
 })
 
 describe('Safe Json', () => {
+  let fixture: SafeJson<JsonData>
+  let expected: JsonData
   describe('given a json fixture that succeeds, when the data is parsed', () => {
-    it.todo('returns the data unchanged')
+    beforeEach(async () => {
+      const origin: JsonFixtures<JsonData> = {
+        async parse(){
+          return {fixtures: []}
+        }
+      }
+      expected = await origin.parse()
+      fixture = new SafeJson(origin);
+    })
+    it('returns the data unchanged', async () => {
+      expect(await fixture.parse()).toStrictEqual(expected)
+    })
   })
   describe('given a json fixture that throws, when the data is parsed', () => {
-    it.todo('raises a json parse error with the original error as a cause')
+    beforeEach(async () => {
+      const origin: JsonFixtures<JsonData> = {
+        async parse() {throw new Error('errored fixture')}
+      }
+      fixture = new SafeJson(origin);
+    })
+    it('raises a json parse error with the original error as a cause', async () => {
+      await expect(() => fixture.parse()).rejects.toThrow(JsonParseError);
+    })
   })
 })
 
 
 describe('Validate Json Scores', () => {
+  let fixture: ValidatedJsonScores
+  let expected: JsonData
   describe('given a json fixture that has valid scores, when the data is parsed', () => {
-    it.todo('returns the data unchanged')
+    beforeEach(async () => {
+      const origin: JsonFixtures<JsonData> = {
+        async parse() {
+          return {
+            fixtures: [
+              {
+                matchId: 'M001',
+                homeId: 'T001',
+                homeName: 'Avalon Rovers',
+                awayId: 'T002',
+                awayName: 'Beacon United',
+                score: '0-1',
+                date: '2026-02-14T15:00:00Z',
+              },
+            ],
+          };
+        }
+      }
+      expected = await origin.parse()
+      fixture = new ValidatedJsonScores(origin);
+    })
+    it('returns the data unchanged', async () => {
+      expect(await fixture.parse()).toStrictEqual(expected)
+    })
   })
   describe('given a json fixture that has an invalid scores, when the data is parsed', () => {
-    it.todo('throws a json parse error')
+    beforeEach(async () => {
+      const origin: JsonFixtures<JsonData> = {
+        async parse() {
+          return {
+            fixtures: [
+              {
+                matchId: 'M001',
+                homeId: 'T001',
+                homeName: 'Avalon Rovers',
+                awayId: 'T002',
+                awayName: 'Beacon United',
+                score: 'invalid score',
+                date: '2026-02-14T15:00:00Z',
+              },
+            ],
+          };
+        },
+      };
+      fixture = new ValidatedJsonScores(origin);
+    })
+    it('throws a json parse error', async () => {
+      await expect(()=> fixture.parse()).rejects.toThrow(JsonParseError);
+    })
   })
 })
 
