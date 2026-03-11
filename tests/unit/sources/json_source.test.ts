@@ -12,8 +12,8 @@ describe('Json Source', () => {
   let source: JsonSource;
   let expected: Result[]
   let actual: Result[]
+  let fixture: JsonFixtures;
   describe('given successfully parsed matches, when the matches are read between two dates', () => {
-    let fixture: JsonFixtures;
     beforeEach(async () => {
       fixture = {
         async parse() {
@@ -48,9 +48,6 @@ describe('Json Source', () => {
     })
   })
   describe('given successfully parsed matches, when there are no matches between both dates', () => {
-    let fixture: JsonFixtures;
-    let expected: Result[]
-    let actual: Result[]
     beforeEach(async () => {
       fixture = {
         async parse() {
@@ -66,16 +63,112 @@ describe('Json Source', () => {
     })
   })
   describe('given a successfully parsed empty match file, when the matches are read', () => {
-    it.todo('returns an empty list')
+    beforeEach(async () => {
+      fixture  = {
+        async parse() { return {fixtures:[]} }
+      }
+      source = new JsonSource(fixture)
+      expected = []
+      actual = await source.results(new Date(2000, 1, 16), new Date(2000, 1, 28));
+    })
+    it('returns an empty list', () => {
+      expect(actual).toEqual(expected)
+    })
   })
   describe('given a successfully parsed home win, when the match is read', () => {
-    it.todo('returns a home win result')
+    beforeEach(async () => {
+      fixture  = {
+        async parse() {
+          return {
+            fixtures: [
+              {
+                matchId: 'M018',
+                homeId: 'T005',
+                homeName: 'Elmwood Athletic',
+                awayId: 'T002',
+                awayName: 'Beacon United',
+                score: '3-0',
+                date: '2026-03-20T19:00:00',
+              },
+            ],
+          };
+        }
+      }
+      source = new JsonSource(fixture)
+      expected = [{home:{id:"T005", name:'Elmwood Athletic'}, away:{id:'T002', name:'Beacon United'}, homeWin:1, date: new Date(2026, 2, 20, 19)}]
+      actual = await source.results(new Date(2026, 2, 20), new Date(2026, 2, 26));
+    })
+    it('returns a home win result', () => {
+      expect(actual).toStrictEqual(expected)
+    })
   })
   describe('given a successfully parsed away win, when the match is read', () => {
-    it.todo('returns an away win result')
+    beforeEach(async () => {
+      fixture = {
+        async parse() {
+          return {
+            fixtures: [
+              {
+                matchId: 'M018',
+                homeId: 'T005',
+                homeName: 'Elmwood Athletic',
+                awayId: 'T002',
+                awayName: 'Beacon United',
+                score: '1-2',
+                date: '2026-03-20T19:00:00',
+              },
+            ],
+          };
+        },
+      };
+      source = new JsonSource(fixture);
+      expected = [
+        {
+          home: { id: 'T005', name: 'Elmwood Athletic' },
+          away: { id: 'T002', name: 'Beacon United' },
+          homeWin: 0,
+          date: new Date(2026, 2, 20, 19),
+        },
+      ];
+      actual = await source.results(new Date(2026, 2, 20), new Date(2026, 2, 26));
+    })
+    it('returns an away win result', () => {
+      expect(actual).toStrictEqual(expected)
+    })
   })
   describe('given a successfully parsed draw, when the match is read', () => {
-    it.todo('returns a drawn result')
+    beforeEach(async () => {
+      fixture = {
+        async parse() {
+          return {
+            fixtures: [
+              {
+                matchId: 'M018',
+                homeId: 'T005',
+                homeName: 'Elmwood Athletic',
+                awayId: 'T002',
+                awayName: 'Beacon United',
+                score: '2-2',
+                date: '2026-03-20T19:00:00',
+              },
+            ],
+          };
+        },
+      };
+      source = new JsonSource(fixture);
+      expected = [
+        {
+          home: { id: 'T005', name: 'Elmwood Athletic' },
+          away: { id: 'T002', name: 'Beacon United' },
+          homeWin: 0.5,
+          date: new Date(2026, 2, 20, 19),
+        },
+      ];
+      actual = await source.results(new Date(2026, 2, 20), new Date(2026, 2, 26));
+    });
+    it('returns a drawn result', () => {
+      expect(actual).toStrictEqual(expected)
+    })
   })
 })
 
