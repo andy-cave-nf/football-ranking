@@ -1,5 +1,5 @@
 import { readFile } from 'fs/promises';
-import type { JsonData } from './types';
+import { type JsonData, JsonDataSchema } from './types';
 import { JsonParseError, type JsonFixtures } from './base';
 
 export class DefaultJsonFixtures implements JsonFixtures<unknown> {
@@ -13,10 +13,7 @@ export class ValidatedJsonShape implements JsonFixtures<JsonData> {
   constructor(private origin: JsonFixtures<JsonData>) {}
   async parse(): Promise<JsonData> {
     const data = await this.origin.parse();
-    if (!Array.isArray(data.fixtures)) {
-      throw new JsonParseError('Invalid fixtures')
-    }
-    return data;
+    return JsonDataSchema.parse(data);
   }
 }
 
