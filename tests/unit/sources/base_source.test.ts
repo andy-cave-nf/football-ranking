@@ -1,4 +1,10 @@
-import { SafeSource, type Source, SourceError, StrictSourceDates } from '../../../src/sources/base';
+import {
+  SafeSource,
+  SortedSource,
+  type Source,
+  SourceError,
+  StrictSourceDates,
+} from '../../../src/sources/base';
 import type { Result } from '../../../src/leagues/types';
 
 describe('Safe Source', () => {
@@ -82,8 +88,78 @@ describe('Strict Source Dates', () => {
   })
 })
 
-describe.todo('Sorted Source', () => {
+describe('Sorted Source', () => {
+  let source: SortedSource
+  let origin: Source
+  let actual: Result[]
+  let expected: Result[]
   describe('given a source with unsorted results, when the source is parsed', () => {
-    it.todo('returns the results in chronological order')
+    beforeEach(async () => {
+      origin = {
+        async results(_start:Date, _end:Date):Promise<Result[]> {
+          return [
+            {
+              home: { id: 'T001', name: 'Avalon Rovers' },
+              away: { id: 'T003', name: 'Cedar City FC' },
+              homeWin: 0,
+              date: new Date(2026, 2, 16, 17),
+            },
+            {
+              home: { id: 'T002', name: 'Beacon United' },
+              away: { id: 'T005', name: 'Elmwood Athletic' },
+              homeWin: 0,
+              date: new Date(2026, 1, 28, 17),
+            },
+          ];
+        }
+      }
+      source = new SortedSource(origin)
+      expected = [
+        {
+          home: { id: 'T002', name: 'Beacon United' },
+          away: { id: 'T005', name: 'Elmwood Athletic' },
+          homeWin: 0,
+          date: new Date(2026, 1, 28, 17),
+        },
+        {
+          home: { id: 'T001', name: 'Avalon Rovers' },
+          away: { id: 'T003', name: 'Cedar City FC' },
+          homeWin: 0,
+          date: new Date(2026, 2, 16, 17),
+        },
+      ];
+      actual = await source.results(new Date(), new Date())
+    })
+    it('returns the results in chronological order', () => {
+      expect(actual).toEqual(expected)
+    })
+  })
+  describe('given a source with results in chronological order, when the source is parsed', () => {
+    beforeEach(async () => {
+      origin = {
+        async results(_start: Date, _end: Date): Promise<Result[]> {
+          return [
+            {
+              home: { id: 'T001', name: 'Avalon Rovers' },
+              away: { id: 'T003', name: 'Cedar City FC' },
+              homeWin: 0,
+              date: new Date(2026, 0, 16, 17),
+            },
+            {
+              home: { id: 'T002', name: 'Beacon United' },
+              away: { id: 'T005', name: 'Elmwood Athletic' },
+              homeWin: 0,
+              date: new Date(2026, 1, 28, 17),
+            },
+          ];
+        },
+      };
+      expected = await origin.results(new Date(), new Date())
+      source = new SortedSource(origin);
+      actual = await source.results(new Date(), new Date());
+    });
+    it('returns the results unchanged', () => {
+      expect(actual).toEqual(expected)
+    })
   })
 })
