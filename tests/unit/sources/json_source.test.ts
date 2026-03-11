@@ -3,9 +3,83 @@ import * as path from 'node:path';
 import { SafeSource, SortedSource, type Source, SourceError, StrictSourceDates } from '../../../src/sources/base';
 import type { Result } from '../../../src/leagues/types';
 
-import { JsonParseError } from '../../../src/sources/parsers/base';
+import { type JsonFixtures, JsonParseError } from '../../../src/sources/parsers/base';
+import { manyJsonFixtures } from '../../utils';
 
 let source: Source;
+
+describe('Json Source', () => {
+  let source: JsonSource;
+  let expected: Result[]
+  let actual: Result[]
+  describe('given successfully parsed matches, when the matches are read between two dates', () => {
+    let fixture: JsonFixtures;
+    beforeEach(async () => {
+      fixture = {
+        async parse() {
+          return manyJsonFixtures()
+        }
+      }
+      expected = [
+        {
+          home: { id: 'T001', name: 'Avalon Rovers' },
+          away: { id: 'T003', name: 'Cedar City FC' },
+          homeWin: 0,
+          date: new Date(2026, 1, 16, 17),
+        },
+        {
+          home: { id: 'T002', name: 'Beacon United' },
+          away: { id: 'T005', name: 'Elmwood Athletic' },
+          homeWin: 0,
+          date: new Date(2026, 1, 28, 17),
+        },
+        {
+          home: { id: 'T002', name: 'Beacon United' },
+          away: { id: 'T003', name: 'Cedar City FC' },
+          homeWin: 0,
+          date: new Date(2026, 1, 24, 19),
+        },
+      ];
+      source = new JsonSource(fixture)
+      actual = await source.results(new Date(2026, 1, 16), new Date(2026, 1, 28));
+    })
+    it('returns only the matches within the date range inclusive of both boundaries', () => {
+      expect(actual).toStrictEqual(expected);
+    })
+  })
+  describe('given successfully parsed matches, when there are no matches between both dates', () => {
+    let fixture: JsonFixtures;
+    let expected: Result[]
+    let actual: Result[]
+    beforeEach(async () => {
+      fixture = {
+        async parse() {
+          return manyJsonFixtures()
+        }
+      }
+      source = new JsonSource(fixture)
+      expected = []
+      actual = await source.results(new Date(2000, 1, 16), new Date(2000, 1, 28));
+    })
+    it('returns an empty list', () => {
+      expect(actual).toEqual(expected)
+    })
+  })
+  describe('given a successfully parsed empty match file, when the matches are read', () => {
+    it.todo('returns an empty list')
+  })
+  describe('given a successfully parsed home win, when the match is read', () => {
+    it.todo('returns a home win result')
+  })
+  describe('given a successfully parsed away win, when the match is read', () => {
+    it.todo('returns an away win result')
+  })
+  describe('given a successfully parsed draw, when the match is read', () => {
+    it.todo('returns a drawn result')
+  })
+})
+
+
 beforeEach(() => {
   const filepath = path.resolve(process.cwd(), 'tests', 'fixtures', 'json_source','five_team_season.json');
   source = new JsonSource(filepath);
