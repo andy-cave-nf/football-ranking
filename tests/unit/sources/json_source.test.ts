@@ -6,8 +6,6 @@ import type { Result } from '../../../src/leagues/types';
 import { type JsonFixtures, JsonParseError } from '../../../src/sources/parsers/base';
 import { manyJsonFixtures } from '../../utils';
 
-let source: Source;
-
 describe('Json Source', () => {
   let source: JsonSource;
   let expected: Result[]
