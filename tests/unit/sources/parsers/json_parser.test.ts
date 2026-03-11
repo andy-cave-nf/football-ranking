@@ -1,5 +1,5 @@
-import type { JsonFixtures } from '../../../../src/sources/parsers/base';
-import type { JsonData } from '../../../../src/sources/parsers/types';
+import { type JsonFixtures, JsonParseError } from '../../../../src/sources/parsers/base';
+import { type JsonData } from '../../../../src/sources/parsers/types';
 import path from 'node:path';
 import { DefaultJsonFixtures } from '../../../../src/sources/parsers/json_parse';
 
@@ -30,10 +30,24 @@ describe('Default Json Fixtures', () => {
     })
   })
   describe('given a file that does not exist, when the file is parsed', () => {
-    it.todo('throws a filesystem error')
+    let fixture: DefaultJsonFixtures
+    beforeEach(async () => {
+      const filepath = path.resolve(process.cwd(), 'tests', 'fixtures','json_source','not-a-file.json');
+      fixture = new DefaultJsonFixtures(filepath);
+    })
+    it('throws an error', async () => {
+      await expect(()=> fixture.parse()).rejects.toThrow(Error);
+    })
   })
   describe('given a file containing invalid JSON when the file is parsed', () => {
-    it.todo('throws a syntax error')
+    let fixture: DefaultJsonFixtures
+    beforeEach(async () => {
+      const filepath = path.resolve(process.cwd(), 'tests', 'fixtures','json_source','illegal_empty.json');
+      fixture = new DefaultJsonFixtures(filepath);
+    })
+    it('throws a syntax error', async () => {
+      await expect(()=> fixture.parse()).rejects.toThrow(SyntaxError);
+    })
   })
 })
 describe('Validated Json Shape', () => {
