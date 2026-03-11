@@ -1,5 +1,7 @@
-export interface JsonFixtures<T> {
-  parse(): Promise<T>;
+import type { JsonData } from './types';
+
+export interface JsonFixtures {
+  parse(): Promise<JsonData>;
 }
 export class JsonParseError extends Error {
   constructor(
@@ -11,9 +13,9 @@ export class JsonParseError extends Error {
   }
 }
 
-export class SafeJson<T> implements JsonFixtures<T> {
-  constructor(private origin: JsonFixtures<T>) {}
-  async parse(): Promise<T> {
+export class SafeJson implements JsonFixtures {
+  constructor(private origin: JsonFixtures) {}
+  async parse(): Promise<JsonData> {
     try {
       return await this.origin.parse();
     } catch (error) {

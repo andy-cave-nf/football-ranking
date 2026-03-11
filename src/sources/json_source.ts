@@ -1,17 +1,13 @@
 import type { Result } from '../leagues/types';
-import { CachedFromJson, DefaultJsonFixtures, ValidatedJsonScores } from './parsers/json_parse';
 import type { Source } from './base';
 import { add } from 'date-fns';
 import type { JsonData, Fixtures } from './parsers/types';
-import { SafeJson } from './parsers/base';
+import { type JsonFixtures } from './parsers/base';
 
 export class JsonSource implements Source {
-  private cache: CachedFromJson;
-  constructor(filepath: string) {
-    this.cache = new CachedFromJson(new ValidatedJsonScores(new SafeJson(new DefaultJsonFixtures(filepath))));
-  }
+  constructor(private fixtures: JsonFixtures) {}
   async results(start: Date, end: Date): Promise<Result[]> {
-    const data: JsonData = await this.cache.parse();
+    const data: JsonData = await this.fixtures.parse();
     return data.fixtures
       .filter(
         (fixture) =>
