@@ -244,3 +244,11 @@ describe('given a league with a storage that throws an unexpected error, when a 
     expect(() => league.record(result)).toThrowError(LeagueError);
   });
 })
+
+describe.todo('given a league with existing teams, when a match is processed with duplicated ids', () => {
+  it.todo('a source error is raised')
+})
+
+describe.todo('given a league with no existing teams, when a match is processed with duplicated ids', () => {
+  it.todo('a source error is raised')
+})
