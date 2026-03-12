@@ -59,7 +59,7 @@ describe('Validated Json Shape', () => {
   let fixture: ValidatedJsonShape
   let expected: JsonData
   beforeEach(async () => {
-    const origin: JsonFixtures<JsonData> = {
+    const origin: JsonFixtures = {
       async parse(){
         return {fixtures: []}
       }
@@ -75,7 +75,7 @@ describe('Validated Json Shape', () => {
 
   describe('given a file containing a valid non empty structure, when the data is parsed', () => {
     beforeEach(async () => {
-      const origin: JsonFixtures<JsonData> = {
+      const origin: JsonFixtures = {
         async parse() {
           return {
             fixtures: [
