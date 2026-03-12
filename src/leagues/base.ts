@@ -1,5 +1,6 @@
 import type { Result, Team } from './types';
-import type { ReadOnlyTeamMap } from '../utils';
+
+import type { ReadOnlyTeamMap } from './team_maps';
 
 export interface League {
   record(result: Result): void;

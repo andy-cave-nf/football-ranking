@@ -3,15 +3,15 @@ import type { Page } from '../../src/pages/pages';
 import type { Result, Team } from '../../src/leagues/types';
 import type { Rankings } from '../../src/rankings';
 import type { SourceTeam } from '../../src/sources/types';
+import type { Source } from '../../src/sources/base';
+import { cleanString, type League } from '../../src/leagues/base';
+import type { Ratings, Ruleset } from '../../src/rulesets/base';
 import {
   DefaultTeamMap,
   type ReadOnlyTeamMap,
   SanitizeMap,
   type TeamMap,
-} from '../../src/utils';
-import type { Source } from '../../src/sources/base';
-import { cleanString, type League } from '../../src/leagues/base';
-import type { Ratings, Ruleset } from '../../src/rulesets/base';
+} from '../../src/leagues/team_maps';
 
 export const DEFAULT_FAKE_TEAMS: Team[] = [
   { id: 1, name: 'fake-team-1', mu: 25, sigma: 25 / 3, lastFixtureDate: new Date(2000, 0, 1) },
