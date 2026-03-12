@@ -13,11 +13,10 @@ export class DefaultRankings implements Rankings {
   constructor(
     private league: League,
     private source: Source,
-    private ruleset: Ruleset
   ) {}
   async run(from: Date, to: Date): Promise<void> {
     const results: Result[] = await this.source.results(from, to);
-    results.forEach((match) => this.league.record(match, this.ruleset));
+    results.forEach((match) => this.league.record(match));
   }
 
   async print(page: Page): Promise<void> {
