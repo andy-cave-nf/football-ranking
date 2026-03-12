@@ -12,50 +12,56 @@ test('a new league has no teams', () => {
   const league = defaultInMemoryLeague();
   expect(league.teams.size).toBe(0);
 });
-
-describe('given a new league, when a match is processed', () => {
-  let result: Result;
+describe('InMemoryLeague', () => {
   let league: League;
-  beforeEach(async () => {
-    league = defaultInMemoryLeague();
-    result = {
-      home: { id: 'team-1', name: 'home' },
-      away: { id: 'team-2', name: 'away' },
-      homeWin: 1,
-      date: new Date(2000, 0, 1),
-    };
-    league.record(result)
+  describe('given a new league, when a match is processed', () => {
+    let result: Result;
+    beforeEach(async () => {
+      league = defaultInMemoryLeague();
+      result = {
+        home: { id: 'team-1', name: 'home' },
+        away: { id: 'team-2', name: 'away' },
+        homeWin: 1,
+        date: new Date(2000, 0, 1),
+      };
+      league.record(result)
+    })
+    it('adds the home team to the league', ()=>{
+      expect(league.teams.has(result.home.id)).toBe(true);
+    })
+    it('adds the away team to the league', ()=>{
+      expect(league.teams.has(result.away.id)).toBe(true);
+    })
+    it('adds only the two teams to the league', ()=>{
+      expect(league.teams.size).toBe(2)
+    })
   })
-  it('adds both teams to the league', ()=>{
-    expect(league.teams.size).toBe(2)
+  describe('given a league with two existing teams, when a match is recorded with differently capitalised team names', () => {
+    let result1: Result;
+    let result2: Result;
+    beforeEach(async () => {
+      league = defaultInMemoryLeague();
+      result1 = {
+        home: { id: 'team-1', name: 'home' },
+        away: { id: 'team-2', name: 'away' },
+        homeWin: 1,
+        date: new Date(2000, 0, 1),
+      };
+      result2 = {
+        home: { id: 'TEAM-1', name: 'home' },
+        away: { id: 'TEAM-2', name: 'away' },
+        homeWin: 1,
+        date: new Date(2000, 0, 2),
+      };
+      league.record(result1)
+      league.record(result2)
+    })
+    it('does not add duplicate teams', () => {
+      expect(league.teams.size).toBe(2)
+    })
   })
 })
 
-describe('given a league with two existing teams, when a match is recorded with differently capitalised team names', () => {
-  let result1: Result;
-  let result2: Result;
-  let league: League;
-  beforeEach(async () => {
-    league = defaultInMemoryLeague();
-    result1 = {
-      home: { id: 'team-1', name: 'home' },
-      away: { id: 'team-2', name: 'away' },
-      homeWin: 1,
-      date: new Date(2000, 0, 1),
-    };
-    result2 = {
-      home: { id: 'TEAM-1', name: 'home' },
-      away: { id: 'TEAM-2', name: 'away' },
-      homeWin: 1,
-      date: new Date(2000, 0, 2),
-    };
-    league.record(result1)
-    league.record(result2)
-  })
-  it('does not add duplicate teams', () => {
-    expect(league.teams.size).toBe(2)
-  })
-})
 
 describe('given a league with two existing teams, when a match is processed with ids with extra whitespace', () => {
   let result1: Result;
