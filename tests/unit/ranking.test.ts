@@ -24,6 +24,34 @@ let source: Source;
 let dates: { start: Date; end: Date };
 let results: Result[];
 
+describe('Default Rankings', () => {
+  describe.todo('given a source with two matches and an empty league, when run is called', () => {
+    it.todo('records both matches in the league in the order the source provided them')
+  })
+
+  describe.todo('given a source with no matches, when run is called', () => {
+    it.todo('leaves the league unchanged')
+  })
+
+  describe.todo('given a league with existing teams, when ranking is called', () => {
+    it.todo('returns the teams in decreasing skill order')
+  })
+
+  describe.todo('given a league with no teams, when ranking is called', () => {
+    it.todo('returns an empty list')
+  })
+
+  describe.todo('given a league with existing teams, when print is called', () => {
+    it.todo('prints the teams with their skill to a page')
+  })
+
+  describe.todo('given a league with no teams, when print is called', () => {
+    it.todo('prints nothing')
+  })
+})
+
+
+
 beforeEach(async () => {
   dates = { start: new Date(2000, 0, 1), end: new Date(2001, 0, 1) };
   results = [
