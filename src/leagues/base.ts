@@ -56,10 +56,6 @@ export class SafeLeague implements League {
   }
 }
 
-export function cleanString(id: string | number): string {
-  return id.toString().trim().toUpperCase();
-}
-
 export class LeagueError extends Error {
   constructor(
     public message: string,

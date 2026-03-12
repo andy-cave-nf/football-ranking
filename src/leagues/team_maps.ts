@@ -78,3 +78,6 @@ export class TeamMapError extends Error {
     this.name = 'StrictMapError';
   }
 }
+export function cleanString(id: string | number): string {
+  return id.toString().trim().toUpperCase();
+}
