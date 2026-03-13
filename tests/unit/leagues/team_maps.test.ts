@@ -45,6 +45,7 @@ describe('clean string sanitizing function', () => {
   })
   describe('given a variable that is not a string, when the clean string function is called', () => {
     it('returns a type error', () => {
+      // @ts-expect-error: expecting a type error
       expect(()=>cleanString(10)).toThrow(TypeError)
     })
   })
