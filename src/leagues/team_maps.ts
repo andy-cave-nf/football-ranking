@@ -1,22 +1,22 @@
 export class SanitizeMap<K, V> extends Map<K, V> {
-  private readonly sanitize: (key: K) => K;
+  private readonly idempotentSanitize: (key: K) => K;
   constructor(sanitize: (key: K) => K, entries?: Iterable<[K, V]>) {
     super();
-    this.sanitize = sanitize;
+    this.idempotentSanitize = sanitize;
     if (entries) {
       for (const [k, v] of entries) {
-        super.set(this.sanitize(k), v);
+        super.set(this.idempotentSanitize(k), v);
       }
     }
   }
   get(key: K): V | undefined {
-    return super.get(this.sanitize(key));
+    return super.get(this.idempotentSanitize(key));
   }
   set(key: K, value: V): this {
-    return super.set(this.sanitize(key), value);
+    return super.set(this.idempotentSanitize(key), value);
   }
   has(key: K): boolean {
-    return super.has(this.sanitize(key));
+    return super.has(this.idempotentSanitize(key));
   }
 }
 
