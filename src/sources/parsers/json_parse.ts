@@ -19,7 +19,7 @@ export class ValidatedJsonShape implements JsonFixtures {
 
 export class ValidatedJsonScores implements JsonFixtures {
   constructor(private origin: JsonFixtures) {}
-  async parse(): Promise {
+  async parse(): Promise<JsonData> {
     const data: JsonData = await this.origin.parse();
     const allValidScores = data.fixtures.every((fixture) => isDashedScore(fixture.score));
     if (!allValidScores) {
