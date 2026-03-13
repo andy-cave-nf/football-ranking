@@ -1,4 +1,4 @@
-import { cleanString } from '../../../src/leagues/team_maps';
+import { cleanString, SanitizeMap } from '../../../src/leagues/team_maps';
 
 describe('clean string sanitizing function', () => {
     let input:string
@@ -47,6 +47,32 @@ describe('clean string sanitizing function', () => {
     it('returns a type error', () => {
       // @ts-expect-error: expecting a type error
       expect(()=>cleanString(10)).toThrow(TypeError)
+    })
+  })
+})
+
+describe('Sanitize Map', () =>{
+  describe('given a sanitizing function and an empty sanitize map, when a new key value pair is set', () => {
+    let map: SanitizeMap<string,string>
+    let actual: string[]
+    let sanitize: (key: string) => string
+    let key: string
+    let value: string
+    beforeEach(() => {
+      sanitize = (key:string): string => key.toUpperCase()
+      key = 'lower-case'
+      value = 'value'
+      map = new SanitizeMap(sanitize)
+      map.set(key, value)
+    })
+    it('adds a sanitized key to the map', () => {
+      actual = map.keys().filter(k => k === sanitize(key)).toArray()
+      expect(actual).toHaveLength(1)
+    })
+    it('adds the value to the map untouched', ()=> {
+      actual = map.values().filter(k => k === value).toArray()
+      expect(actual).toHaveLength(1)
+
     })
   })
 })
