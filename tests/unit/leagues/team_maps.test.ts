@@ -4,6 +4,18 @@ describe('clean string sanitizing function', () => {
     let input:string
     let actual:string
     let expected:string
+  test.each(
+    [
+      'lower case',
+      'UPPER-CASE',
+      '   extra-whitespace   ',
+      'MIxed - cASe',
+      '   UPPER CASE WHITESPACE   ',
+      ' MiXed cASe whitespace   '
+    ])('the sanitizing function is idempotent for "%s"', (input) => {
+    expect(cleanString(cleanString(input))).equals(cleanString(input))
+  })
+
   describe('given a string that is upper case, with no extra whitespace, when the clean string function is called', () => {
     beforeEach(() => {
       input = 'UPPER CASE'
@@ -52,27 +64,53 @@ describe('clean string sanitizing function', () => {
 })
 
 describe('Sanitize Map', () =>{
-  describe('given a sanitizing function and an empty sanitize map, when a new key value pair is set', () => {
-    let map: SanitizeMap<string,string>
-    let actual: string[]
-    let sanitize: (key: string) => string
-    let key: string
-    let value: string
+  describe('given an empty map', () => {
+      let map: SanitizeMap<string,string>
+      let sanitize: (key: string) => string
+      let key: string
+      let value: string
     beforeEach(() => {
       sanitize = (key:string): string => key.toUpperCase()
-      key = 'lower-case'
-      value = 'value'
-      map = new SanitizeMap(sanitize)
-      map.set(key, value)
     })
-    it('adds a sanitized key to the map', () => {
-      actual = map.keys().filter(k => k === sanitize(key)).toArray()
-      expect(actual).toHaveLength(1)
+    describe('when a non-sanitized entry is set', () => {
+      beforeEach(() => {
+        key = 'lower-case'
+        value = 'value'
+        map = new SanitizeMap(sanitize)
+        map.set(key, value)
+      })
+      it('stores the value under the sanitized key', () => {
+        const actual = [...map][0]
+        expect(actual).toEqual([sanitize(key),value])
+      })
     })
-    it('adds the value to the map untouched', ()=> {
-      actual = map.values().filter(k => k === value).toArray()
-      expect(actual).toHaveLength(1)
-
+    describe('when a sanitized entry is set', () => {
+      beforeEach(() => {
+        key = 'UPPER-CASE'
+        value = 'value'
+        map = new SanitizeMap(sanitize)
+        map.set(key, value)
+      })
+      it('stores the value under the key unchanged', () => {
+        const actual = [...map][0]
+        expect(actual).toEqual([key, value])
+      })
+    })
+  })
+  describe.todo('given a map with an entry', () => {
+    describe.todo('when a non sanitized key is called', () => {
+      it.todo('confirms the key exists')
+      it.todo('returns the value under the sanitized key')
+    })
+    describe.todo('when a sanitized key is called', () => {
+      it.todo('confirms the key exists')
+      it.todo('returns the value under the sanitized key')
+    })
+    describe.todo('when a non-sanitized entry is set', () => {
+      it.todo('stores the value under the sanitized key')
+    })
+    describe.todo('when a sanitized entry is set', () => {
+      it.todo('stores the value under the key unchanged')
     })
   })
 })
