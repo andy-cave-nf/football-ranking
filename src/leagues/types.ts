@@ -7,7 +7,7 @@ export type Result = {
   date: Date;
 };
 export type Team = {
-  id: number | string;
+  id: string;
   name: string;
   mu: number;
   sigma: number;

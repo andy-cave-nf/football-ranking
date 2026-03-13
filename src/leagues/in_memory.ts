@@ -5,10 +5,10 @@ import type { Ruleset } from '../rulesets/base';
 import { cleanString, DefaultTeamMap, type ReadOnlyTeamMap, SanitizeMap } from './team_maps';
 
 export class InMemoryLeague implements League {
-  private allTeams = new DefaultTeamMap(new SanitizeMap<number | string, Team>(cleanString));
+  private allTeams = new DefaultTeamMap(new SanitizeMap<string, Team>(cleanString));
 
   constructor(private ruleset: Ruleset) {}
-  get teams(): ReadOnlyTeamMap<number | string, Team> {
+  get teams(): ReadOnlyTeamMap<string, Team> {
     return this.allTeams.toReadOnly();
   }
   record(result: Result): void {

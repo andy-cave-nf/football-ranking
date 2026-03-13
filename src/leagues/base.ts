@@ -4,7 +4,7 @@ import type { ReadOnlyTeamMap } from './team_maps';
 
 export interface League {
   record(result: Result): void;
-  teams: ReadOnlyTeamMap<number | string, Team>;
+  teams: ReadOnlyTeamMap<string, Team>;
 }
 
 abstract class StrictLeague implements League {
