@@ -1,16 +1,12 @@
 import type { Result, Team } from '../../../src/leagues/types';
 import {
   type League,
-  LeagueError,
-  SafeLeague,
-  StrictLeagueRecord,
 } from '../../../src/leagues/base';
-import { defaultInMemoryLeague, inMemoryLeague } from '../../utils';
 import type { Ratings, Ruleset, TeamRating } from '../../../src/rulesets/base';
 import { DefaultTeamMap, type TeamMap } from '../../../src/leagues/team_maps';
 import { InMemoryLeague } from '../../../src/leagues/in_memory';
 
-describe.only('InMemoryLeague', () => {
+describe('InMemoryLeague', () => {
   let league: League;
   let teamMap: TeamMap<string, Team>
   let ruleset: Ruleset;
@@ -94,142 +90,4 @@ describe.only('InMemoryLeague', () => {
       it.todo('leaves the remaining teams unchanged')
     })
   })
-})
-
-describe('Strict League Record', () => {
-  describe.todo('given a league with an empty map')
-})
-
-describe('given a league with two existing teams, when a match is processed that occurs on a prior day to the previous match of both teams', () => {
-  let previousResult: Result
-  let league: League;
-  let earlyResult: Result;
-  beforeEach(async () => {
-    league = new StrictLeagueRecord(defaultInMemoryLeague());
-    previousResult = {
-      home: { id: 'team-1', name: 'home' },
-      away: { id: 'team-2', name: 'away' },
-      homeWin: 1,
-      date: new Date(2000, 0, 1),
-    };
-    earlyResult = {
-      home: { id: 'team-1', name: 'home' },
-      away: { id: 'team-2', name: 'away' },
-      homeWin: 1,
-      date: new Date(1999, 0, 1),
-    };
-    league.record(previousResult)
-  })
-  it('raises a League Error', () =>{
-    expect(() => league.record(earlyResult)).toThrowError(LeagueError)
-  })
-})
-
-describe('given a league with existing teams, when a match is processed with an existing team that occurs on a prior day to the previous match of that team', () => {
-  let previousResult: Result
-  let league: League;
-  let earlyResult: Result;
-  beforeEach(async () => {
-    league = new StrictLeagueRecord(defaultInMemoryLeague());
-    previousResult = {
-      home: { id: 'team-1', name: 'home' },
-      away: { id: 'team-2', name: 'away' },
-      homeWin: 1,
-      date: new Date(2000, 0, 1),
-    };
-    earlyResult = {
-      home: { id: 'team-1', name: 'home' },
-      away: { id: 'team-3', name: 'away' },
-      homeWin: 1,
-      date: new Date(1999, 0, 1),
-    };
-    league.record(previousResult)
-  })
-  it('raises a League Error', () =>{
-    expect(() => league.record(earlyResult)).toThrowError(LeagueError);
-  })
-})
-
-describe('given a league with two existing teams, when a match is processed that occurs on the same day as the previous match', () => {
-  let previousResult: Result
-  let league: League;
-  let earlyResult: Result;
-  beforeEach(async () => {
-    league = new StrictLeagueRecord(defaultInMemoryLeague());
-    previousResult = {
-      home: { id: 'team-1', name: 'home' },
-      away: { id: 'team-2', name: 'away' },
-      homeWin: 1,
-      date: new Date(2000, 0, 1,12,0),
-    };
-    earlyResult = {
-      home: { id: 'team-1', name: 'home' },
-      away: { id: 'team-3', name: 'away' },
-      homeWin: 1,
-      date: new Date(2000, 0, 1,12,0),
-    };
-    league.record(previousResult)
-  })
-  it('does not raise an Error', () =>{
-    expect(() => league.record(earlyResult)).not.toThrowError();
-  })
-});
-
-describe('given a league with two existing teams, when a match is processed that occurs on the same day and an earlier time as the previous match', () => {
-  let previousResult: Result;
-  let league: League;
-  let earlyResult: Result;
-  beforeEach(async () => {
-    league = new StrictLeagueRecord(defaultInMemoryLeague());
-    previousResult = {
-      home: { id: 'team-1', name: 'home' },
-      away: { id: 'team-2', name: 'away' },
-      homeWin: 1,
-      date: new Date(2000, 0, 1, 12, 0),
-    };
-    earlyResult = {
-      home: { id: 'team-1', name: 'home' },
-      away: { id: 'team-3', name: 'away' },
-      homeWin: 1,
-      date: new Date(2000, 0, 1, 11, 0),
-    };
-    league.record(previousResult);
-  });
-  it('raises a league error', () => {
-    expect(() => league.record(earlyResult)).toThrowError(LeagueError);
-  });
-})
-
-describe('given a league with a storage that throws an unexpected error, when a match is processed', () => {
-  let erroredRuleset: Ruleset;
-  let league: League;
-  let result: Result;
-  beforeEach(async () => {
-    result = {
-      home: { id: 'team-1', name: 'home' },
-      away: { id: 'team-2', name: 'away' },
-      homeWin: 1,
-      date: new Date(2000, 0, 1),
-    };
-    erroredRuleset = {
-      record(_result: Result, _ratings: Ratings): Ratings {
-        throw new Error('errored');
-      },
-      newRating(): TeamRating {
-        throw new Error('errored');
-      },
-    };
-    league = new SafeLeague(inMemoryLeague(erroredRuleset));
-  })
-  it('wraps it in a League Error', () => {
-    expect(() => league.record(result)).toThrowError(LeagueError);
-  });
-})
-
-describe.todo('given a league with existing teams, when a match is processed with duplicated ids', () => {
-  it.todo('a source error is raised')
-})
-
-describe.todo('given a league with no existing teams, when a match is processed with duplicated ids', () => {
-  it.todo('a source error is raised')
 })
