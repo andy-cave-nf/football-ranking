@@ -31,7 +31,7 @@ export class StrictLeagueRecord extends StrictLeague {
     }
     if (awayDate > result.date) {
       throw new LeagueError(
-        `Fixture played at ${result.date} occurs after last known home date ${homeDate}`
+        `Fixture played at ${result.date} occurs before last known home date ${homeDate}`
       );
     }
     this.origin.record(result);
