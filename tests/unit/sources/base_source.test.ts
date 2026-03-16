@@ -88,6 +88,17 @@ describe('Strict Source Dates', () => {
   })
 })
 
+describe('Strict Source Ids', () => {
+  describe.todo('given a source that succeeds', async () => {
+    describe.todo('when a result is parsed with unique team ids', () => {
+      it.todo('returns the data unchanged')
+    })
+    describe.todo('when a result is parsed with duplicate team ids', () => {
+      it.todo('raises a source error')
+    })
+  })
+})
+
 describe('Sorted Source', () => {
   let source: SortedSource
   let origin: Source
