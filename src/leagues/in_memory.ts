@@ -5,7 +5,10 @@ import type { Ruleset } from '../rulesets/base';
 import { type ReadOnlyTeamMap, type TeamMap } from './team_maps';
 
 export class InMemoryLeague implements League {
-  constructor(private ruleset: Ruleset, private _teams: TeamMap<string, Team>) {}
+  constructor(
+    private _teams: TeamMap<string, Team>,
+    private ruleset: Ruleset
+  ) {}
   get teams(): ReadOnlyTeamMap<string, Team> {
     return this._teams.toReadOnly();
   }

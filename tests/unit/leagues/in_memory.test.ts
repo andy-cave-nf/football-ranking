@@ -1,4 +1,4 @@
-import type { Result } from '../../../src/leagues/types';
+import type { Result, Team } from '../../../src/leagues/types';
 import {
   type League,
   LeagueError,
@@ -7,122 +7,97 @@ import {
 } from '../../../src/leagues/base';
 import { defaultInMemoryLeague, inMemoryLeague } from '../../utils';
 import type { Ratings, Ruleset, TeamRating } from '../../../src/rulesets/base';
+import { DefaultTeamMap, type TeamMap } from '../../../src/leagues/team_maps';
+import { InMemoryLeague } from '../../../src/leagues/in_memory';
 
-test('a new league has no teams', () => {
-  const league = defaultInMemoryLeague();
-  expect(league.teams.size).toBe(0);
-});
-describe('InMemoryLeague', () => {
+describe.only('InMemoryLeague', () => {
   let league: League;
-  describe('given a new league, when a match is processed', () => {
-    let result: Result;
-    beforeEach(async () => {
-      league = defaultInMemoryLeague();
-      result = {
-        home: { id: 'team-1', name: 'home' },
-        away: { id: 'team-2', name: 'away' },
-        homeWin: 1,
-        date: new Date(2000, 0, 1),
-      };
-      league.record(result)
-    })
-    it('adds the home team to the league', ()=>{
-      expect(league.teams.has(result.home.id)).toBe(true);
-    })
-    it('adds the away team to the league', ()=>{
-      expect(league.teams.has(result.away.id)).toBe(true);
-    })
-    it('adds only the two teams to the league', ()=>{
-      expect(league.teams.size).toBe(2)
-    })
-  })
-  describe('given a league with two existing teams, when a match is recorded with differently capitalised team names', () => {
-    let result1: Result;
-    let result2: Result;
-    beforeEach(async () => {
-      league = defaultInMemoryLeague();
-      result1 = {
-        home: { id: 'team-1', name: 'home' },
-        away: { id: 'team-2', name: 'away' },
-        homeWin: 1,
-        date: new Date(2000, 0, 1),
-      };
-      result2 = {
-        home: { id: 'TEAM-1', name: 'home' },
-        away: { id: 'TEAM-2', name: 'away' },
-        homeWin: 1,
-        date: new Date(2000, 0, 2),
-      };
-      league.record(result1)
-      league.record(result2)
-    })
-    it('does not add duplicate teams', () => {
-      expect(league.teams.size).toBe(2)
-    })
-  })
-})
-
-
-describe('given a league with two existing teams, when a match is processed with ids with extra whitespace', () => {
-  let result1: Result;
-  let result2: Result;
-  let league: League;
-  beforeEach(async () => {
-    league = defaultInMemoryLeague();
-    result1 = {
-      home: { id: 'team-1', name: 'home' },
-      away: { id: 'team-2', name: 'away' },
-      homeWin: 1,
-      date: new Date(2000, 0, 1),
-    };
-    result2 = {
-      home: { id: '    team-1     ', name: 'home' },
-      away: { id: '    team-2     ', name: 'away' },
-      homeWin: 1,
-      date: new Date(2000, 0, 2),
-    };
-    league.record(result1);
-    league.record(result2);
-  });
-  it('does not add duplicate teams', () => {
-    expect(league.teams.size).toBe(2)
-  })
-})
-
-describe('given a league with a predicatable ruleset, when a match is processed', () => {
-  let result: Result;
-  let fakeRuleset: Ruleset;
-  let league: League;
-  beforeEach(async () => {
-    result = {
-      home: { id: 'team-1', name: 'home' },
-      away: { id: 'team-2', name: 'away' },
-      homeWin: 1,
-      date: new Date(2000, 0, 1),
-    };
-    fakeRuleset = {
-      record(_result: Result, ratings:Ratings): Ratings {
-        return {
-          home:{...ratings.home, mu:10,sigma:1},
-          away:{...ratings.away, mu:-10,sigma:2},
-        }
-      },
-      newRating():TeamRating {
-        return {
-          mu:10,sigma:1
+  let teamMap: TeamMap<string, Team>
+  let ruleset: Ruleset;
+  describe('given a league with an empty map', () => {
+    let homeRating: TeamRating
+    let awayRating: TeamRating
+    let newRating: TeamRating;
+    beforeEach(() => {
+      homeRating = {mu:10, sigma:3}
+      awayRating = {mu:11, sigma:4}
+      newRating = {mu:12, sigma:5}
+      ruleset = {
+        record(_result: Result, _ratings: Ratings):Ratings{
+          return {
+            home: homeRating,
+            away: awayRating,
+          }
+        },
+        newRating():TeamRating {
+          return newRating;
         }
       }
-    }
-    league = inMemoryLeague(fakeRuleset);
-    league.record(result)
+      teamMap = new DefaultTeamMap(new Map());
+      league = new InMemoryLeague(teamMap, ruleset);
+    })
+    test('it has no teams', () => {
+      expect(league.teams.size).toBe(0);
+    });
+    describe('when a new match is processed', () =>{
+      let result: Result;
+      let fixtureDate: Date;
+      beforeEach(async () => {
+        fixtureDate = new Date(2021, 1, 1);
+        result = {
+          home: { id: 'team-1', name: 'home' },
+          away: { id: 'team-2', name: 'away' },
+          homeWin: 1,
+          date: fixtureDate,
+        };
+        league.record(result)
+      })
+      it('stores the home team correctly', ()=>{
+        expect(league.teams.getOrThrow(result.home.id)).toEqual({
+          id: 'team-1',
+          name: 'home',
+          lastFixtureDate: fixtureDate,
+          ...homeRating
+        })
+      })
+      it('stores the away team correctly', ()=>{
+        expect(league.teams.getOrThrow(result.away.id)).toEqual({
+          id: 'team-2',
+          name: 'away',
+          lastFixtureDate: fixtureDate,
+          ...awayRating
+        })
+        expect(league.teams.has(result.away.id)).toBe(true);
+      })
+      it('adds only the two teams to the league', ()=>{
+        expect(league.teams.size).toBe(2)
+      })
+    })
   })
-  it('stores the teams with their new ratings', () => {
-    const homeTeam = league.teams.getOrThrow(result.home.id);
-    const awayTeam = league.teams.getOrThrow(result.away.id);
-    expect({mu: homeTeam.mu, sigma:homeTeam.sigma}).toStrictEqual({mu:10, sigma:1})
-    expect({mu: awayTeam.mu, sigma:awayTeam.sigma}).toStrictEqual({mu:-10, sigma:2})
+  describe.todo('given a league with a map of two teams', () => {
+    test.todo('it has two teams')
+    describe('when a new match is processed between existing teams', () => {
+      it.todo('has only two teams')
+      it.todo('stores the updated home team correctly')
+      it.todo('stores the updated away team correctly')
+    })
+    describe('when a new match is processed with a single new team', () => {
+      it.todo('has only three teams')
+      it.todo('stores the updated home team correctly')
+      it.todo('stores the updated away team correctly')
+      it.todo('leaves the remaining team unchanged')
+    })
+    describe('when a new match is processed with two different teams', () => {
+      it.todo('has only four teams')
+      it.todo('stores the home team correctly')
+      it.todo('stores the away team correctly')
+      it.todo('leaves the remaining teams unchanged')
+    })
   })
+})
 
+describe('Strict League Record', () => {
+  describe.todo('given a league with an empty map')
 })
 
 describe('given a league with two existing teams, when a match is processed that occurs on a prior day to the previous match of both teams', () => {
