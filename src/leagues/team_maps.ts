@@ -30,7 +30,7 @@ export interface ReadOnlyTeamMap<K, V> {
 
 export interface TeamMap<K, V> extends ReadOnlyTeamMap<K, V> {
   set(id: K, value: V): void;
-  setInit(id: K, value: V): void;
+  setInitOrIgnore(id: K, value: V): void;
   toReadOnly(): ReadOnlyTeamMap<K, V>;
 }
 
@@ -59,7 +59,7 @@ export class DefaultTeamMap<K, V> implements TeamMap<K, V> {
   set(id: K, value: V) {
     this.origin.set(id, value);
   }
-  setInit(id: K, value: V): void {
+  setInitOrIgnore(id: K, value: V): void {
     if (!this.has(id)) {
       this.origin.set(id, value);
     }

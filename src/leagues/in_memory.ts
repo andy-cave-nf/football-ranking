@@ -38,7 +38,7 @@ export class InMemoryLeague implements League {
     });
   }
   private addInit(team: SourceTeam, fixtureDate: Date): void {
-    this.allTeams.setInit(team.id, {
+    this.allTeams.setInitOrIgnore(team.id, {
       id: team.id,
       name: team.name,
       lastFixtureDate: fixtureDate,
