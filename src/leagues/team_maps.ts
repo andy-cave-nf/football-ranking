@@ -28,14 +28,8 @@ export interface ReadOnlyTeamMap<K, V> {
   size: number;
 }
 
-export interface TeamMap<K, V> extends ReadOnlyTeamMap<K, V> {
-  set(id: K, value: V): void;
-  setInitOrIgnore(id: K, value: V): void;
-  toReadOnly(): ReadOnlyTeamMap<K, V>;
-}
-
-export class DefaultTeamMap<K, V> implements TeamMap<K, V> {
-  constructor(protected origin: Map<K, V>) {}
+export class ReadOnlyDefaultTeamMap<K,V> implements ReadOnlyTeamMap<K, V> {
+  constructor(protected readonly origin: Map<K, V>) {}
   getOrThrow(id: K): V {
     const value = this.origin.get(id);
     if (value === undefined) {
@@ -56,6 +50,18 @@ export class DefaultTeamMap<K, V> implements TeamMap<K, V> {
   get size(): number {
     return this.origin.size;
   }
+}
+
+export interface TeamMap<K, V> extends ReadOnlyTeamMap<K, V> {
+  set(id: K, value: V): void;
+  setInitOrIgnore(id: K, value: V): void;
+  toReadOnly(): ReadOnlyTeamMap<K, V>;
+}
+
+export class DefaultTeamMap<K, V> extends ReadOnlyDefaultTeamMap<K,V> implements TeamMap<K, V> {
+  constructor(origin: Map<K, V>) {
+    super(origin)
+  }
   set(id: K, value: V) {
     this.origin.set(id, value);
   }
@@ -65,7 +71,7 @@ export class DefaultTeamMap<K, V> implements TeamMap<K, V> {
     }
   }
   toReadOnly(): ReadOnlyTeamMap<K, V> {
-    return this;
+    return new ReadOnlyDefaultTeamMap(new Map(this.origin));
   }
 }
 
