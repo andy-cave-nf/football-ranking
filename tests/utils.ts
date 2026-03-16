@@ -1,7 +1,31 @@
-import type { Result } from '../src/leagues/types';
+import type { Result, Team } from '../src/leagues/types';
 import { mkdtempSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
+import { InMemoryLeague } from '../src/leagues/in_memory';
+import type { Ratings, Ruleset, TeamRating } from '../src/rulesets/base';
+import { DefaultTeamMap, type TeamMap } from '../src/leagues/team_maps';
+
+
+
+
+export function defaultInMemoryLeague(opts?:{ ruleset?: Ruleset; teamMap?: TeamMap<string, Team> }): InMemoryLeague {
+  const fakeRuleset: Ruleset =  opts?.ruleset ?? {
+    record(_result: Result, ratings: Ratings): Ratings {
+      return {
+        home:{mu:ratings.home.mu+1, sigma: ratings.home.sigma+1},
+        away:{mu:ratings.away.mu+2, sigma: ratings.away.sigma+2},
+      };
+    },
+    newRating():TeamRating {
+      return {mu:1,sigma:1}
+    }
+  }
+
+  const teamMap = opts?.teamMap ?? new DefaultTeamMap(new Map<string,Team>());
+  return new InMemoryLeague(teamMap, fakeRuleset);
+}
+
 
 export function expectedElo(
   elo: { home: number; away: number },
