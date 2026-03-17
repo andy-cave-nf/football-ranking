@@ -6,13 +6,12 @@ import {
   StrictSourceDates,
 } from '../../../src/sources/base';
 import type { Result } from '../../../src/leagues/types';
+import { addDays } from 'date-fns';
 
 describe('Safe Source', () => {
   let source: SafeSource
   let origin: Source
-  describe('given a source that succeeds, when the source is parsed', () => {
-    let expected: Result[]
-    let actual: Result[]
+  describe('given a source that succeeds', () => {
     beforeEach(async () => {
       origin = {
         async results(_start:Date, _end:Date):Promise<Result[]> {
@@ -26,15 +25,22 @@ describe('Safe Source', () => {
           ]
         }
       }
-      expected = await origin.results(new Date(), new Date())
       source = new SafeSource(origin)
-      actual = await source.results(new Date(), new Date())
     })
-    it('returns the data unchanged', () => {
-      expect(actual).toEqual(expected)
+
+    describe('when the source is parsed', () => {
+      let expected: Result[]
+      let actual: Result[]
+      beforeEach(async () => {
+        expected = await origin.results(new Date(), new Date())
+        actual = await source.results(new Date(), new Date())
+      })
+      it('returns the data unchanged', () => {
+        expect(actual).toEqual(expected)
+      })
     })
   })
-  describe('given a source that fails, when the source is parsed', () => {
+  describe('given a source that fails', () => {
     beforeEach(async () => {
       origin = {
         async results(_start:Date, _end:Date):Promise<Result[]> {
@@ -43,19 +49,21 @@ describe('Safe Source', () => {
       }
       source = new SafeSource(origin)
     })
-    it('raises a source error', async () => {
-      await expect(() => source.results(new Date(), new Date())).rejects.toThrowError(SourceError)
+    describe('when the source is parsed', () => {
+      it('raises a source error', async () => {
+        await expect(() => source.results(new Date(), new Date())).rejects.toThrowError(SourceError)
+      })
     })
   })
 })
 
 describe('Strict Source Dates', () => {
   let source: StrictSourceDates
-  describe('given a source, when it is parsed with correctly ordered dates', () => {
+  describe('given a source with a single result', () => {
     let origin: Source
-    let expected: Result[]
-    let actual: Result[]
+    let date: Date
     beforeEach(async () => {
+      date = new Date(2000,0,1)
       origin = {
         async results(_start:Date, _end:Date):Promise<Result[]> {
           return [
@@ -63,28 +71,52 @@ describe('Strict Source Dates', () => {
               home: { id: 'id-1', name: 'team-1' },
               away: { id: 'id-2', name: 'team-2' },
               homeWin: 1,
-              date: new Date(),
+              date
             },
           ];
         }
       }
-      expected = await origin.results(new Date(), new Date())
       source = new StrictSourceDates(origin)
-      actual = await source.results(new Date(), new Date())
     })
-    it('returns the data unchanged', () => {
-      expect(actual).toEqual(expected)
+    describe('when it is parsed with chronologically ordered dates', () => {
+      it.todo('does not raise a source error')
+      it.each([
+        ['results inside the interval',addDays(date,-1), addDays(date,1)],
+        ['results outside the interval',addDays(date,1), addDays(date,2)],
+      ])('returns the data unchanged for %s', async (_message, start, end) => {
+        const actual = await source.results(start, end)
+        const expected = await origin.results(start, end)
+        expect(actual).toEqual(expected)
+      })
+    })
+    describe('when it is parsed with the same start and end dates', () => {
+      it.todo('does not raise a source error')
+      it.each([
+        ['results on that day', date],
+        ['results before that day', addDays(date,-1)],
+        ['results after that day', addDays(date,1)],
+      ])('returns the data unchanged for %s', async (_message, day) => {
+        const actual = await source.results(day, day)
+        const expected = await origin.results(day, day)
+        expect(actual).toEqual(expected)
+      })
+    })
+    describe('when it is parsed with unchronologically ordered dates', () => {
+      it.todo('raises a source error', async () => {})
     })
   })
-  it('a source error is raised if the end date is before the start date', async () => {
-    const origin = {
-      async results(_start:Date, _end:Date) {
-        return []
-      }
-    }
-    source = new StrictSourceDates(origin)
-    await expect(() => source.results(new Date(2026,0,1), new Date(2000,0,1))).rejects.toThrowError(SourceError)
-
+  describe('given a source with two results on different days', () => {
+    describe('when it is parsed with chronologically ordered dates', () => {
+      it.todo('does not raise a source error')
+      it.todo.each([])('returns the data unchanged for %s', async (_message, start, end) => {})
+    })
+    describe.todo('when it is parsed with the same start and end dates', () => {
+      it.todo('does not raise a source error')
+      it.todo.each([])('returns the data unchanged for %s', async (_message, day) => {})
+    })
+    describe.todo('when it is parsed with unchronologically ordered dates', () => {
+      it.todo('raises a source error')
+    })
   })
 })
 
