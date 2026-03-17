@@ -5,6 +5,8 @@ import {
 import type { Ratings, Ruleset, TeamRating } from '../../../src/rulesets/base';
 import { DefaultTeamMap, type TeamMap } from '../../../src/leagues/team_maps';
 import { InMemoryLeague } from '../../../src/leagues/in_memory';
+import { defaultInMemoryLeague } from '../../utils';
+import type { SourceTeam } from '../../../src/sources/types';
 
 describe('InMemoryLeague', () => {
   let league: League;
@@ -30,7 +32,7 @@ describe('InMemoryLeague', () => {
         }
       }
       teamMap = new DefaultTeamMap(new Map());
-      league = new InMemoryLeague(teamMap, ruleset);
+      league = defaultInMemoryLeague({teamMap, ruleset});
     })
     test('it has no teams', () => {
       expect(league.teams.size).toBe(0);
@@ -70,12 +72,107 @@ describe('InMemoryLeague', () => {
       })
     })
   })
-  describe.todo('given a league with a map of two teams', () => {
-    test.todo('it has two teams')
+  describe('given a league with a map of a single team', () => {
+    let team: Team
+    beforeEach(async () => {
+      team = {
+        id: 'new-id',
+        name: 'new-name',
+        mu: 12,
+        sigma: 2,
+        lastFixtureDate: new Date(2021, 1, 1),
+      }
+      teamMap = new DefaultTeamMap(new Map([[team.id, team]]));
+      league = defaultInMemoryLeague({teamMap});
+    })
+    test('it has one team', () => {
+      expect(league.teams.size).toEqual(1)
+    })
+    describe('when a match is processed with the existing team', () => {
+      let result: Result;
+      let newTeam: SourceTeam
+      let date: Date;
+      beforeEach(async () => {
+        date = new Date(2021, 1, 1);
+        newTeam = {id: 'id-2', name: 'another-name'}
+        result = {
+          home: team,
+          away: newTeam,
+          homeWin: 1,
+          date
+        }
+        league.record(result)
+      })
+      it('adds a single team', () => {
+        expect(league.teams.size).toEqual(2)
+      })
+      it('updates the existing team correctly', () => {
+        expect(league.teams.get(team.id)).toEqual({
+          id: team.id,
+          name: team.name,
+          mu: team.mu + 1,
+          sigma: team.sigma + 1,
+          lastFixtureDate: date
+        })
+      })
+      it('stores the new team correctly', () => {
+        expect(league.teams.get(newTeam.id)).toEqual({
+          id: newTeam.id,
+          name: newTeam.name,
+          mu: 3,
+          sigma: 3,
+          lastFixtureDate: date
+        })
+      })
+    })
+  })
+
+
+  describe('given a league with a map of two teams', () => {
+    let existingTeam1: Team
+    let existingTeam2: Team
+    let teamMap: TeamMap<string, Team>
+    beforeEach(async () => {
+      existingTeam1 = {id: 'id-1', name: 'team-1', mu: 25, sigma:2, lastFixtureDate: new Date(2021, 1, 1)}
+      existingTeam2 = {id: 'id-2', name: 'team-2', mu:12, sigma:3, lastFixtureDate: new Date(2020, 1, 1)}
+      teamMap = new DefaultTeamMap(new Map([[existingTeam1.id, existingTeam1],[existingTeam2.id, existingTeam2]]))
+      league = defaultInMemoryLeague({teamMap})
+    })
+    test('it has two teams', () => {
+      expect(league.teams.size).toEqual(2)
+    })
     describe('when a new match is processed between existing teams', () => {
-      it.todo('has only two teams')
-      it.todo('stores the updated home team correctly')
-      it.todo('stores the updated away team correctly')
+      let result: Result;
+      let date: Date;
+      beforeEach(async () => {
+        date = new Date(2022,0,1)
+        result = {
+          home: existingTeam1,
+          away: existingTeam2,
+          homeWin: 1,
+          date
+        }
+        league.record(result)
+      })
+      it('has only two teams', () => {
+        expect(league.teams.size).toEqual(2)
+      })
+      it('updates the home team correctly', () => {
+        expect(league.teams.get(existingTeam1.id)).toEqual({
+          ...existingTeam1,
+          mu: existingTeam1.mu+1,
+          sigma: existingTeam1.sigma+1,
+          lastFixtureDate: date
+        })
+      })
+      it('updates the away team correctly', () => {
+        expect(league.teams.get(existingTeam2.id)).toEqual({
+          ...existingTeam2,
+          mu: existingTeam2.mu+2,
+          sigma: existingTeam2.sigma+2,
+          lastFixtureDate: date
+        })
+      })
     })
     describe('when a new match is processed with a single new team', () => {
       it.todo('has only three teams')
