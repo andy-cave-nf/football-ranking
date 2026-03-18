@@ -4,7 +4,6 @@ import { DefaultTeamMap } from '../../../src/leagues/team_maps';
 import type { Result, Team } from '../../../src/leagues/types';
 import type { SourceTeam } from '../../../src/sources/types';
 import { addDays } from 'date-fns';
-import type { Source } from '../../../src/sources/base';
 
 describe('Strict League Record', () => {
   let league: StrictLeagueRecord
