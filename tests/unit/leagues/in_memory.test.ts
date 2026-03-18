@@ -4,7 +4,6 @@ import {
 } from '../../../src/leagues/base';
 import type { Ratings, Ruleset, TeamRating } from '../../../src/rulesets/base';
 import { DefaultTeamMap, type TeamMap } from '../../../src/leagues/team_maps';
-import { InMemoryLeague } from '../../../src/leagues/in_memory';
 import { defaultInMemoryLeague } from '../../utils';
 import type { SourceTeam } from '../../../src/sources/types';
 
@@ -175,16 +174,83 @@ describe('InMemoryLeague', () => {
       })
     })
     describe('when a new match is processed with a single new team', () => {
-      it.todo('has only three teams')
-      it.todo('stores the updated home team correctly')
-      it.todo('stores the updated away team correctly')
-      it.todo('leaves the remaining team unchanged')
+      let newTeam: SourceTeam
+      let result: Result;
+      let date: Date;
+      beforeEach(async () => {
+        date = new Date(2022,0,1)
+        newTeam = {id: 'id-3', name: 'another-name'}
+        result = {
+          home: existingTeam1,
+          away: newTeam,
+          homeWin: 1,
+          date
+        }
+        league.record(result)
+      })
+      it('has only three teams', () => {
+        expect(league.teams.size).toEqual(3)
+      })
+      it('updates the existing team correctly', () => {
+        expect(league.teams.get(existingTeam1.id)).toEqual({
+          ...existingTeam1,
+          mu: existingTeam1.mu+1,
+          sigma: existingTeam1.sigma+1,
+          lastFixtureDate: date
+        })
+      })
+      it('stores the new team correctly', () => {
+        expect(league.teams.get(newTeam.id)).toEqual({
+          ...newTeam,
+          mu: 3,
+          sigma: 3,
+          lastFixtureDate: date
+        })
+      })
+      it('leaves the remaining team unchanged', () => {
+        expect(league.teams.get(existingTeam2.id)).toEqual(existingTeam2)
+      })
     })
     describe('when a new match is processed with two different teams', () => {
-      it.todo('has only four teams')
-      it.todo('stores the home team correctly')
-      it.todo('stores the away team correctly')
-      it.todo('leaves the remaining teams unchanged')
+      let newHome: SourceTeam
+      let newAway: SourceTeam
+      let result: Result;
+      let date: Date;
+      beforeEach(async () => {
+        date = new Date(2022,0,1)
+        newHome = {id:'id-3', name: 'home-team'}
+        newAway = {id:'id-4', name:'away-team'}
+        result = {
+          home: newHome,
+          away: newAway,
+          homeWin: 1,
+          date
+        }
+        league.record(result)
+      })
+      it('has only four teams', () => {
+        expect(league.teams.size).toEqual(4)
+      })
+      it('stores the home team correctly', () => {
+        expect(league.teams.get(newHome.id)).toEqual({
+          ...newHome,
+          mu: 2,
+          sigma: 2,
+          lastFixtureDate: date
+        })
+      })
+      it('stores the away team correctly', () => {
+        expect(league.teams.get(newAway.id)).toEqual({
+          ...newAway,
+          mu: 3,
+          sigma: 3,
+          lastFixtureDate: date
+        })
+      })
+      it('leaves the remaining teams unchanged', () => {
+        expect(league.teams.get(existingTeam1.id)).toEqual(existingTeam1)
+        expect(league.teams.get(existingTeam2.id)).toEqual(existingTeam2)
+      })
     })
   })
 })
