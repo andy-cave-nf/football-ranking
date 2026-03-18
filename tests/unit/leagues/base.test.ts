@@ -250,7 +250,7 @@ describe.todo('Safe League' , () => {
   })
 })
 
-describe.todo('Fixed League', () => {
+describe.todo('Fixed Names', () => {
   describe.todo('given a league with an existing team', () => {
     describe.todo('when a new match is processed with the existing team with a changed name', () => {
       it.todo('raises a league error')
