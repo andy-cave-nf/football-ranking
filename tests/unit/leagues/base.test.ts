@@ -5,10 +5,11 @@ import {
   SafeLeague,
 } from '../../../src/leagues/base';
 import { defaultInMemoryLeague } from '../../utils';
-import { DefaultTeamMap } from '../../../src/leagues/team_maps';
+import { DefaultTeamMap, type ReadOnlyTeamMap } from '../../../src/leagues/team_maps';
 import type { Result, Team } from '../../../src/leagues/types';
 import type { SourceTeam } from '../../../src/sources/types';
 import { addDays } from 'date-fns';
+import { record } from 'zod';
 
 describe('Strict League Record', () => {
   let league: StrictLeagueRecord
@@ -585,21 +586,81 @@ describe('Safe League' , () => {
         expect(league.teams.size).toEqual(3)
       })
     })
-    describe.todo('when a match is processed with two new teams', () => {
-      it.todo('does not raise a League Error')
-      it.todo('stores the new home team correctly')
-      it.todo('stores the new away team correctly')
-      it.todo('leaves th existing teams unchanged')
-      it.todo('adds only two teams to the league')
+    describe('when a match is processed with two new teams', () => {
+      let newHome: SourceTeam
+      let newAway: SourceTeam
+      let result: Result
+      let date: Date
+      beforeEach(async () => {
+        newHome = {id: 'new-home-id-1', name: 'new-home'}
+        newAway = {id: 'new-away-id-2', name: 'new-away'}
+        date = new Date(2000,0,3)
+        result = {
+          home: newHome,
+          away: newAway,
+          homeWin: 1,
+          date,
+        }
+      })
+      it('does not raise a League Error', ()=> {
+        expect(()=> league.record(result)).not.toThrow(LeagueError)
+      })
+      it('stores the new home team correctly', () => {
+        league.record(result)
+        expect(league.teams.get(newHome.id)).toEqual({
+          ...newHome,
+          mu: 2,
+          sigma: 2,
+          lastFixtureDate: date,
+        })
+      })
+      it('stores the new away team correctly', () => {
+        league.record(result)
+        expect(league.teams.get(newAway.id)).toEqual({
+          ...newAway,
+          mu: 3,
+          sigma: 3,
+          lastFixtureDate: date,
+        })
+      })
+      it('leaves the existing teams unchanged', ()=>{
+        league.record(result)
+        expect(league.teams.get(existingTeam1.id)).toEqual(existingTeam1)
+        expect(league.teams.get(existingTeam2.id)).toEqual(existingTeam2)
+      })
+      it('adds only two teams to the league', () => {
+        league.record(result)
+        expect(league.teams.size).toEqual(4)
+      })
     })
   })
 
-  describe.todo('given a league that throws an unexpected error', () => {
-    describe.todo('when a match is processed', () => {
-      it.todo('wraps it in a League Error')
+  describe('given a league that throws an unexpected error', () => {
+    let result: Result
+    beforeEach(async () => {
+      result = {
+        home: {id:'1', name:'home'},
+        away: {id:'2',name:'away'},
+        homeWin: 1,
+        date: new Date()
+      }
+      origin = {
+        get teams(): ReadOnlyTeamMap<string, Team> {throw new Error('errored league')},
+        record(_result: Result) {
+          throw new Error('errored league')
+        }
+      }
+      league = new SafeLeague(origin)
     })
-    describe.todo('when the teams are called', () => {
-      it.todo('wraps it in a League Error')
+    describe('when a match is processed', () => {
+      it('wraps it in a League Error', () => {
+        expect(()=>league.record(result)).toThrow(LeagueError)
+      })
+    })
+    describe('when the teams are called', () => {
+      it('wraps it in a League Error', () => {
+        expect(()=> league.teams).toThrow(LeagueError)
+      })
     })
   })
 })
