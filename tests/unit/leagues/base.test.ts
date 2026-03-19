@@ -490,19 +490,100 @@ describe('Safe League' , () => {
       })
     })
   })
-  describe.todo('given a league with two existing teams', () => {
-    describe.todo('when a match is processed with between existing teams', () => {
-      it.todo('does not raise a League Error')
-      it.todo('updates the home team correctly')
-      it.todo('updates the away team correctly')
-      it.todo('has only two teams')
+  describe('given a league with two existing teams', () => {
+    let existingTeam1: Team
+    let existingTeam2: Team
+    let date1: Date
+    let date2: Date
+    beforeEach(async () => {
+      date1 = new Date(2000,0,1)
+      date2 = new Date(2000,0,2)
+      existingTeam1 = {id: 'existing-id-1', name: 'existing-name-1', mu: 25, sigma: 2, lastFixtureDate: date1}
+      existingTeam2 = {id: 'existing-id-2', name: 'existing-name-2', mu: 12, sigma: 3, lastFixtureDate: date2}
+      origin = defaultInMemoryLeague({teamMap: new DefaultTeamMap(new Map([[existingTeam1.id, existingTeam1],[existingTeam2.id, existingTeam2]]))})
+      league = new SafeLeague(origin)
     })
-    describe.todo('when a match is processed with one new team', () => {
-      it.todo('does not raise a League Error')
-      it.todo('stores the new team correctly')
-      it.todo('updates the existing team correctly')
-      it.todo('leaves the existing team unchanged')
-      it.todo('adds only one team to the league')
+    describe('when a match is processed with between existing teams', () => {
+      let result: Result
+      let date: Date
+      beforeEach(async () => {
+        date = new Date(2000,0,3)
+        result = {
+          home: existingTeam1,
+          away: existingTeam2,
+          homeWin: 1,
+          date
+        }
+      })
+      it('does not raise a League Error', () => {
+        expect(()=>league.record(result)).not.toThrow(LeagueError)
+      })
+      it('updates the home team correctly', () => {
+        league.record(result)
+        expect(league.teams.get(existingTeam1.id)).toEqual({
+          ...existingTeam1,
+          mu: existingTeam1.mu+1,
+          sigma: existingTeam1.sigma+1,
+          lastFixtureDate: date,
+        })
+      })
+      it('updates the away team correctly', () => {
+        league.record(result)
+        expect(league.teams.get(existingTeam2.id)).toEqual({
+          ...existingTeam2,
+          mu: existingTeam2.mu+2,
+          sigma: existingTeam2.sigma+2,
+          lastFixtureDate: date,
+        })
+      })
+      it('has only two teams', () => {
+        league.record(result)
+        expect(league.teams.size).toEqual(2)
+      })
+    })
+    describe('when a match is processed with one new team', () => {
+      let newTeam: SourceTeam
+      let result: Result
+      let date: Date
+      beforeEach(async () => {
+        date = new Date(2000,0,3)
+        newTeam = {id: 'new-id-1', name: 'new-name-1'}
+        result = {
+          home: newTeam,
+          away: existingTeam1,
+          homeWin:0,
+          date,
+        }
+      })
+      it('does not raise a League Error', () => {
+        expect(()=>league.record(result)).not.toThrow(LeagueError)
+      })
+      it('stores the new team correctly', () => {
+        league.record(result)
+        expect(league.teams.get(newTeam.id)).toEqual({
+          ...newTeam,
+          mu: 2,
+          sigma: 2,
+          lastFixtureDate: date,
+        })
+      })
+      it('updates the existing team correctly', () => {
+        league.record(result)
+        expect(league.teams.get(existingTeam1.id)).toEqual({
+          ...existingTeam1,
+          mu: existingTeam1.mu+2,
+          sigma: existingTeam1.sigma+2,
+          lastFixtureDate: date,
+        })
+      })
+      it('leaves the existing team unchanged', () => {
+        league.record(result)
+        expect(league.teams.get(existingTeam2.id)).toEqual(existingTeam2)
+      })
+      it('adds only one team to the league', () => {
+        league.record(result)
+        expect(league.teams.size).toEqual(3)
+      })
     })
     describe.todo('when a match is processed with two new teams', () => {
       it.todo('does not raise a League Error')
