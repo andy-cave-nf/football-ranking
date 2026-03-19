@@ -6,7 +6,7 @@ import {
   StrictSourceDates,
 } from '../../../src/sources/base';
 import type { Result } from '../../../src/leagues/types';
-import { addDays } from 'date-fns';
+import { add, addDays } from 'date-fns';
 
 describe('Safe Source', () => {
   let source: SafeSource
@@ -79,10 +79,12 @@ describe('Strict Source Dates', () => {
       source = new StrictSourceDates(origin)
     })
     describe('when it is parsed with chronologically ordered dates', () => {
-      it.todo('does not raise a source error')
+      it('does not raise a source error', async () => {
+        await expect(() => source.results(date,addDays(date,1))).not.toThrow(SourceError)
+      })
       it.each([
-        ['results inside the interval',addDays(date,-1), addDays(date,1)],
-        ['results outside the interval',addDays(date,1), addDays(date,2)],
+        ['the result inside the date interval',addDays(date,-1), addDays(date,1)],
+        ['the result outside the date interval',addDays(date,1), addDays(date,2)],
       ])('returns the data unchanged for %s', async (_message, start, end) => {
         const actual = await source.results(start, end)
         const expected = await origin.results(start, end)
@@ -90,32 +92,97 @@ describe('Strict Source Dates', () => {
       })
     })
     describe('when it is parsed with the same start and end dates', () => {
-      it.todo('does not raise a source error')
+      it('does not raise a source error', async () => {
+        await expect(()=> source.results(date,date)).not.toThrow(SourceError)
+      })
       it.each([
-        ['results on that day', date],
-        ['results before that day', addDays(date,-1)],
-        ['results after that day', addDays(date,1)],
+        ['parsing the day of the result', date],
+        ['parsing before the day of the result', addDays(date,-1)],
+        ['parsing after the day of the result', addDays(date,1)],
       ])('returns the data unchanged for %s', async (_message, day) => {
         const actual = await source.results(day, day)
         const expected = await origin.results(day, day)
         expect(actual).toEqual(expected)
       })
     })
-    describe('when it is parsed with unchronologically ordered dates', () => {
-      it.todo('raises a source error', async () => {})
+    describe('when it is parsed with dates out of chronological order', () => {
+      it('raises a source error', async () => {
+        await expect(()=> source.results(date,addDays(date,-1))).rejects.toThrow(SourceError)
+      })
     })
   })
   describe('given a source with two results on different days', () => {
+    let origin: Source
+    let firstDate: Date
+    let secondDate: Date
+    beforeEach(async () => {
+      firstDate = new Date(2000, 0, 1);
+      secondDate = new Date(2001, 0, 1);
+      const orderedResults: Result[] = [
+        {
+          home: { id: 'id-1', name: 'team-1' },
+          away: { id: 'id-2', name: 'team-2' },
+          homeWin: 1,
+          date: firstDate,
+        },
+        {
+          home: { id: 'id-3', name: 'team-3' },
+          away: { id: 'id-4', name: 'team-4' },
+          homeWin: 0,
+          date: secondDate,
+        }
+      ]
+      origin = {
+        async results(start:Date, end: Date): Promise<Result[]> {
+          return orderedResults.filter(
+            (fixture) =>
+              fixture.date >= start &&
+              fixture.date <= add(end, { days: 1 })
+          );
+        }
+      }
+      source = new StrictSourceDates(origin);
+    });
+
+
     describe('when it is parsed with chronologically ordered dates', () => {
-      it.todo('does not raise a source error')
-      it.todo.each([])('returns the data unchanged for %s', async (_message, start, end) => {})
+      it('does not raise a source error', async () => {
+        await expect(()=>source.results(firstDate,secondDate)).not.toThrow(SourceError)
+      })
+      it.each([
+        ['only the first result inside the date interval',addDays(firstDate,-1),addDays(firstDate,1)],
+        ['only the second result inside the date interval',addDays(secondDate,-1),addDays(secondDate,1)],
+        ['both results inside the date interval', addDays(firstDate,-1),addDays(secondDate,1)],
+        ['both results are before the date interval', addDays(secondDate,1),addDays(secondDate,2)],
+        ['both results are after the date interval', addDays(firstDate,-2),addDays(firstDate,-1)],
+        ['first result is on the left side of the date interval', firstDate,addDays(firstDate,1)],
+        ['first result is on the right side of the date interval',addDays(firstDate,-1),firstDate],
+        ['second result is on the right side of the date interval', addDays(secondDate,-1),secondDate],
+        ['second result is on the left side of the date interval', secondDate,addDays(secondDate,1)],
+      ])('returns the data unchanged for %s', async (_message, start, end) => {
+        const actual = await source.results(start, end)
+        const expected = await origin.results(start, end)
+        expect(actual).toEqual(expected)
+      })
     })
-    describe.todo('when it is parsed with the same start and end dates', () => {
-      it.todo('does not raise a source error')
-      it.todo.each([])('returns the data unchanged for %s', async (_message, day) => {})
+    describe('when it is parsed with the same start and end dates', () => {
+      it('does not raise a source error', async () => {
+        await expect(() => source.results(firstDate,firstDate)).not.toThrow(SourceError)
+      })
+      it.each([
+        ['parsing the day of the first result',firstDate],
+        ['parsing the day of the second result',secondDate],
+        ['parsing a day that does not have a result',addDays(firstDate,-1)]
+      ])('returns the data unchanged for %s', async (_message, date) => {
+        const actual = await source.results(date,date)
+        const expected = await origin.results(date,date)
+        expect(actual).toEqual(expected)
+      })
     })
-    describe.todo('when it is parsed with unchronologically ordered dates', () => {
-      it.todo('raises a source error')
+    describe('when it is parsed with unchronologically ordered dates', () => {
+      it('raises a source error', async () => {
+        await expect(()=>source.results(secondDate,firstDate)).rejects.toThrow(SourceError)
+      })
     })
   })
 })
