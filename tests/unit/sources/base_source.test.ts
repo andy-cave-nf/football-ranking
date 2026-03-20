@@ -4,6 +4,7 @@ import {
   type Source,
   SourceError,
   StrictSourceDates,
+  StrictSourceIds,
 } from '../../../src/sources/base';
 import type { Result } from '../../../src/leagues/types';
 import { add, addDays } from 'date-fns';
@@ -12,7 +13,9 @@ describe('Safe Source', () => {
   let source: SafeSource
   let origin: Source
   describe('given a source that succeeds', () => {
+    let date: Date
     beforeEach(async () => {
+      date = new Date(2000,0,1)
       origin = {
         async results(_start:Date, _end:Date):Promise<Result[]> {
           return [
@@ -20,7 +23,7 @@ describe('Safe Source', () => {
               home:{id:'id-1',name:'team-1'},
               away:{id:'id-2',name:'team-2'},
               homeWin: 1,
-              date: new Date()
+              date
             }
           ]
         }
@@ -32,8 +35,8 @@ describe('Safe Source', () => {
       let expected: Result[]
       let actual: Result[]
       beforeEach(async () => {
-        expected = await origin.results(new Date(), new Date())
-        actual = await source.results(new Date(), new Date())
+        expected = await origin.results(date, date)
+        actual = await source.results(date, date)
       })
       it('returns the data unchanged', () => {
         expect(actual).toEqual(expected)
@@ -188,12 +191,58 @@ describe('Strict Source Dates', () => {
 })
 
 describe('Strict Source Ids', () => {
-  describe.todo('given a source that succeeds', async () => {
-    describe.todo('when a result is parsed with unique team ids', () => {
-      it.todo('returns the data unchanged')
+  let origin: Source
+  let source: StrictSourceIds
+  describe('given a source that succeeds', async () => {
+    describe('when a result is parsed with unique team ids', () => {
+      let results: Result[]
+      let date: Date
+      beforeEach(() => {
+        date = new Date(2000,0,1)
+        results = [
+          {
+            home: {id:'id-1',name:'home'},
+            away: {id:'id-2',name:'away'},
+            homeWin: 1,
+            date,
+          }
+        ]
+        origin = {
+          async results(_start:Date, _end:Date): Promise<Result[]> {
+            return results
+          }
+        }
+        source = new StrictSourceIds(origin)
+      })
+      it('returns the data unchanged', async () => {
+        const actual = await source.results(addDays(date,-1),date)
+        const expected = await origin.results(addDays(date,-1),date)
+        expect(actual).toEqual(expected)
+      })
     })
-    describe.todo('when a result is parsed with duplicate team ids', () => {
-      it.todo('raises a source error')
+    describe('when a result is parsed with duplicate team ids', () => {
+      let results: Result[]
+      let date: Date
+      beforeEach(() => {
+        date = new Date(2000,0,1)
+        results = [
+          {
+            home: {id:'id-1', name: 'home'},
+            away: {id:'id-1', name: 'away'},
+            homeWin:1,
+            date,
+          }
+        ]
+        origin = {
+          async results(_start:Date, _end:Date): Promise<Result[]> {
+            return results
+          }
+        }
+        source = new StrictSourceIds(origin)
+      })
+      it('raises a source error', async () => {
+        await expect(()=>source.results(addDays(date,-1),date)).rejects.toThrow(SourceError)
+      })
     })
   })
 })
