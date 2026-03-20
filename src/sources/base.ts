@@ -15,7 +15,7 @@ export class SortedSource implements Source {
 abstract class StrictSource implements Source {
   protected constructor(protected origin: Source) {}
   async results(start: Date, end: Date): Promise<Result[]> {
-    return this.origin.results(start, end);
+    return await this.origin.results(start, end);
   }
 }
 
@@ -27,7 +27,22 @@ export class StrictSourceDates extends StrictSource {
     if (start > end) {
       throw new SourceError(`${start.toISOString()} is not before ${end.toISOString()}`);
     }
-    return this.origin.results(start, end);
+    return await this.origin.results(start, end);
+  }
+}
+
+export class StrictSourceIds extends StrictSource {
+  constructor(protected origin: Source) {
+    super(origin);
+  }
+  async results(start: Date, end: Date): Promise<Result[]> {
+    const raw = await this.origin.results(start, end);
+    const duplicates = raw.filter((result: Result) => result.home.id === result.away.id)
+    if (duplicates.length > 0) {
+      const duplicateIds = duplicates.map((result: Result) => result.away.id)
+      throw new SourceError(`Duplicate ids ${duplicateIds.join(',')} in result`);
+    }
+    return raw
   }
 }
 
@@ -41,6 +56,7 @@ export class SafeSource implements Source {
     }
   }
 }
+
 
 export class SourceError extends Error {
   constructor(
