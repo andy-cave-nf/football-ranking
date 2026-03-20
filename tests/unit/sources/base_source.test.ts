@@ -5,6 +5,7 @@ import {
   SourceError,
   StrictSourceDates,
   StrictSourceIds,
+  UniqueResultsSource,
 } from '../../../src/sources/base';
 import type { Result } from '../../../src/leagues/types';
 import { add, addDays } from 'date-fns';
@@ -242,6 +243,77 @@ describe('Strict Source Ids', () => {
       })
       it('raises a source error', async () => {
         await expect(()=>source.results(addDays(date,-1),date)).rejects.toThrow(SourceError)
+      })
+    })
+  })
+})
+
+describe('Unique Results Source', () => {
+  let origin: Source
+  let source: UniqueResultsSource
+  describe('given a source that succeeds', async () => {
+    describe('when two results are parsed that are not identical', () => {
+      let results: Result[]
+      let firstDate: Date
+      let secondDate: Date
+      beforeEach(() => {
+        firstDate = new Date(2000,0,1)
+        secondDate = new Date(2000,0,2)
+        results = [
+          {
+            home:{id:'id-1',name:'home'},
+            away:{id:'id-2',name:'away'},
+            homeWin:1,
+            date: firstDate,
+          },
+          {
+            home:{id:'id-3',name:'home'},
+            away:{id:'id-4',name:'away'},
+            homeWin:0,
+            date: secondDate,
+          }
+        ]
+        origin = {
+          async results(_start:Date, _end:Date): Promise<Result[]> {
+            return results
+          }
+        }
+        source = new UniqueResultsSource(origin)
+      })
+      it('returns the data unchanged', async () => {
+        const actual = await source.results(firstDate,secondDate)
+        const expected = await origin.results(firstDate,secondDate)
+        expect(actual).toEqual(expected)
+      })
+    })
+    describe('when two results are parsed that are identical', () => {
+      let results: Result[]
+      let date: Date
+      beforeEach(() => {
+        date = new Date(2000,0,1)
+        results = [
+          {
+            home: { id: 'id-1', name: 'home' },
+            away: { id: 'id-2', name: 'away' },
+            homeWin: 1,
+            date,
+          },
+          {
+            home: { id: 'id-1', name: 'home' },
+            away: { id: 'id-2', name: 'away' },
+            homeWin: 1,
+            date: date,
+          },
+        ];
+        origin = {
+          async results(_start:Date, _end:Date): Promise<Result[]> {
+            return results
+          }
+        }
+        source = new UniqueResultsSource(origin)
+      })
+      it('raises a source error', async () => {
+        await expect(()=>source.results(date,date)).rejects.toThrow(SourceError)
       })
     })
   })

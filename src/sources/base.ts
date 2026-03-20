@@ -25,7 +25,7 @@ export class StrictSourceDates extends StrictSource {
   }
   async results(start: Date, end: Date): Promise<Result[]> {
     if (start > end) {
-      throw new SourceError(`${start.toISOString()} is not before ${end.toISOString()}`);
+      throw new SourceError(`${start} is not before ${end}`);
     }
     return await this.origin.results(start, end);
   }
@@ -45,6 +45,22 @@ export class StrictSourceIds extends StrictSource {
     return raw
   }
 }
+
+export class UniqueResultsSource extends StrictSource {
+  constructor(protected origin: Source) {
+    super(origin);
+  }
+  async results(start: Date, end: Date): Promise<Result[]> {
+    const raw = await this.origin.results(start, end);
+    const sortedResultKeys = (result:Result) => JSON.stringify(result, Object.keys(result).sort());
+    const unique = new Set(raw.map(sortedResultKeys));
+    if (unique.size !== raw.length) {
+      throw new SourceError(`There are duplicate results between ${start} and ${end}`);
+    }
+    return await this.origin.results(start, end);
+  }
+}
+
 
 export class SafeSource implements Source {
   constructor(private origin: Source) {}
