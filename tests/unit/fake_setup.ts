@@ -4,9 +4,10 @@ import type { Result, Team } from '../../src/leagues/types';
 import type { Rankings } from '../../src/rankings';
 import type { SourceTeam } from '../../src/sources/types';
 import type { Source } from '../../src/sources/base';
-import { cleanString, type League } from '../../src/leagues/base';
+import { type League } from '../../src/leagues/base';
 import type { Ratings, Ruleset } from '../../src/rulesets/base';
 import {
+  cleanString,
   DefaultTeamMap,
   type ReadOnlyTeamMap,
   SanitizeMap,
@@ -44,14 +45,14 @@ export class FakeLeague implements League {
     this.teamMap = new DefaultTeamMap<string, Team>(new SanitizeMap(cleanString));
   }
   record = vi.fn(async (result: Result, _ruleset: Ruleset): Promise<void> => {
-    this.teamMap.setInit(result.home.id, {
+    this.teamMap.setInitOrIgnore(result.home.id, {
       id: result.home.id,
       name: result.home.name,
       mu: this.mu0,
       sigma: this.sigma0,
       lastFixtureDate: result.date,
     });
-    this.teamMap.setInit(result.away.id, {
+    this.teamMap.setInitOrIgnore(result.away.id, {
       id: result.away.id,
       name: result.away.name,
       mu: this.mu0,

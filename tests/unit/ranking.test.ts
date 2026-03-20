@@ -1,22 +1,10 @@
 import {
   DefaultRankings,
-  RankingError,
-  type Rankings,
-  RankingsWithStrictDates,
-  SafeRankings,
 } from '../../src/rankings';
-import {
-  ErroredRanking,
-  FakeLeague,
-  FakePage,
-  FakeSource,
-} from './fake_setup';
-import type { Page } from '../../src/pages/pages';
-import type { Mock } from 'vitest';
 import type { Result, Team } from '../../src/leagues/types';
-import  { DefaultTeamMap, type ReadOnlyTeamMap } from '../../src/utils';
 import type { Source } from '../../src/sources/base';
 import type { League } from '../../src/leagues/base';
+import { DefaultTeamMap} from '../../src/leagues/team_maps';
 
 // let rankings: Rankings;
 // let league: League;
@@ -28,9 +16,9 @@ describe.only('Default Rankings', () => {
   let rankings: DefaultRankings;
   let source: Source;
   let league: League;
-  let actual: Result[]
-  let expected: Result[];
   describe('given a source with two matches and an empty league, when run is called', () => {
+    let actual: Result[]
+    let expected: Result[];
     beforeEach(async () => {
       source = {
         async results(_start: Date, _end: Date) {
@@ -67,6 +55,8 @@ describe.only('Default Rankings', () => {
   })
 
   describe('given a source with no matches, when run is called', () => {
+    let actual: Result[];
+    let expected: Result[];
     beforeEach(async () => {
       source = {
         async results(_start: Date, _end: Date) {
@@ -96,7 +86,30 @@ describe.only('Default Rankings', () => {
   })
 
   describe.todo('given a league with existing teams, when ranking is called', () => {
-    it.todo('returns the teams in decreasing skill order')
+    let actual: Team[];
+    let expected: Team[];
+    beforeEach(async () => {
+      const team1 = {id:'id-1', name:'team-1', mu: 10, sigma:3, lastFixtureDate: new Date(2000,0,1)}
+      const team2 = {id:'id-2',name:'team-2', mu: 10, sigma:1, lastFixtureDate: new Date(2000,0,1)}
+      const existingTeams = new DefaultTeamMap(new Map<string|number,Team>())
+      existingTeams.set('id-1',team1)
+      existingTeams.set('id-2',team2)
+      source = {
+        async results(_start: Date, _end: Date) {
+          return [];
+        },
+      };
+      league = {
+        async record(_result: Result) {},
+        teams: existingTeams.toReadOnly()
+      }
+      rankings = new DefaultRankings(league, source)
+      actual = await rankings.rankings
+      expected = [team2, team1]
+    })
+    it('returns the teams in decreasing skill order', () => {
+      expect(actual).toEqual(expected)
+    })
   })
 
   describe.todo('given a league with no teams, when ranking is called', () => {
