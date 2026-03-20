@@ -112,6 +112,7 @@ describe('Validated Json Shape', () => {
   describe('given a json fixture that has an invalid structure, when the data is parsed', () => {
     beforeEach(async () => {
       const origin: JsonFixtures = {
+        // @ts-expect-error: parse should fail
         async parse() {
           return { invalid: 'structure' };
         }
