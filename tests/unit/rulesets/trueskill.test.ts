@@ -139,6 +139,7 @@ describe('given two teams that play many matches with alternating results, when 
       expect(after.away.sigma - config.tau).toBeLessThanOrEqual(before.away.sigma-config.tau);
     }
   });
+  // eslint-disable-next-line vitest/expect-expect
   it('decreases both sigma values', () => {
     for (let i = 0; i < ratings.length-1; i++) {
       const before = ratings[i] as Ratings
