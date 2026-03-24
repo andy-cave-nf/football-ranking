@@ -16,45 +16,48 @@ describe.only('Default Rankings', () => {
   let rankings: DefaultRankings;
   let source: Source;
   let league: League;
-  describe('given a source with two matches and an empty league, when run is called', () => {
-    let actual: Result[]
+  describe('given a source with two matches and an empty league', () => {
+    let actual: Result[];
     let expected: Result[];
     beforeEach(async () => {
       source = {
         async results(_start: Date, _end: Date) {
           return [
             {
-              home:{id:'id-1',name:'team-1'},
-              away:{id:'id-2', name:'team-2'},
-              homeWin:1,
-              date: new Date(2000,0,1)
+              home: { id: 'id-1', name: 'team-1' },
+              away: { id: 'id-2', name: 'team-2' },
+              homeWin: 1,
+              date: new Date(2000, 0, 1),
             },
             {
-              home:{id:'id-3',name:'team-3'},
-              away:{id:'id-4', name:'team-4'},
-              homeWin:0.5,
-              date: new Date(2000,0,2)
-            }
-          ]
-        }
-      }
-      expected = await source.results(new Date(), new Date())
-      actual = []
+              home: { id: 'id-3', name: 'team-3' },
+              away: { id: 'id-4', name: 'team-4' },
+              homeWin: 0.5,
+              date: new Date(2000, 0, 2),
+            },
+          ];
+        },
+      };
+      actual = [];
       league = {
         async record(result: Result) {
           actual.push(result);
         },
-        teams: new DefaultTeamMap(new Map<string|number,Team>()).toReadOnly()
       };
-      rankings = new DefaultRankings(league, source)
-      await rankings.run(new Date(), new Date())
-    })
-    it('records both matches in the league in the order the source provided them', () => {
-      expect(actual).toEqual(expected)
-    })
-  })
-
-  describe('given a source with no matches, when run is called', () => {
+      expected = await source.results(new Date(), new Date());
+      teams: new DefaultTeamMap(new Map<string | number, Team>()).toReadOnly();
+      rankings = new DefaultRankings(league, source);
+    });
+    describe('when a run is called', () => {
+      beforeEach(async () => {
+        await rankings.run(new Date(), new Date());
+      })
+      it('records both matches in the league in the order the source provided them', () => {
+        expect(actual).toEqual(expected);
+      });
+    });
+  });
+  describe('given a source with no matches', () => {
     let actual: Result[];
     let expected: Result[];
     beforeEach(async () => {
@@ -77,11 +80,16 @@ describe.only('Default Rankings', () => {
         teams: new DefaultTeamMap(new Map<string|number,Team>()).toReadOnly()
       }
       rankings = new DefaultRankings(league, source)
-      await rankings.run(new Date(), new Date())
     })
-    it('leaves the league unchanged', () => {
-      expect(actual).toEqual(expected)
-      expect(actual).toHaveLength(0)
+    describe('when run is called', () => {
+      beforeEach(async () => {
+        await rankings.run(new Date(), new Date())
+      })
+      it('leaves the league unchanged', () => {
+        expect(actual).toEqual(expected)
+        expect(actual).toHaveLength(0)
+      })
+
     })
   })
 
