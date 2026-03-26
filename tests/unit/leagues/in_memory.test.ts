@@ -124,6 +124,9 @@ describe('InMemoryLeague', () => {
         })
       })
     })
+    describe.todo('when standings is called', () => {
+      it.todo('returns only the existing team with the correct skill')
+    })
   })
 
 
@@ -251,6 +254,11 @@ describe('InMemoryLeague', () => {
         expect(league.teams.get(existingTeam1.id)).toEqual(existingTeam1)
         expect(league.teams.get(existingTeam2.id)).toEqual(existingTeam2)
       })
+    })
+    describe.todo('when standings is called', () => {
+      it.todo('returns a list of two teams', () => {})
+      it.todo('returns the skills of the teams correctly', () => {})
+      it.todo('returns the teams in skill order')
     })
   })
 })
