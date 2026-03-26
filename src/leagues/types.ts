@@ -13,3 +13,10 @@ export type Team = {
   sigma: number;
   lastFixtureDate: Date;
 };
+
+export type Standing = {
+  name: string
+  skill: number
+  mu: number
+  sigma: number
+}

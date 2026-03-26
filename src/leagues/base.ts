@@ -1,9 +1,10 @@
-import type { Result, Team } from './types';
+import type { Result, Standing, Team } from './types';
 
 import type { ReadOnlyTeamMap } from './team_maps';
 
 export interface League {
   record(result: Result): void;
+  standings(): Standing[];
   teams: ReadOnlyTeamMap<string, Team>;
 }
 
@@ -11,6 +12,9 @@ abstract class StrictLeague implements League {
   protected constructor(protected origin: League) {}
   record(result: Result): void {
     this.origin.record(result);
+  }
+  standings(): Standing[] {
+    return this.origin.standings();
   }
   get teams() {
     return this.origin.teams;
@@ -45,6 +49,13 @@ export class SafeLeague implements League {
       this.origin.record(result);
     } catch (error) {
       throw new LeagueError('Unable to add record', { cause: error });
+    }
+  }
+  standings(): Standing[] {
+    try {
+      return this.origin.standings();
+    } catch (error) {
+      throw new LeagueError('Unable to get standings', { cause: error });
     }
   }
   get teams() {

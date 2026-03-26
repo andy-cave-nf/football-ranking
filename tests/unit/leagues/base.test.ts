@@ -9,7 +9,6 @@ import { DefaultTeamMap, type ReadOnlyTeamMap } from '../../../src/leagues/team_
 import type { Result, Team } from '../../../src/leagues/types';
 import type { SourceTeam } from '../../../src/sources/types';
 import { addDays } from 'date-fns';
-import { record } from 'zod';
 
 describe('Strict League Record', () => {
   let league: StrictLeagueRecord
@@ -18,6 +17,11 @@ describe('Strict League Record', () => {
     beforeEach(async () => {
       origin = defaultInMemoryLeague({teamMap: new DefaultTeamMap(new Map<string,Team>())});
       league = new StrictLeagueRecord(origin);
+    })
+    describe('when standings is called', () => {
+      it('returns the standings unchanged', () => {
+        expect(league.standings()).toEqual(origin.standings())
+      })
     })
     describe('when a match is processed', () => {
       let home: SourceTeam
@@ -65,6 +69,11 @@ describe('Strict League Record', () => {
       team = {id:'team-id',name:'team-name',mu:10,sigma:0.5, lastFixtureDate}
       origin = defaultInMemoryLeague({teamMap: new DefaultTeamMap(new Map<string,Team>([[team.id,team]]))})
       league = new StrictLeagueRecord(origin);
+    })
+    describe('when standings is called', () => {
+      it('returns the standings unchanged', () => {
+        expect(league.standings()).toEqual(origin.standings())
+      })
     })
     describe('when a match involving one existing team and one new team, played after the existing teams last fixture date, is processed', () => {
       let newTeam: SourceTeam
@@ -219,6 +228,11 @@ describe('Strict League Record', () => {
       origin = defaultInMemoryLeague({teamMap: new DefaultTeamMap(new Map([[team1.id, team1],[team2.id, team2]]))})
       league = new StrictLeagueRecord(origin)
     })
+    describe('when standings is called', () => {
+      it('returns the standings unchanged', () => {
+        expect(league.standings()).toEqual(origin.standings())
+      })
+    })
     describe('when a match involving both teams, played before a single teams last fixture date, is processed', () => {
       let result: Result
       let date: Date
@@ -345,6 +359,11 @@ describe('Safe League' , () => {
     test('it has no teams', () => {
       expect(league.teams.size).toEqual(0)
     })
+    describe('when standings is called', () => {
+      it('returns the standings unchanged', ()=>{
+        expect(league.standings()).toEqual(origin.standings())
+      })
+    })
     describe('when a match is processed', () => {
       let home: SourceTeam
       let away: SourceTeam
@@ -403,6 +422,11 @@ describe('Safe League' , () => {
     })
     test('it has only one team', () => {
       expect(league.teams.size).toEqual(1)
+    })
+    describe('when standings is called', () => {
+      it('returns the standings unchanged', ()=>{
+        expect(league.standings()).toEqual(origin.standings())
+      })
     })
     describe('when a match is processed with the existing team', () => {
       let newTeam: SourceTeam
@@ -503,6 +527,11 @@ describe('Safe League' , () => {
       existingTeam2 = {id: 'existing-id-2', name: 'existing-name-2', mu: 12, sigma: 3, lastFixtureDate: date2}
       origin = defaultInMemoryLeague({teamMap: new DefaultTeamMap(new Map([[existingTeam1.id, existingTeam1],[existingTeam2.id, existingTeam2]]))})
       league = new SafeLeague(origin)
+    })
+    describe('when standings is called', () =>{
+      it('returns the standings unchanged', () => {
+        expect(league.standings()).toEqual(origin.standings())
+      })
     })
     describe('when a match is processed with between existing teams', () => {
       let result: Result
@@ -648,6 +677,9 @@ describe('Safe League' , () => {
         get teams(): ReadOnlyTeamMap<string, Team> {throw new Error('errored league')},
         record(_result: Result) {
           throw new Error('errored league')
+        },
+        standings(){
+          throw new Error('errored league')
         }
       }
       league = new SafeLeague(origin)
@@ -660,6 +692,11 @@ describe('Safe League' , () => {
     describe('when the teams are called', () => {
       it('wraps it in a League Error', () => {
         expect(()=> league.teams).toThrow(LeagueError)
+      })
+    })
+    describe('when standings is called', () => {
+      it('wraps it in a League Error', () => {
+        expect(()=>league.standings()).toThrow(LeagueError)
       })
     })
   })

@@ -1,4 +1,4 @@
-import type { Result, Team } from './types';
+import type { Result, Standing, Team } from './types';
 import type { SourceTeam } from '../sources/types';
 import { type League } from './base';
 import type { Ruleset } from '../rulesets/base';
@@ -11,6 +11,14 @@ export class InMemoryLeague implements League {
   ) {}
   get teams(): ReadOnlyTeamMap<string, Team> {
     return this._teams.toReadOnly();
+  }
+  standings(): Standing[] {
+    return this._teams.values().map((team): Standing=> ({
+      name:team.name,
+      skill: this.ruleset.exposeSkill({mu:team.mu, sigma: team.sigma}),
+      mu: team.mu,
+      sigma: team.sigma,
+    }));
   }
   record(result: Result): void {
     this.addInit(result.home, result.date);

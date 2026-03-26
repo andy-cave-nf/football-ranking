@@ -19,7 +19,8 @@ export function defaultInMemoryLeague(opts?:{ ruleset?: Ruleset; teamMap?: TeamM
     },
     newRating():TeamRating {
       return {mu:1,sigma:1}
-    }
+    },
+    exposeSkill(rating:TeamRating):number {return rating.mu;}
   }
 
   const teamMap = opts?.teamMap ?? new DefaultTeamMap(new Map<string,Team>());

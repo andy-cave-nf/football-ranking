@@ -1,4 +1,4 @@
-import type { Result, Team } from '../../../src/leagues/types';
+import type { Result, Standing, Team } from '../../../src/leagues/types';
 import {
   type League,
 } from '../../../src/leagues/base';
@@ -25,6 +25,9 @@ describe('InMemoryLeague', () => {
             home: homeRating,
             away: awayRating,
           }
+        },
+        exposeSkill(rating:TeamRating):number {
+          return rating.mu
         },
         newRating():TeamRating {
           return newRating;
@@ -68,6 +71,15 @@ describe('InMemoryLeague', () => {
       })
       it('adds only the two teams to the league', ()=>{
         expect(league.teams.size).toBe(2)
+      })
+    })
+    describe('when standings is called', () => {
+      let actual: Standing[]
+      beforeEach(async () => {
+        actual = league.standings()
+      })
+      it('returns an empty array', () => {
+        expect(actual).toHaveLength(0)
       })
     })
   })
@@ -124,8 +136,22 @@ describe('InMemoryLeague', () => {
         })
       })
     })
-    describe.todo('when standings is called', () => {
-      it.todo('returns only the existing team with the correct skill')
+    describe('when standings is called', () => {
+      let standings: {name: string, skill: number}[];
+      beforeEach(async () => {
+        standings = league.standings()
+      })
+      it('returns only the existing team with the correct skill', () => {
+        expect(standings).toHaveLength(1)
+      })
+      it('returns the correct skill', () => {
+        expect(standings[0]).toEqual({
+          name: team.name,
+          skill: team.mu,
+          mu: team.mu,
+          sigma: team.sigma
+        })
+      })
     })
   })
 
@@ -255,10 +281,14 @@ describe('InMemoryLeague', () => {
         expect(league.teams.get(existingTeam2.id)).toEqual(existingTeam2)
       })
     })
-    describe.todo('when standings is called', () => {
-      it.todo('returns a list of two teams', () => {})
-      it.todo('returns the skills of the teams correctly', () => {})
-      it.todo('returns the teams in skill order')
+    describe('when standings is called', () => {
+      let standings: Standing[]
+      beforeEach(async () => {
+        standings = league.standings()
+      })
+      it('returns a list of two teams', () => {
+        expect(standings).toHaveLength(2)
+      })
     })
   })
 })
