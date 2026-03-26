@@ -9,4 +9,5 @@ export type TeamRating = { mu: number; sigma: number };
 export interface Ruleset {
   record(result: Result, ratings: Ratings): Ratings;
   newRating(): TeamRating;
+  exposeSkill(rating: TeamRating): number;
 }

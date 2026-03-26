@@ -1,6 +1,6 @@
 import type { TrueSkillConfig } from '../../../src/rulesets/types';
 import type { Result } from '../../../src/leagues/types';
-import type { Ratings, Ruleset } from '../../../src/rulesets/base';
+import type { Ratings, Ruleset, TeamRating } from '../../../src/rulesets/base';
 import { DefaultTrueSkill } from '../../../src/rulesets/trueskill';
 
 function expectValidSigma(ratings: Ratings, config: TrueSkillConfig) {
@@ -31,7 +31,23 @@ describe('DefaultTrueSkill', () => {
     const actual = ruleset.newRating()
     expect(actual).toStrictEqual({mu:config.mu0,sigma:config.sigma0})
   })
+  describe('given a team with a set mu and sigma', () => {
+    let rating: TeamRating
+    beforeEach(() => {
+      rating = {mu: 10, sigma: 2}
+    })
+    describe('when the skill is calculated', () => {
+      let skill: number
+      beforeEach(() => {
+        skill = ruleset.exposeSkill(rating)
+      })
+      it('returns the correct value', () => {
+        const k = config.mu0/config.sigma0
+        expect(skill).toEqual(rating.mu - k*rating.sigma)
 
+      })
+    })
+  })
   describe('given two teams with a home win', () => {
     let result: Result
     beforeEach(() => {
