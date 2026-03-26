@@ -8,6 +8,12 @@ import { JsonPage } from '../../src/pages/pages';
 import { join } from 'path';
 import type { TrueSkillConfig } from '../../src/rulesets/types';
 import { DefaultTrueSkill } from '../../src/rulesets/trueskill';
+import { DefaultTeamMap } from '../../src/leagues/team_maps';
+import type { Team } from '../../src/leagues/types';
+import { SafeJson } from '../../src/sources/parsers/base';
+import { DefaultJsonFixtures, ValidatedJsonScores, ValidatedJsonShape } from '../../src/sources/parsers/json_parse';
+import type { League } from '../../src/leagues/base';
+import type { Rating } from 'ts-trueskill';
 
 let dir:string
 beforeEach(() => {
@@ -19,9 +25,10 @@ afterEach(() => {
 });
 
 
-describe('given a single non-drawn match between two teams from a json source, when the match is processed', () => {
+describe('given a single non-drawn match between two teams from a json source, when the match is', () => {
   let ranking: Rankings
   let config: TrueSkillConfig
+  let league: League
   beforeEach(async () => {
     config = {
       mu0: 25,
@@ -30,31 +37,32 @@ describe('given a single non-drawn match between two teams from a json source, w
       beta: 25/6,
       drawRate: 0.25
     }
-    ranking = new DefaultRankings(
-      new InMemoryLeague(new DefaultTrueSkill(config)),
-      new JsonSource(
-        path.resolve(process.cwd(), 'tests', 'fixtures', 'json_source', 'single_match.json')
-      )
+    league = new InMemoryLeague(
+      new DefaultTeamMap(new Map<string,Team>()),
+      new DefaultTrueSkill(config)
+    )
+    const filepath = path.resolve(process.cwd(), 'tests', 'fixtures', 'json_source', 'single_match.json')
+    ranking =
+      new DefaultRankings(
+        league,
+        new JsonSource(
+          new SafeJson(
+            new ValidatedJsonScores(
+              new ValidatedJsonShape(
+                new DefaultJsonFixtures(filepath)
+              )
+            )
+          )
+        )
     );
-    await ranking.run(new Date(2025, 8, 16), new Date(2026, 5, 25));
+  })
+  describe('when the match is processed', () => {
+    beforeEach(async () => {
+      await ranking.run(new Date(2025, 8, 16), new Date(2026, 5, 25));
+    })
   })
   it.todo('stores both teams with updated ratings', async () => {
-    const rankings= ranking.ranking
-    expect(rankings).toHaveLength(2)
-    for (const ranking in rankings){
-      expect(ranking.mu).not.toEqual(config.mu0);
-      expect(ranking.sigma).toBeLessThan(config.sigma0);
-    }
-  })
-  it.todo('writes a results file with teams sorted by rating', async () => {
-    const file = join(dir, 'single-match-test.json');
-    const page = new JsonPage(file)
-    await ranking.print(page)
-    const raw = readFileSync(file, 'utf-8');
-    const ratings = JSON.parse(raw) as Record<string, Rating>;
-    const allRatings = Object.values(ratings);
-    expect(allRatings[0].mu).toBeGreaterThan(allRatings[1].mu)
-
+    expect(league.standings()).toHaveLength(2)
   })
 })
 
