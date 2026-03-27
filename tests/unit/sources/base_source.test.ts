@@ -256,7 +256,9 @@ describe('Unique Results Source', () => {
       let results: Result[]
       let firstDate: Date
       let secondDate: Date
+      let originCallCount: number
       beforeEach(() => {
+        originCallCount = 0
         firstDate = new Date(2000,0,1)
         secondDate = new Date(2000,0,2)
         results = [
@@ -275,6 +277,7 @@ describe('Unique Results Source', () => {
         ]
         origin = {
           async results(_start:Date, _end:Date): Promise<Result[]> {
+            originCallCount++
             return results
           }
         }
@@ -284,6 +287,10 @@ describe('Unique Results Source', () => {
         const actual = await source.results(firstDate,secondDate)
         const expected = await origin.results(firstDate,secondDate)
         expect(actual).toEqual(expected)
+      })
+      it('calls the original source only once', async ()=> {
+        await source.results(firstDate,secondDate)
+        expect(originCallCount).toEqual(1)
       })
     })
     describe('when two results are parsed that are identical', () => {

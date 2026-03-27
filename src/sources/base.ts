@@ -57,7 +57,7 @@ export class UniqueResultsSource extends StrictSource {
     if (unique.size !== raw.length) {
       throw new SourceError(`There are duplicate results between ${start} and ${end}`);
     }
-    return await this.origin.results(start, end);
+    return raw
   }
 }
 
