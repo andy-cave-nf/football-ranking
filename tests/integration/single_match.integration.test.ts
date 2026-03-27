@@ -3,9 +3,7 @@ import { InMemoryLeague } from '../../src/leagues/in_memory';
 import { JsonSource } from '../../src/sources/json_source';
 import path from 'node:path';
 import { makeTempDir } from '../utils';
-import { readFileSync, rmSync } from 'fs';
-import { JsonPage } from '../../src/pages/pages';
-import { join } from 'path';
+import { rmSync } from 'fs';
 import type { TrueSkillConfig } from '../../src/rulesets/types';
 import { DefaultTrueSkill } from '../../src/rulesets/trueskill';
 import { DefaultTeamMap } from '../../src/leagues/team_maps';
@@ -13,7 +11,6 @@ import type { Team } from '../../src/leagues/types';
 import { SafeJson } from '../../src/sources/parsers/base';
 import { DefaultJsonFixtures, ValidatedJsonScores, ValidatedJsonShape } from '../../src/sources/parsers/json_parse';
 import type { League } from '../../src/leagues/base';
-import type { Rating } from 'ts-trueskill';
 
 let dir:string
 beforeEach(() => {
@@ -25,7 +22,7 @@ afterEach(() => {
 });
 
 
-describe('given a single non-drawn match between two teams from a json source, when the match is', () => {
+describe('given a single non-drawn match between two teams from a json source', () => {
   let ranking: Rankings
   let config: TrueSkillConfig
   let league: League
@@ -60,9 +57,15 @@ describe('given a single non-drawn match between two teams from a json source, w
     beforeEach(async () => {
       await ranking.run(new Date(2025, 8, 16), new Date(2026, 5, 25));
     })
+    it('stores both teams with ratings', () => {
+      expect(league.standings()).toHaveLength(2)
+    })
   })
-  it.todo('stores both teams with updated ratings', async () => {
-    expect(league.standings()).toHaveLength(2)
+})
+
+describe('given a single drawn match between two teams from a json source', () => {
+  describe.todo('when the match is processed', () => {
+    it.todo('stores both teams with ratings', () => {})
   })
 })
 
