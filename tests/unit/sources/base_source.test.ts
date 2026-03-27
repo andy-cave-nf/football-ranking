@@ -13,7 +13,7 @@ import { add, addDays } from 'date-fns';
 describe('Safe Source', () => {
   let source: SafeSource
   let origin: Source
-  describe('given a source that succeeds', () => {
+  describe('given a source that successfully returns results', () => {
     let date: Date
     beforeEach(async () => {
       date = new Date(2000,0,1)
@@ -35,12 +35,26 @@ describe('Safe Source', () => {
     describe('when the source is parsed', () => {
       let expected: Result[]
       let actual: Result[]
-      beforeEach(async () => {
-        expected = await origin.results(date, date)
+      it('returns the data unchanged', async () => {
         actual = await source.results(date, date)
-      })
-      it('returns the data unchanged', () => {
+        expected = await origin.results(date, date)
         expect(actual).toEqual(expected)
+      })
+    })
+  })
+  describe('given a source that succeeds', () => {
+    beforeEach(async () => {
+      origin = {
+        results: vi.fn(async (_start:Date, _end:Date) => [])
+      }
+      source = new SafeSource(origin)
+    })
+    describe('when the source is parsed', () => {
+      beforeEach(async () => {
+        await source.results(new Date(), new Date())
+      })
+      it('calls the origin source only once', () => {
+        expect(origin.results).toHaveBeenCalledOnce()
       })
     })
   })
@@ -63,8 +77,24 @@ describe('Safe Source', () => {
 
 describe('Strict Source Dates', () => {
   let source: StrictSourceDates
+  let origin: Source
+  describe('given a source that succeeds', () => {
+    beforeEach(async () => {
+      origin = {
+        results: vi.fn(async (_start: Date, _end: Date) => []),
+      };
+      source = new StrictSourceDates(origin);
+    })
+    describe('when the source is parsed', () => {
+      beforeEach(async () => {
+        await source.results(new Date(), new Date())
+      })
+      it('calls the origin source only once', () => {
+        expect(origin.results).toHaveBeenCalledOnce()
+      })
+    })
+  })
   describe('given a source with a single result', () => {
-    let origin: Source
     let date: Date
     beforeEach(async () => {
       date = new Date(2000,0,1)
@@ -84,7 +114,7 @@ describe('Strict Source Dates', () => {
     })
     describe('when it is parsed with chronologically ordered dates', () => {
       it('does not raise a source error', async () => {
-        await expect(() => source.results(date,addDays(date,1))).not.toThrow(SourceError)
+        await expect(source.results(date,addDays(date,1))).resolves.not.toThrow(SourceError)
       })
       it.each([
         ['the result inside the date interval',addDays(date,-1), addDays(date,1)],
@@ -97,7 +127,7 @@ describe('Strict Source Dates', () => {
     })
     describe('when it is parsed with the same start and end dates', () => {
       it('does not raise a source error', async () => {
-        await expect(()=> source.results(date,date)).not.toThrow(SourceError)
+        await expect(source.results(date,date)).resolves.not.toThrow(SourceError)
       })
       it.each([
         ['parsing the day of the result', date],
@@ -116,7 +146,6 @@ describe('Strict Source Dates', () => {
     })
   })
   describe('given a source with two results on different days', () => {
-    let origin: Source
     let firstDate: Date
     let secondDate: Date
     beforeEach(async () => {
@@ -194,7 +223,21 @@ describe('Strict Source Dates', () => {
 describe('Strict Source Ids', () => {
   let origin: Source
   let source: StrictSourceIds
-  describe('given a source that succeeds', async () => {
+  describe('given an origin source that succeeds', async () => {
+    beforeEach(async () => {
+      origin = {
+        results: vi.fn(async (_start: Date, _end: Date) => []),
+      };
+      source = new StrictSourceIds(origin);
+      await source.results(new Date(), new Date())
+    })
+    describe('when the source is parsed', async() => {
+      it('calls the source only once', async () => {
+        expect(origin.results).toHaveBeenCalledOnce()
+      })
+    })
+  })
+  describe('given a source with results', async () => {
     describe('when a result is parsed with unique team ids', () => {
       let results: Result[]
       let date: Date
@@ -251,14 +294,30 @@ describe('Strict Source Ids', () => {
 describe('Unique Results Source', () => {
   let origin: Source
   let source: UniqueResultsSource
-  describe('given a source that succeeds', async () => {
+  describe('given an origin source that succeeds', async () => {
+    beforeEach(async () => {
+      origin = {
+        results: vi.fn(async (_start: Date, _end: Date) => []),
+      };
+      source = new UniqueResultsSource(origin);
+    });
+    describe('when the source is processed', async () => {
+      beforeEach(async () => {
+        await source.results(new Date(), new Date());
+      })
+      it('calls the source only once', () => {
+        expect(origin.results).toHaveBeenCalledOnce()
+      })
+    })
+  })
+
+
+  describe('given a source with results', async () => {
     describe('when two results are parsed that are not identical', () => {
       let results: Result[]
       let firstDate: Date
       let secondDate: Date
-      let originCallCount: number
       beforeEach(() => {
-        originCallCount = 0
         firstDate = new Date(2000,0,1)
         secondDate = new Date(2000,0,2)
         results = [
@@ -277,7 +336,6 @@ describe('Unique Results Source', () => {
         ]
         origin = {
           async results(_start:Date, _end:Date): Promise<Result[]> {
-            originCallCount++
             return results
           }
         }
@@ -287,10 +345,6 @@ describe('Unique Results Source', () => {
         const actual = await source.results(firstDate,secondDate)
         const expected = await origin.results(firstDate,secondDate)
         expect(actual).toEqual(expected)
-      })
-      it('calls the original source only once', async ()=> {
-        await source.results(firstDate,secondDate)
-        expect(originCallCount).toEqual(1)
       })
     })
     describe('when two results are parsed that are identical', () => {
