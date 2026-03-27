@@ -30,7 +30,7 @@ export class ApiSource implements Source {
   }
   private async fetchResult(from: Date, to: Date, season: string, league: string) {
     const response = await fetch(
-      apiEnv.API_URL +
+      this.url +
         '/fixtures' +
         '?' +
         new URLSearchParams({
@@ -41,7 +41,7 @@ export class ApiSource implements Source {
         }).toString(),
       {
         method: 'GET',
-        headers: { 'x-apisports-key': apiEnv.API_KEY },
+        headers: { 'x-apisports-key': this.key },
       }
     );
     return (await response.json()) as ApiResponse<'fixture'>;
