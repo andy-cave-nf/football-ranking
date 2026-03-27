@@ -2,8 +2,6 @@ import { DefaultRankings, type Rankings } from '../../src/rankings';
 import { InMemoryLeague } from '../../src/leagues/in_memory';
 import { JsonSource } from '../../src/sources/json_source';
 import path from 'node:path';
-import { makeTempDir } from '../utils';
-import { rmSync } from 'fs';
 import type { TrueSkillConfig } from '../../src/rulesets/types';
 import { DefaultTrueSkill } from '../../src/rulesets/trueskill';
 import { DefaultTeamMap } from '../../src/leagues/team_maps';
@@ -11,15 +9,6 @@ import type { Team } from '../../src/leagues/types';
 import { SafeJson } from '../../src/sources/parsers/base';
 import { DefaultJsonFixtures, ValidatedJsonScores, ValidatedJsonShape } from '../../src/sources/parsers/json_parse';
 import type { League } from '../../src/leagues/base';
-
-let dir:string
-beforeEach(() => {
-  dir = makeTempDir('tmp');
-});
-
-afterEach(() => {
-  rmSync(dir, { recursive: true, force: true });
-});
 
 
 describe('given a single non-drawn match between two teams from a json source', () => {
@@ -62,11 +51,3 @@ describe('given a single non-drawn match between two teams from a json source', 
     })
   })
 })
-
-describe('given a single drawn match between two teams from a json source', () => {
-  describe.todo('when the match is processed', () => {
-    it.todo('stores both teams with ratings', () => {})
-  })
-})
-
-it.todo('given a single drawn match between two teams from a json source when the match is processed then both teams are stored with closer ratings than the prior')
