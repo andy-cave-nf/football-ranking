@@ -102,15 +102,13 @@ describe.only('Default Rankings', () => {
       expected = await source.results(new Date(), new Date())
       actual = []
       league = {
-        async record(_result: Result) {
-          actual.push({
-            home: { id: 'id-1', name: 'team-1' },
-            away: { id: 'id-2', name: 'team-2' },
-            homeWin: 1,
-            date: new Date(2000, 0, 1),
-          });
+        async record(result: Result) {
+          actual.push(result);
         },
-        teams: new DefaultTeamMap(new Map<string|number,Team>()).toReadOnly()
+        teams: new DefaultTeamMap(new Map<string|number,Team>()).toReadOnly(),
+        standings() {
+          return [];
+        }
       }
       rankings = new DefaultRankings(league, source)
     })
@@ -118,9 +116,8 @@ describe.only('Default Rankings', () => {
       beforeEach(async () => {
         await rankings.run(new Date(), new Date())
       })
-      it('leaves the league unchanged', () => {
+      it('no results are recorded', () => {
         expect(actual).toEqual(expected)
-        expect(actual).toHaveLength(0)
       })
 
     })
