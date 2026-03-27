@@ -1,6 +1,4 @@
-import {
-  DefaultRankings,
-} from '../../src/rankings';
+import { DefaultRankings, RankingError, type Rankings, SafeRankings } from '../../src/rankings';
 import type { Result, Team } from '../../src/leagues/types';
 import type { Source } from '../../src/sources/base';
 import type { League } from '../../src/leagues/base';
@@ -115,6 +113,37 @@ describe('Default Rankings', () => {
         expect(actual).toEqual(expected)
       })
 
+    })
+  })
+})
+
+describe('Safe Rankings', () => {
+  let rankings: SafeRankings;
+  let origin: Rankings;
+  describe('given a ranking that succeeds', () => {
+    beforeEach(async() => {
+      origin = {
+        async run(_from: Date, _to: Date){}
+      }
+      rankings = new SafeRankings(origin)
+    })
+    describe('when run is called', () => {
+      it('no error is raised', async () => {
+        await expect(rankings.run(new Date(), new Date())).resolves.not.toThrow()
+      })
+    })
+  })
+  describe('given a ranking that throws an unexpected error', () => {
+    beforeEach(async() => {
+      origin = {
+        async run(_from: Date, _to: Date) {throw new Error('unexpected error')}
+      }
+      rankings = new SafeRankings(origin)
+    })
+    describe('when run is called', () => {
+      it('wraps the error in a RankingError', async () => {
+        await expect(rankings.run(new Date(), new Date())).rejects.toThrow(RankingError)
+      })
     })
   })
 })
