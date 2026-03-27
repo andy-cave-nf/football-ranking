@@ -149,7 +149,6 @@ describe('Read Only Team Maps', () => {
       it('raises a type error', () => {
         // @ts-expect-error: expecting a type error
         expect(()=>teamMap.set(id,updatedTeam)).toThrow();
-        console.log(teamMap.get(id))
       })
     })
     test.todo('the map size is one')
