@@ -27,7 +27,7 @@ describe('Default Json Fixtures', () => {
             awayId: 'T002',
             awayName: 'Beacon United',
             score: '0-1',
-            date: '2026-02-14T15:00:00',
+            date: '2026-02-14T15:00:00Z',
           },
         ],
       };
