@@ -1,7 +1,4 @@
 import type { Result, Team } from '../src/leagues/types';
-import { mkdtempSync } from 'fs';
-import { tmpdir } from 'os';
-import { join } from 'path';
 import { InMemoryLeague } from '../src/leagues/in_memory';
 import type { Ratings, Ruleset, TeamRating } from '../src/rulesets/base';
 import { DefaultTeamMap, type TeamMap } from '../src/leagues/team_maps';
