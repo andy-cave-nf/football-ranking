@@ -35,19 +35,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-modules-
 
-      # Step 4: Install dependencies
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Build (TypeScript → JavaScript)
-        run: npm run build
-
-      - name: Create distribution archive
-        run: |
-          cd dist
-          zip -r ../dist.zip .
-
-      # Step 5: Run semantic-release
+      # Step 4: Run semantic-release
       - name: Run Semantic Release
         run: npx semantic-release
         env:
