@@ -1,4 +1,3 @@
-import type { Page } from './pages/pages';
 import type { Result } from './leagues/types';
 import type { Source } from './sources/base';
 import type { League } from './leagues/base';

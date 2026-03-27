@@ -6,7 +6,7 @@ import type { Source } from '../../src/sources/base';
 import type { League } from '../../src/leagues/base';
 import { DefaultTeamMap} from '../../src/leagues/team_maps';
 
-describe.only('Default Rankings', () => {
+describe('Default Rankings', () => {
   let rankings: DefaultRankings;
   let source: Source;
   let league: League;
