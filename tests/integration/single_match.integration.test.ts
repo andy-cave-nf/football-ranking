@@ -11,7 +11,7 @@ import { DefaultJsonFixtures, ValidatedJsonScores, ValidatedJsonShape } from '..
 import type { League } from '../../src/leagues/base';
 
 
-describe('given a single non-drawn match between two teams from a json source', () => {
+describe('given a single match between two teams from a json source', () => {
   let ranking: Rankings
   let config: TrueSkillConfig
   let league: League
