@@ -33,13 +33,3 @@ function isDashedScore(score: string | null): score is `${number}-${number}` {
   return typeof score === 'string' && /^\d+-\d+$/.test(score);
 }
 
-export class CachedFromJson implements JsonFixtures {
-  private data: JsonData | null = null;
-  constructor(private origin: JsonFixtures) {}
-  async parse(): Promise<JsonData> {
-    if (this.data === null) {
-      this.data = await this.origin.parse();
-    }
-    return this.data;
-  }
-}
