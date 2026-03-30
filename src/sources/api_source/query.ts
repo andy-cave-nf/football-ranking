@@ -21,3 +21,24 @@ export class DefaultApiQuery implements ApiQuery {
       this.url+'/')
   }
 }
+
+export class SafeApiQuery implements ApiQuery {
+  constructor(private origin: ApiQuery) {}
+  query(from: Date, to: Date, season: number): URL {
+    try {
+      return this.origin.query(from, to, season);
+    } catch (error) {
+      throw new ApiQueryError('Error while generating API query', { cause: error });
+    }
+  }
+}
+
+export class ApiQueryError extends Error {
+  constructor(
+    public message: string,
+    public options?: ErrorOptions
+  ) {
+    super(message, options);
+    this.name = 'ApiQueryError';
+  }
+}

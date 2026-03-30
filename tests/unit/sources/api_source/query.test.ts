@@ -1,4 +1,9 @@
-import { DefaultApiQuery } from '../../../../src/sources/api_source/query';
+import {
+  type ApiQuery,
+  ApiQueryError,
+  DefaultApiQuery,
+  SafeApiQuery,
+} from '../../../../src/sources/api_source/query';
 
 describe('Default Api Query', () => {
   let query : DefaultApiQuery
@@ -36,6 +41,57 @@ describe('Default Api Query', () => {
           'https://v3.football.api-sports.io/fixtures?from=2024-01-01&to=2024-12-31&season=2024&league=39'
         );
         expect(actual).toEqual(expected)
+      })
+    })
+  })
+})
+
+describe('Safe Api Query', () => {
+  let origin: ApiQuery
+  let query: SafeApiQuery
+  describe('given an origin that succeeds', () => {
+    beforeEach(async () => {
+      origin = {
+        query(_from: Date, _to:Date, _season:number):URL{
+          return new URL('https://example.com')
+        }
+      }
+      query = new SafeApiQuery(origin)
+    })
+    describe('when the query is processed', () => {
+      let from: Date;
+      let to: Date;
+      let season: number
+      beforeEach(async () => {
+        from = new Date('2024-01-01');
+        to = new Date('2024-12-31');
+        season = 2024
+      })
+      it('returns the query unchanged', () => {
+        expect(query.query(from,to,season)).toEqual(origin.query(from, to, season));
+      })
+    })
+  })
+  describe('given an origin that raises an unexpected error', () => {
+    beforeEach(async () => {
+      origin = {
+        query(_from: Date, _to: Date, _season:number):URL{
+          throw new Error('Unexpected error')
+        }
+      }
+      query = new SafeApiQuery(origin)
+    })
+    describe('when the query is processed', () => {
+      let from: Date;
+      let to: Date;
+      let season: number
+      beforeEach(async () => {
+        from = new Date('2024-01-01');
+        to = new Date('2024-12-31');
+        season = 2024
+      })
+      it('raises an Api Query error', () => {
+        expect(() => query.query(from,to,season)).toThrow(ApiQueryError)
       })
     })
   })
