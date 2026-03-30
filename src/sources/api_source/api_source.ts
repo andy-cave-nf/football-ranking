@@ -1,9 +1,9 @@
-import type { Source } from './base';
-import { apiEnv } from '../env';
-import type { ApiResponse } from './types';
-import { cartesianProduct } from '../utils';
+import type { Source } from '../base';
+import { apiEnv } from '../../env';
+import type { ApiResponse } from '../types';
+import { cartesianProduct } from '../../utils';
 import { format } from 'date-fns';
-import type { Result } from '../leagues/types';
+import type { Result } from '../../leagues/types';
 
 export class ApiSource implements Source {
   private url = apiEnv.API_URL;

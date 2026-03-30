@@ -1,17 +1,34 @@
 import nock, { type Scope } from 'nock';
-import { apiEnv } from '../../../src/env';
+import { apiEnv } from '../../../../src/env';
 
-import { SortedSource, type Source } from '../../../src/sources/base';
-import { ApiSource } from '../../../src/sources/api_source';
-import { apiNock } from '../../fixtures/nocks';
-import type { SourceTeam } from '../../../src/sources/types';
-import type { Result } from '../../../src/leagues/types';
+import { SortedSource, type Source } from '../../../../src/sources/base';
+import { ApiSource } from '../../../../src/sources/api_source/api_source';
+import { apiNock } from '../../../fixtures/nocks';
+import type { SourceTeam } from '../../../../src/sources/types';
+import type { Result } from '../../../../src/leagues/types';
 
 let scope: Scope;
 let source: Source;
 let teams: SourceTeam[];
 let league: number;
 let season: number;
+
+describe('api sources', () => {
+  describe('given an api source of the premier league', () => {
+    describe('when the results of a home win between Liverpool and Newcastle on 2024-01-01 are processed', () => {
+      it.todo('returns the transformed result correctly as a home win', () => {})
+    });
+    describe('when the results of an away win between ')
+
+    describe('when the results between 2024-01-01 and 2026-01-01 are processed',() =>{
+      it.todo('calls the fixtures endpoint with the correct date range')
+      it.todo('returns the correct number of matches')
+      it.todo('returns the matches in ascending date order.')
+    })
+  })
+  describe('when')
+})
+
 
 beforeEach(async () => {
   nock.disableNetConnect();

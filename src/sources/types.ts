@@ -1,4 +1,4 @@
-import type { ApiQuery, FixtureQuery } from './api_source';
+import type { ApiQuery, FixtureQuery } from './api_source/api_source';
 
 export interface SourceTeam {
   id: string;

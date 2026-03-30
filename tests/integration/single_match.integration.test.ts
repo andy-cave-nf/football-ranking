@@ -17,7 +17,7 @@ import {
   StrictSourceIds,
   UniqueResultsSource,
 } from '../../src/sources/base';
-import { ApiSource } from '../../src/sources/api_source';
+import { ApiSource } from '../../src/sources/api_source/api_source';
 
 
 describe('given a single match between two teams from a json source', () => {

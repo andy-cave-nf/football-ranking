@@ -1,4 +1,4 @@
-import type { FixtureQuery, ApiQuery } from '../../src/sources/api_source';
+import type { FixtureQuery, ApiQuery } from '../../src/sources/api_source/api_source';
 import nock from 'nock';
 import { apiEnv } from '../../src/env';
 
