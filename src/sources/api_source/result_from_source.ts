@@ -16,3 +16,24 @@ export class DefaultResultFromApi implements ResultFromApi {
     }
   }
 }
+
+export class SafeResultFromApi implements ResultFromApi {
+  constructor(private origin: ResultFromApi) {}
+  result() {
+    try {
+      return this.origin.result();
+    } catch (error) {
+      throw new ResultsFromApiError('Unable to process result from API', { cause: error });
+    }
+  }
+}
+
+export class ResultsFromApiError extends Error {
+  constructor(
+    public message: string,
+    public options?: ErrorOptions
+  ) {
+    super(message, options);
+    this.name = 'ResultsFromApiError';
+  }
+}

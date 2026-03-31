@@ -1,7 +1,12 @@
 import type { FixtureResponse } from '../../../../src/sources/types';
 import { awayWin, draw, homeWin } from '../../../utils';
 import type { Result } from '../../../../src/leagues/types';
-import { DefaultResultFromApi } from '../../../../src/sources/api_source/result_from_source';
+import {
+  DefaultResultFromApi,
+  type ResultFromApi,
+  ResultsFromApiError,
+  SafeResultFromApi,
+} from '../../../../src/sources/api_source/result_from_source';
 
 describe("DefaultResultFromApi", () => {
   let result: DefaultResultFromApi
@@ -93,3 +98,44 @@ describe("DefaultResultFromApi", () => {
   })
 })
 
+describe('SafeResultFromApi', () => {
+  let origin: ResultFromApi
+  let result: SafeResultFromApi
+  describe('given an origin result that passes',() => {
+    beforeEach(() => {
+      origin = {
+        result(): Result {
+          return {
+            home: {id: "1", name: "team-1"},
+            away: {id: "2", name: "team-2"},
+            homeWin: 1,
+            date: new Date(2026,1,22,14)
+          }
+        },
+      };
+      result = new SafeResultFromApi(origin)
+    })
+    describe('when the result is processed', () => {
+      let actual: Result
+      beforeEach(() => {
+        actual = result.result()
+      })
+      it('returns the transformed result unchanged', () => {
+        expect(actual).toEqual(origin.result())
+      })
+    })
+  })
+  describe('given an origin result that raises an unexpected error', () => {
+    beforeEach(() => {
+      origin = {
+        result(): Result {throw new Error('unexpected error')}
+      }
+      result = new SafeResultFromApi(origin)
+    })
+    describe('when the result is processed', () => {
+      it('wraps the error in a result from api error', () => {
+        expect(() => result.result()).toThrow(ResultsFromApiError)
+      })
+    })
+  })
+})
