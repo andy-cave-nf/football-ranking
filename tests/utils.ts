@@ -2,6 +2,7 @@ import type { Result, Team } from '../src/leagues/types';
 import { InMemoryLeague } from '../src/leagues/in_memory';
 import type { Ratings, Ruleset, TeamRating } from '../src/rulesets/base';
 import { DefaultTeamMap, type TeamMap } from '../src/leagues/team_maps';
+import type { FixtureResponse } from '../src/sources/types';
 
 
 
@@ -75,4 +76,217 @@ export function manyJsonFixtures() {
     ],
   };
 
+}
+
+export const homeWin: FixtureResponse = {
+    "fixture": {
+      "id": 1379232,
+      "referee": "Thomas Kirk, England",
+      "timezone": "UTC",
+      "date": "2026-02-22T14:00:00+00:00",
+      "timestamp": 1771768800,
+      "periods": {
+        "first": 1771768800,
+        "second": 1771772400
+      },
+      "venue": {
+        "id": 525,
+        "name": "Selhurst Park",
+        "city": "London"
+      },
+      "status": {
+        "long": "Match Finished",
+        "short": "FT",
+        "elapsed": 90,
+        "extra": 10
+      }
+    },
+    "league": {
+      "id": 39,
+      "name": "Premier League",
+      "country": "England",
+      "logo": "https://media.api-sports.io/football/leagues/39.png",
+      "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+      "season": 2025,
+      "round": "Regular Season - 27",
+      "standings": true
+    },
+    "teams": {
+      "home": {
+        "id": 52,
+        "name": "Crystal Palace",
+        "logo": "https://media.api-sports.io/football/teams/52.png",
+        "winner": true
+      },
+      "away": {
+        "id": 39,
+        "name": "Wolves",
+        "logo": "https://media.api-sports.io/football/teams/39.png",
+        "winner": false
+      }
+    },
+    "goals": {
+      "home": 1,
+      "away": 0
+    },
+    "score": {
+      "halftime": {
+        "home": 0,
+        "away": 0
+      },
+      "fulltime": {
+        "home": 1,
+        "away": 0
+      },
+      "extratime": {
+        "home": null,
+        "away": null
+      },
+      "penalty": {
+        "home": null,
+        "away": null
+      }
+    }
+  }
+
+export const awayWin: FixtureResponse = {
+  fixture: {
+    id: 1379232,
+    referee: 'Thomas Kirk, England',
+    timezone: 'UTC',
+    date: '2026-02-22T14:00:00+00:00',
+    timestamp: 1771768800,
+    periods: {
+      first: 1771768800,
+      second: 1771772400,
+    },
+    venue: {
+      id: 525,
+      name: 'Selhurst Park',
+      city: 'London',
+    },
+    status: {
+      long: 'Match Finished',
+      short: 'FT',
+      elapsed: 90,
+      extra: 10,
+    },
+  },
+  league: {
+    id: 39,
+    name: 'Premier League',
+    country: 'England',
+    logo: 'https://media.api-sports.io/football/leagues/39.png',
+    flag: 'https://media.api-sports.io/flags/gb-eng.svg',
+    season: 2025,
+    round: 'Regular Season - 27',
+    standings: true,
+  },
+  teams: {
+    home: {
+      id: 52,
+      name: 'Crystal Palace',
+      logo: 'https://media.api-sports.io/football/teams/52.png',
+      winner: false,
+    },
+    away: {
+      id: 39,
+      name: 'Wolves',
+      logo: 'https://media.api-sports.io/football/teams/39.png',
+      winner: true,
+    },
+  },
+  goals: {
+    home: 0,
+    away: 1,
+  },
+  score: {
+    halftime: {
+      home: 0,
+      away: 0,
+    },
+    fulltime: {
+      home: 0,
+      away: 1,
+    },
+    extratime: {
+      home: null,
+      away: null,
+    },
+    penalty: {
+      home: null,
+      away: null,
+    }
+  }
+};
+
+export const draw: FixtureResponse = {
+  "fixture": {
+    "id": 1208026,
+    "referee": "M. Oliver",
+    "timezone": "UTC",
+    "date": "2024-08-17T14:00:00+00:00",
+    "timestamp": 1723903200,
+    "periods": {
+      "first": 1723903200,
+      "second": 1723906800
+    },
+    "venue": {
+      "id": 566,
+      "name": "The City Ground",
+      "city": "Nottingham, Nottinghamshire"
+    },
+    "status": {
+      "long": "Match Finished",
+      "short": "FT",
+      "elapsed": 90,
+      "extra": null
+    }
+  },
+  "league": {
+    "id": 39,
+    "name": "Premier League",
+    "country": "England",
+    "logo": "https://media.api-sports.io/football/leagues/39.png",
+    "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+    "season": 2024,
+    "round": "Regular Season - 1",
+    "standings": true
+  },
+  "teams": {
+    "home": {
+      "id": 65,
+      "name": "Nottingham Forest",
+      "logo": "https://media.api-sports.io/football/teams/65.png",
+      "winner": null
+    },
+    "away": {
+      "id": 35,
+      "name": "Bournemouth",
+      "logo": "https://media.api-sports.io/football/teams/35.png",
+      "winner": null
+    }
+  },
+  "goals": {
+    "home": 1,
+    "away": 1
+  },
+  "score": {
+    "halftime": {
+      "home": 1,
+      "away": 0
+    },
+    "fulltime": {
+      "home": 1,
+      "away": 1
+    },
+    "extratime": {
+      "home": null,
+      "away": null
+    },
+    "penalty": {
+      "home": null,
+      "away": null
+    }
+  }
 }
