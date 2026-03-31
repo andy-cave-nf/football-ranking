@@ -58,7 +58,7 @@ type Fixture = {
   timezone: string;
   date: string;
   timestamp: number;
-  periods: { first: number; last: number };
+  periods: { first: number; second: number };
 };
 
 type VenueFixtureDetail = {
