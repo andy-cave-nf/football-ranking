@@ -86,7 +86,7 @@ type TeamFixtureDetail = {
   id: number;
   name: string;
   logo: string;
-  winner: boolean;
+  winner: boolean | null;
 };
 type StrictGoals = {
   home: number;
@@ -99,7 +99,7 @@ type Goals = {
 
 type Score = {
   halftime: Goals;
-  fulltime: Goals;
+  fulltime: Goals
   extratime: Goals;
   penalty: Goals;
 };
