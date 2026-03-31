@@ -44,8 +44,6 @@ type VenueDetail = {
 
 export type FixtureResponse = {
   fixture: Fixture;
-  venue: VenueFixtureDetail;
-  status: Status;
   league: League;
   teams: { home: TeamFixtureDetail; away: TeamFixtureDetail };
   goals: StrictGoals;
@@ -59,6 +57,8 @@ type Fixture = {
   date: string;
   timestamp: number;
   periods: { first: number; second: number };
+  venue: VenueFixtureDetail;
+  status: Status;
 };
 
 type VenueFixtureDetail = {
