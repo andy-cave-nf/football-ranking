@@ -1,45 +1,17 @@
-import type { ApiQuery, FixtureQuery } from './api_source/api_source';
+import type { FixtureQuery } from './api_source/api_source';
 
 export interface SourceTeam {
   id: string;
   name: string;
 }
 
-type ApiResponseMap = {
-  team: { parameters: ApiQuery; response: TeamResponse[] };
-  fixture: { parameters: FixtureQuery; response: FixtureResponse[] };
-};
-
-export type ApiResponse<T extends keyof ApiResponseMap> = {
+export type ApiResponse = {
   get: string;
-  parameters: ApiResponseMap[T]['parameters'];
+  parameters: FixtureQuery;
   errors: string[];
   results: number;
   paging: { current: number; total: number };
-  response: ApiResponseMap[T]['response'];
-};
-export type TeamResponse = {
-  team: TeamDetail;
-  venue: VenueDetail;
-};
-
-type TeamDetail = {
-  id: number;
-  name: string;
-  code: string;
-  country: string;
-  founded: number;
-  national: boolean;
-  logo: string;
-};
-type VenueDetail = {
-  id: number;
-  name: string;
-  address: string;
-  city: string;
-  capacity: number;
-  surface: string;
-  image: string;
+  response: FixtureResponse[];
 };
 
 export type FixtureResponse = {
