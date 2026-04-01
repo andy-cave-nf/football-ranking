@@ -44,12 +44,12 @@ export class ApiSource implements Source {
         headers: { 'x-apisports-key': this.key },
       }
     );
-    return (await response.json()) as ApiResponse<'fixture'>;
+    return (await response.json()) as ApiResponse;
   }
-  private cleanedResults(rawResponse: ApiResponse<'fixture'>[]) {
+  private cleanedResults(rawResponse: ApiResponse[]) {
     return rawResponse.map((response) => this.cleanedResult(response)).flat();
   }
-  private cleanedResult(response: ApiResponse<'fixture'>): Result[] {
+  private cleanedResult(response: ApiResponse): Result[] {
     const fixtures = response.response;
     return fixtures.map((fixture) => ({
       home: { id: fixture.teams.home.id.toString(), name: fixture.teams.home.name },
