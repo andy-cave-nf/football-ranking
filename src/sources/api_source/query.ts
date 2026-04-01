@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 
 export interface ApiQuery {
-  query(start: Date, end: Date, season: number): URL
+  query(start: Date, end: Date, season: number): string
 }
 
 export type ApiUrl = {
@@ -11,24 +11,20 @@ export type ApiUrl = {
 
 
 export class DefaultApiQuery implements ApiQuery {
-  constructor(private league: string, private url: ApiUrl) {}
-  query(from:Date, to: Date, season: number) {
-    return new URL(
-      this.url.endpoint + '?'+
-      new URLSearchParams({
-        from: format(from,'yyyy-MM-dd'),
-        to: format(to,'yyyy-MM-dd'),
-        season: season.toString(),
-        league: this.league,
-      },
-        ).toString(),
-      this.url.base+'/')
+  constructor(private league: string) {}
+  query(from: Date, to: Date, season: number) {
+    return new URLSearchParams({
+      from: format(from, 'yyyy-MM-dd'),
+      to: format(to, 'yyyy-MM-dd'),
+      season: season.toString(),
+      league: this.league,
+    }).toString();
   }
 }
 
 export class SafeApiQuery implements ApiQuery {
   constructor(private origin: ApiQuery) {}
-  query(from: Date, to: Date, season: number): URL {
+  query(from: Date, to: Date, season: number): string {
     try {
       return this.origin.query(from, to, season);
     } catch (error) {

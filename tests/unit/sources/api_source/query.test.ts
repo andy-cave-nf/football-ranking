@@ -5,19 +5,16 @@ import {
   DefaultApiQuery,
   SafeApiQuery,
 } from '../../../../src/sources/api_source/query';
-import { apiEnv } from '../../../../src/env';
 
 describe('Default Api Query', () => {
   let query : DefaultApiQuery
   let startDate: Date;
   let endDate: Date;
   describe('given a query for a premier league api source', () => {
-    let actual: URL
-    let apiUrl: ApiUrl
+    let actual: string
     let season: number
     beforeEach(async () => {
-      apiUrl = {base: apiEnv.API_URL, endpoint: apiEnv.API_ENDPOINT}
-      query = new DefaultApiQuery("39", apiUrl)
+      query = new DefaultApiQuery("39")
     })
     describe('when the date 2024-01-01 is processed for the 2024 season', () => {
       beforeEach(async () => {
@@ -28,8 +25,7 @@ describe('Default Api Query', () => {
       })
 
       it('returns a query for the 2024 season', () => {
-        const expected =
-          new URL('https://v3.football.api-sports.io/fixtures?from=2024-01-01&to=2024-01-01&season=2024&league=39');
+        const expected = 'from=2024-01-01&to=2024-01-01&season=2024&league=39';
         expect(actual).toEqual(expected)
       })
     })
@@ -41,9 +37,7 @@ describe('Default Api Query', () => {
         actual = query.query(startDate, endDate, season)
       })
       it('returns a query for the 2024 season', () => {
-        const expected = new URL(
-          'https://v3.football.api-sports.io/fixtures?from=2024-01-01&to=2024-12-31&season=2024&league=39'
-        );
+        const expected = 'from=2024-01-01&to=2024-12-31&season=2024&league=39';
         expect(actual).toEqual(expected)
       })
     })
@@ -56,8 +50,8 @@ describe('Safe Api Query', () => {
   describe('given an origin that succeeds', () => {
     beforeEach(async () => {
       origin = {
-        query(_from: Date, _to:Date, _season:number):URL{
-          return new URL('https://example.com')
+        query(_from: Date, _to:Date, _season:number):string{
+          return 'a-query'
         }
       }
       query = new SafeApiQuery(origin)
