@@ -1,24 +1,28 @@
-import { apiEnv } from '../../env';
 import { format } from 'date-fns';
 
 export interface ApiQuery {
   query(start: Date, end: Date, season: number): URL
 }
 
+export type ApiUrl = {
+  base: string;
+  endpoint: string;
+}
+
+
 export class DefaultApiQuery implements ApiQuery {
-  private url = apiEnv.API_URL
-  constructor(private leagues: string) {}
+  constructor(private league: string, private url: ApiUrl) {}
   query(from:Date, to: Date, season: number) {
     return new URL(
-      'fixtures?'+
+      this.url.endpoint + '?'+
       new URLSearchParams({
         from: format(from,'yyyy-MM-dd'),
         to: format(to,'yyyy-MM-dd'),
         season: season.toString(),
-        league: this.leagues,
+        league: this.league,
       },
         ).toString(),
-      this.url+'/')
+      this.url.base+'/')
   }
 }
 

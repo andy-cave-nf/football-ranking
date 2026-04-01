@@ -1,9 +1,11 @@
 import {
   type ApiQuery,
   ApiQueryError,
+  type ApiUrl,
   DefaultApiQuery,
   SafeApiQuery,
 } from '../../../../src/sources/api_source/query';
+import { apiEnv } from '../../../../src/env';
 
 describe('Default Api Query', () => {
   let query : DefaultApiQuery
@@ -11,9 +13,11 @@ describe('Default Api Query', () => {
   let endDate: Date;
   describe('given a query for a premier league api source', () => {
     let actual: URL
+    let apiUrl: ApiUrl
     let season: number
     beforeEach(async () => {
-      query = new DefaultApiQuery("39")
+      apiUrl = {base: apiEnv.API_URL, endpoint: apiEnv.API_ENDPOINT}
+      query = new DefaultApiQuery("39", apiUrl)
     })
     describe('when the date 2024-01-01 is processed for the 2024 season', () => {
       beforeEach(async () => {
