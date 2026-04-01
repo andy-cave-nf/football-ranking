@@ -1,7 +1,6 @@
 import {
   type ApiQuery,
   ApiQueryError,
-  type ApiUrl,
   DefaultApiQuery,
   SafeApiQuery,
 } from '../../../../src/sources/api_source/query';
@@ -73,7 +72,7 @@ describe('Safe Api Query', () => {
   describe('given an origin that raises an unexpected error', () => {
     beforeEach(async () => {
       origin = {
-        query(_from: Date, _to: Date, _season:number):URL{
+        query(_from: Date, _to: Date, _season:number):string{
           throw new Error('Unexpected error')
         }
       }
