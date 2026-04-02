@@ -79,10 +79,8 @@ describe('Api Request', () => {
     let query: ApiQuery;
     let options: RequestOptions;
     let scope: Scope;
-    let filename: string;
 
     beforeEach(() => {
-      filename = 'tests/fixtures/api_football/pl-2026-02-22.json';
       url = new URL('https://www.example.com');
       queryParams = { start: new Date(), end: new Date(), season: 2025 };
       options = {
