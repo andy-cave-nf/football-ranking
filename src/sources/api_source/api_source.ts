@@ -4,6 +4,7 @@ import type { ApiResponse } from '../types';
 import { cartesianProduct } from '../../utils';
 import { format } from 'date-fns';
 import type { Result } from '../../leagues/types';
+import { z } from 'zod';
 
 export class ApiSource implements Source {
   private url = apiEnv.API_URL;
@@ -65,9 +66,11 @@ export type ApiQuery = {
   season: string;
 };
 
-export type FixtureQuery = {
-  from: string;
-  to: string;
-  season: string;
-  league: string;
-};
+export const FixtureQuerySchema = z.object({
+  from: z.iso.date(),
+  to: z.iso.date(),
+  season: z.string(),
+  league: z.string()
+})
+
+export type FixtureQuery = z.infer<typeof FixtureQuerySchema>

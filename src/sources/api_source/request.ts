@@ -1,4 +1,4 @@
-import type { ApiResponse } from '../types';
+import  { type ApiResponse, ApiResponseSchema } from '../types';
 import type { ApiQuery } from './query';
 
 export interface ApiRequest {
@@ -23,6 +23,6 @@ export class DefaultApiRequest implements ApiRequest {
         headers: this.options.headers,
       }
     )
-    return await response.json();
+    return ApiResponseSchema.parse(await response.json());
   }
 }
