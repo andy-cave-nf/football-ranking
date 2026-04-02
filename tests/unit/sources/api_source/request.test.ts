@@ -78,7 +78,6 @@ describe('Api Request', () => {
     let queryParams: { start: Date; end: Date; season: number };
     let query: ApiQuery;
     let options: RequestOptions;
-    let scope: Scope;
 
     beforeEach(() => {
       url = new URL('https://www.example.com');
@@ -93,7 +92,7 @@ describe('Api Request', () => {
           return 'a-query';
         },
       };
-      scope = nock(new URL(url), {
+      nock(new URL(url), {
         reqheaders: options.headers,
       })
         .get('/' + options.endpoint)
