@@ -23,6 +23,13 @@ export class DefaultApiRequest implements ApiRequest {
         headers: this.options.headers,
       }
     )
-    return ApiResponseSchema.parse(await response.json());
+    return await response.json();
+  }
+}
+
+export class ValidatedRequest implements ApiRequest {
+  constructor(private origin: ApiRequest){}
+  async requestWithParams(start: Date, end: Date, season: number): Promise<ApiResponse> {
+    return ApiResponseSchema.parse(await this.origin.requestWithParams(start, end, season));
   }
 }

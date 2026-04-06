@@ -9,9 +9,9 @@ const fixtureResponse = await fetch(
     '?' +
     new URLSearchParams({
       league: '39',
-      from: '2024-08-16',
-      to: '2025-05-25',
-      season: '2025',
+      from: '2022-08-08',
+      to: '2022-08-09',
+      season: '2022',
     }).toString(),
   {
     method: 'GET',
@@ -23,7 +23,7 @@ const fixtureResponse = await fetch(
 // TODO: say dates are between 2023-01-01 and 2026-01-01 it needs seasons 2022,23,24,25,26
 
 fs.writeFileSync(
-  'tests/fixtures/api_football/pl_2024-08-16_2025-05-25_season_2025.json',
+  'tests/fixtures/api_football/pl_2022-08-08_2022-08-09_season_2022.json',
   JSON.stringify(await fixtureResponse.json(), null, 2)
 );
 
