@@ -36,7 +36,7 @@ export class SchemaValidatedRequest implements ApiRequest {
 
 export class ApiErrorWrappedRequest implements ApiRequest {
   constructor(private origin: ApiRequest){}
-  async requestWithParams(start: Date, end: Date, season: number) {
+  async requestWithParams(start: Date, end: Date, season: number):Promise<ApiResponse> {
     try {
       return await this.origin.requestWithParams(start, end, season);
     } catch (error) {
