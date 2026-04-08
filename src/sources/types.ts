@@ -50,7 +50,7 @@ const LeagueSchema = z.object({
 
 const StatusSchema = z.object({
   long: z.string(),
-  short: z.union([z.literal('FT'),z.literal('AET'),z.literal('PEN'),z.literal('WO'),z.literal('AWD')]),
+  short: z.string(),
   elapsed: z.number().int().gte(90),
   extra: z.union([z.number().int().gte(0), z.null()])
 })
