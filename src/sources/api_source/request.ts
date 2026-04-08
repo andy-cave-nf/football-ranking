@@ -11,7 +11,7 @@ export type RequestOptions = {
   method: 'GET' | 'POST' | 'PUT' | 'PATCH'
 }
 
-export class DefaultApiRequest implements ApiRequest {
+export class EndpointRequest implements ApiRequest {
   constructor(private url: URL, private query: ApiQuery, private options: RequestOptions) {}
   async requestWithParams(start: Date, end: Date, season: number): Promise<ApiResponse> {
     const response = await fetch(
@@ -27,9 +27,30 @@ export class DefaultApiRequest implements ApiRequest {
   }
 }
 
-export class ValidatedRequest implements ApiRequest {
+export class SchemaValidatedRequest implements ApiRequest {
   constructor(private origin: ApiRequest){}
   async requestWithParams(start: Date, end: Date, season: number): Promise<ApiResponse> {
     return ApiResponseSchema.parse(await this.origin.requestWithParams(start, end, season));
+  }
+}
+
+export class ApiErrorWrappedRequest implements ApiRequest {
+  constructor(private origin: ApiRequest){}
+  async requestWithParams(start: Date, end: Date, season: number) {
+    try {
+      return await this.origin.requestWithParams(start, end, season);
+    } catch (error) {
+      throw new ApiRequestError('Unable to parse response', { cause: error});
+    }
+  }
+}
+
+export class ApiRequestError extends Error {
+  constructor(
+    public message: string,
+    public options?: ErrorOptions
+  ) {
+    super(message, options);
+    this.name = 'ApiRequestError';
   }
 }

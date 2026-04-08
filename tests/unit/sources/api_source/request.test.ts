@@ -1,16 +1,18 @@
 import type { ApiQuery } from '../../../../src/sources/api_source/query';
 import nock, { type Scope } from 'nock';
 import {
+  ApiErrorWrappedRequest,
   type ApiRequest,
-  DefaultApiRequest,
+  ApiRequestError,
+  EndpointRequest,
   type RequestOptions,
-  ValidatedRequest,
+  SchemaValidatedRequest,
 } from '../../../../src/sources/api_source/request';
 import type { ApiResponse } from '../../../../src/sources/types';
 import * as fs from 'node:fs';
 import { ZodError } from 'zod';
 import { readFile } from 'fs/promises';
-describe('Api Request', () => {
+describe('Endpoint Request', () => {
   let request: ApiRequest
   beforeAll(() => {
     nock.disableNetConnect()
@@ -49,7 +51,7 @@ describe('Api Request', () => {
         .get('/' + options.endpoint)
         .query(query.query(queryParams.start, queryParams.end, queryParams.season))
         .replyWithFile(200, filename, { 'Content-Type': 'application/json' });
-      request = new DefaultApiRequest(url, query, options)
+      request = new EndpointRequest(url, query, options)
     })
     describe('when the request is executed', () => {
       let response: ApiResponse
@@ -97,7 +99,7 @@ describe('Api Request', () => {
         .query(query.query(queryParams.start, queryParams.end, queryParams.season))
         .replyWithFile(200, filename, { 'Content-Type': 'application/json' });
 
-      request = new DefaultApiRequest(url, query, options);
+      request = new EndpointRequest(url, query, options);
     })
     describe('when the request is executed', () => {
       let response: ApiResponse
@@ -110,9 +112,51 @@ describe('Api Request', () => {
     })
   })
 })
-describe.todo('Safe Api Request', () => {})
+describe('Api Error Wrapped Request', () => {
+  let request: ApiErrorWrappedRequest
+  let origin: ApiRequest
+  describe('given an api request that returns a successful response', () => {
+    beforeEach(async () => {
+      const filename = 'tests/fixtures/api_football/pl-2026-02-22.json';
+      origin = {
+        async requestWithParams(_start: Date, _end: Date, _season: number): Promise<ApiResponse> {
+          const raw = await readFile(filename, 'utf-8');
+          return JSON.parse(raw);
+        },
+      };
+      request = new ApiErrorWrappedRequest(origin);
+    });
+    describe('when the request is executed', () => {
+      let response: ApiResponse
+      beforeEach(async () => {
+        response = await request.requestWithParams(new Date(), new Date(), 2025)
+      })
+      it('returns the response unchanged', async () => {
+        const expected = await origin.requestWithParams(new Date(), new Date(), 2025)
+        expect(response).toEqual(expected)
+      })
+    })
+  })
+  describe('given an api request that throws an unexpected error', () => {
+    beforeEach(async () => {
+      origin = {
+        async requestWithParams(_start: Date, _end: Date, _season: number): Promise<ApiResponse> {
+          throw new Error('Unexpected error')
+        },
+      };
+      request = new ApiErrorWrappedRequest(origin);
+    });
+    describe('when the request is executed', () => {
+      it('wraps the error in an Api Request Error', async () =>{
+        await expect(request.requestWithParams(new Date(), new Date(), 2025)).rejects.toThrow(
+          ApiRequestError
+        );
+      })
+    })
+  })
+})
 describe('Valid Response From Api Request', () => {
-  let request: ValidatedRequest
+  let request: SchemaValidatedRequest
   let origin: ApiRequest
   describe('given an api request that returns an expected response', () => {
     beforeEach(async () => {
@@ -123,7 +167,7 @@ describe('Valid Response From Api Request', () => {
           return JSON.parse(raw)
         }
       }
-      request = new ValidatedRequest(origin);
+      request = new SchemaValidatedRequest(origin);
     })
     describe('when the request is executed', () => {
       let response: ApiResponse
@@ -144,14 +188,27 @@ describe('Valid Response From Api Request', () => {
           return {bad: 'structure'}
         },
       };
-      request = new ValidatedRequest(origin);
+      request = new SchemaValidatedRequest(origin);
     })
     describe('when the request is executed', () => {
-      it.todo('raises a Zod Error', async () => {
+      it('raises a Zod Error', async () => {
         await expect(
           request.requestWithParams(new Date(), new Date(), 2025)
         ).rejects.toThrow(ZodError);
       })
+    })
+  })
+})
+
+describe.todo('ErrorGuarded Api Request', () => {
+  describe('given an api request that returns a successful response', () => {
+    describe('when the request is executed', () => {
+      it.todo('returns the response unchanged')
+    })
+  })
+  describe('given an api request that returns a response with errors', () => {
+    describe('when the request is executed', () => {
+      it.todo('throws an Api Request Error')
     })
   })
 })
