@@ -18,7 +18,7 @@ describe('api sources', () => {
     describe('when the results of a home win between Liverpool and Newcastle on 2024-01-01 are processed', () => {
       it.todo('returns the transformed result correctly as a home win', () => {})
     });
-    describe('when the results of an away win between ')
+    describe.todo('when the results of an away win between')
 
     describe('when the results between 2024-01-01 and 2026-01-01 are processed',() =>{
       it.todo('calls the fixtures endpoint with the correct date range')

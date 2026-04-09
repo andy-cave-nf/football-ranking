@@ -88,7 +88,7 @@ const PagingSchema = z.object({
   total: z.number().gte(0)
 })
 
-export const ApiResponseSchema = z.object({
+export const ApiZodSchema = z.object({
   get: z.string(),
   parameters: FixtureQuerySchema,
   errors: z.array(z.string()),
@@ -98,5 +98,5 @@ export const ApiResponseSchema = z.object({
 })
 
 
-export type ApiResponse = z.infer<typeof ApiResponseSchema>;
+export type ApiSchema = z.infer<typeof ApiZodSchema>;
 export type FixtureResponse = z.infer<typeof FixtureResponseSchema>;

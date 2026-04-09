@@ -1,6 +1,6 @@
 import type { Source } from '../base';
 import { apiEnv } from '../../env';
-import type { ApiResponse } from '../types';
+import type { ApiSchema } from '../types';
 import { cartesianProduct } from '../../utils';
 import { format } from 'date-fns';
 import type { Result } from '../../leagues/types';
@@ -45,12 +45,12 @@ export class ApiSource implements Source {
         headers: { 'x-apisports-key': this.key },
       }
     );
-    return (await response.json()) as ApiResponse;
+    return (await response.json()) as ApiSchema;
   }
-  private cleanedResults(rawResponse: ApiResponse[]) {
+  private cleanedResults(rawResponse: ApiSchema[]) {
     return rawResponse.map((response) => this.cleanedResult(response)).flat();
   }
-  private cleanedResult(response: ApiResponse): Result[] {
+  private cleanedResult(response: ApiSchema): Result[] {
     const fixtures = response.response;
     return fixtures.map((fixture) => ({
       home: { id: fixture.teams.home.id.toString(), name: fixture.teams.home.name },

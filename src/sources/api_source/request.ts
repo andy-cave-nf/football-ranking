@@ -1,8 +1,8 @@
-import  { type ApiResponse, ApiResponseSchema } from '../types';
+import  { type ApiSchema, ApiZodSchema } from '../types';
 import type { ApiQuery } from './query';
 
 export interface ApiRequest {
-  requestWithParams(start: Date,end: Date, season: number) : Promise<ApiResponse>
+  requestWithParams(start: Date,end: Date, season: number) : Promise<ApiSchema>
 }
 
 export type RequestOptions = {
@@ -13,7 +13,7 @@ export type RequestOptions = {
 
 export class EndpointRequest implements ApiRequest {
   constructor(private url: URL, private query: ApiQuery, private options: RequestOptions) {}
-  async requestWithParams(start: Date, end: Date, season: number): Promise<ApiResponse> {
+  async requestWithParams(start: Date, end: Date, season: number): Promise<ApiSchema> {
     const response = await fetch(
       new URL(
         '/'+this.options.endpoint + '?' + this.query.query(start,end,season),this.url
@@ -29,14 +29,14 @@ export class EndpointRequest implements ApiRequest {
 
 export class SchemaValidatedRequest implements ApiRequest {
   constructor(private origin: ApiRequest){}
-  async requestWithParams(start: Date, end: Date, season: number): Promise<ApiResponse> {
-    return ApiResponseSchema.parse(await this.origin.requestWithParams(start, end, season));
+  async requestWithParams(start: Date, end: Date, season: number): Promise<ApiSchema> {
+    return ApiZodSchema.parse(await this.origin.requestWithParams(start, end, season));
   }
 }
 
 export class ApiErrorWrappedRequest implements ApiRequest {
   constructor(private origin: ApiRequest){}
-  async requestWithParams(start: Date, end: Date, season: number):Promise<ApiResponse> {
+  async requestWithParams(start: Date, end: Date, season: number):Promise<ApiSchema> {
     try {
       return await this.origin.requestWithParams(start, end, season);
     } catch (error) {
@@ -47,8 +47,8 @@ export class ApiErrorWrappedRequest implements ApiRequest {
 
 export class ErrorGuardedApiRequest implements ApiRequest {
   constructor(private origin: ApiRequest){}
-  async requestWithParams(start: Date, end: Date, season: number): Promise<ApiResponse> {
-    const raw: ApiResponse = await this.origin.requestWithParams(start, end, season);
+  async requestWithParams(start: Date, end: Date, season: number): Promise<ApiSchema> {
+    const raw: ApiSchema = await this.origin.requestWithParams(start, end, season);
     if (!Array.isArray(raw.errors) || raw.errors.length > 0) {
       throw new ApiRequestError('Api response returned errors', {cause: raw.errors});
     }

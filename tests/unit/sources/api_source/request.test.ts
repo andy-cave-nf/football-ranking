@@ -9,7 +9,7 @@ import {
   type RequestOptions,
   SchemaValidatedRequest,
 } from '../../../../src/sources/api_source/request';
-import type { ApiResponse } from '../../../../src/sources/types';
+import type { ApiSchema } from '../../../../src/sources/types';
 import * as fs from 'node:fs';
 import { ZodError } from 'zod';
 import { readFile } from 'fs/promises';
@@ -55,8 +55,8 @@ describe('Endpoint Request', () => {
       request = new EndpointRequest(url, query, options)
     })
     describe('when the request is executed', () => {
-      let response: ApiResponse
-      let expected: ApiResponse
+      let response: ApiSchema
+      let expected: ApiSchema
       beforeEach(async () => {
         response = await request.requestWithParams(queryParams.start, queryParams.end, queryParams.season)
         expected = JSON.parse(fs.readFileSync(filename, 'utf8'));
@@ -103,7 +103,7 @@ describe('Endpoint Request', () => {
       request = new EndpointRequest(url, query, options);
     })
     describe('when the request is executed', () => {
-      let response: ApiResponse
+      let response: ApiSchema
       beforeEach(async () => {
         response = await request.requestWithParams(queryParams.start, queryParams.end, queryParams.season)
       })
@@ -120,7 +120,7 @@ describe('Api Error Wrapped Request', () => {
     beforeEach(async () => {
       const filename = 'tests/fixtures/api_football/pl-2026-02-22.json';
       origin = {
-        async requestWithParams(_start: Date, _end: Date, _season: number): Promise<ApiResponse> {
+        async requestWithParams(_start: Date, _end: Date, _season: number): Promise<ApiSchema> {
           const raw = await readFile(filename, 'utf-8');
           return JSON.parse(raw);
         },
@@ -128,7 +128,7 @@ describe('Api Error Wrapped Request', () => {
       request = new ApiErrorWrappedRequest(origin);
     });
     describe('when the request is executed', () => {
-      let response: ApiResponse
+      let response: ApiSchema
       beforeEach(async () => {
         response = await request.requestWithParams(new Date(), new Date(), 2025)
       })
@@ -141,7 +141,7 @@ describe('Api Error Wrapped Request', () => {
   describe('given an api request that throws an unexpected error', () => {
     beforeEach(async () => {
       origin = {
-        async requestWithParams(_start: Date, _end: Date, _season: number): Promise<ApiResponse> {
+        async requestWithParams(_start: Date, _end: Date, _season: number): Promise<ApiSchema> {
           throw new Error('Unexpected error')
         },
       };
@@ -163,7 +163,7 @@ describe('Valid Response From Api Request', () => {
     beforeEach(async () => {
       const filename = "tests/fixtures/api_football/pl-2026-02-22.json";
       origin = {
-        async requestWithParams(_start: Date, _end: Date, _season: number): Promise<ApiResponse> {
+        async requestWithParams(_start: Date, _end: Date, _season: number): Promise<ApiSchema> {
           const raw = await readFile(filename,'utf-8')
           return JSON.parse(raw)
         }
@@ -171,7 +171,7 @@ describe('Valid Response From Api Request', () => {
       request = new SchemaValidatedRequest(origin);
     })
     describe('when the request is executed', () => {
-      let response: ApiResponse
+      let response: ApiSchema
       beforeEach(async () => {
         response = await request.requestWithParams(new Date(), new Date(), 2025)
       })
@@ -184,7 +184,7 @@ describe('Valid Response From Api Request', () => {
   describe('given an api request that returns an unexpected response', () => {
     beforeEach(async () => {
       origin = {
-        async requestWithParams(_start: Date, _end: Date, _season: number): Promise<ApiResponse> {
+        async requestWithParams(_start: Date, _end: Date, _season: number): Promise<ApiSchema> {
           // @ts-expect-error: expect Type Error or Zod Error
           return {bad: 'structure'}
         },
@@ -208,7 +208,7 @@ describe('ErrorGuarded Api Request', () => {
     beforeEach(async () => {
       const filename = 'tests/fixtures/api_football/pl-2026-02-22.json';
       origin = {
-        async requestWithParams(_start: Date, _end: Date, _season: number): Promise<ApiResponse> {
+        async requestWithParams(_start: Date, _end: Date, _season: number): Promise<ApiSchema> {
           const raw = await readFile(filename, 'utf-8');
           return JSON.parse(raw);
         },
@@ -216,7 +216,7 @@ describe('ErrorGuarded Api Request', () => {
       request = new ErrorGuardedApiRequest(origin);
     });
     describe('when the request is executed', () => {
-      let response: ApiResponse;
+      let response: ApiSchema;
       beforeEach(async () => {
         response = await request.requestWithParams(new Date(), new Date(), 2025)
       })
@@ -230,7 +230,7 @@ describe('ErrorGuarded Api Request', () => {
     beforeEach(async () => {
       const filename = 'tests/fixtures/api_football/errored-response.json';
       origin = {
-        async requestWithParams(_start: Date, _end: Date, _season: number): Promise<ApiResponse> {
+        async requestWithParams(_start: Date, _end: Date, _season: number): Promise<ApiSchema> {
           const raw = await readFile(filename, 'utf-8');
           return JSON.parse(raw);
         },

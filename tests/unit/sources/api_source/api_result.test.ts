@@ -2,19 +2,19 @@ import type { FixtureResponse } from '../../../../src/sources/types';
 import { awayWin, draw, homeWin } from '../../../utils';
 import type { Result } from '../../../../src/leagues/types';
 import {
-  DefaultResultFromApi,
-  type ResultFromApi,
-  ResultsFromApiError,
-  SafeResultFromApi,
-} from '../../../../src/sources/api_source/result_from_source';
+  ApiProjection,
+  type ApiResult,
+  ApiResponseError,
+  ApiErrorWrappedResult,
+} from '../../../../src/sources/api_source/api_result';
 
 describe("DefaultResultFromApi", () => {
-  let result: DefaultResultFromApi
+  let result: ApiProjection
   let raw: FixtureResponse
   describe("given a home win from an api source", () => {
     beforeEach(() => {
       raw = homeWin
-      result = new DefaultResultFromApi(raw)
+      result = new ApiProjection(raw)
     })
     describe("when the result is processed", () => {
       let actual: Result
@@ -34,7 +34,7 @@ describe("DefaultResultFromApi", () => {
   describe("given an away win from an api source", () => {
     beforeEach(() => {
       raw = awayWin
-      result = new DefaultResultFromApi(raw)
+      result = new ApiProjection(raw)
     })
     describe("when the result is processed", () => {
       let actual: Result
@@ -54,7 +54,7 @@ describe("DefaultResultFromApi", () => {
   describe('given a draw from an api source', () => {
     beforeEach(() => {
       raw = draw
-      result = new DefaultResultFromApi(raw)
+      result = new ApiProjection(raw)
     })
     describe('when the result is processed', () => {
       let actual: Result
@@ -75,7 +75,7 @@ describe("DefaultResultFromApi", () => {
     beforeEach(() => {
       // @ts-expect-error: expect type error for empty result
       raw = {}
-      result = new DefaultResultFromApi(raw)
+      result = new ApiProjection(raw)
     })
     describe("when the result is processed", () => {
       it('throws a type error', () => {
@@ -88,7 +88,7 @@ describe("DefaultResultFromApi", () => {
     beforeEach(() => {
       // @ts-expect-error: expect type error for empty result
       raw = {bad: 'structure'}
-      result = new DefaultResultFromApi(raw)
+      result = new ApiProjection(raw)
     })
     describe("when the result is processed", () => {
       it('throws a type error', () => {
@@ -99,8 +99,8 @@ describe("DefaultResultFromApi", () => {
 })
 
 describe('SafeResultFromApi', () => {
-  let origin: ResultFromApi
-  let result: SafeResultFromApi
+  let origin: ApiResult
+  let result: ApiErrorWrappedResult
   describe('given an origin result that passes',() => {
     beforeEach(() => {
       origin = {
@@ -113,7 +113,7 @@ describe('SafeResultFromApi', () => {
           }
         },
       };
-      result = new SafeResultFromApi(origin)
+      result = new ApiErrorWrappedResult(origin)
     })
     describe('when the result is processed', () => {
       let actual: Result
@@ -130,11 +130,11 @@ describe('SafeResultFromApi', () => {
       origin = {
         result(): Result {throw new Error('unexpected error')}
       }
-      result = new SafeResultFromApi(origin)
+      result = new ApiErrorWrappedResult(origin)
     })
     describe('when the result is processed', () => {
       it('wraps the error in a result from api error', () => {
-        expect(() => result.result()).toThrow(ResultsFromApiError)
+        expect(() => result.result()).toThrow(ApiResponseError)
       })
     })
   })
