@@ -45,6 +45,17 @@ export class ApiErrorWrappedRequest implements ApiRequest {
   }
 }
 
+export class ErrorGuardedApiRequest implements ApiRequest {
+  constructor(private origin: ApiRequest){}
+  async requestWithParams(start: Date, end: Date, season: number): Promise<ApiResponse> {
+    const raw: ApiResponse = await this.origin.requestWithParams(start, end, season);
+    if (!Array.isArray(raw.errors) || raw.errors.length > 0) {
+      throw new ApiRequestError('Api response returned errors', {cause: raw.errors});
+    }
+    return raw
+  }
+}
+
 export class ApiRequestError extends Error {
   constructor(
     public message: string,

@@ -5,6 +5,7 @@ import {
   type ApiRequest,
   ApiRequestError,
   EndpointRequest,
+  ErrorGuardedApiRequest,
   type RequestOptions,
   SchemaValidatedRequest,
 } from '../../../../src/sources/api_source/request';
@@ -200,15 +201,48 @@ describe('Valid Response From Api Request', () => {
   })
 })
 
-describe.todo('ErrorGuarded Api Request', () => {
+describe('ErrorGuarded Api Request', () => {
+  let request: ErrorGuardedApiRequest
+  let origin: ApiRequest
   describe('given an api request that returns a successful response', () => {
+    beforeEach(async () => {
+      const filename = 'tests/fixtures/api_football/pl-2026-02-22.json';
+      origin = {
+        async requestWithParams(_start: Date, _end: Date, _season: number): Promise<ApiResponse> {
+          const raw = await readFile(filename, 'utf-8');
+          return JSON.parse(raw);
+        },
+      };
+      request = new ErrorGuardedApiRequest(origin);
+    });
     describe('when the request is executed', () => {
-      it.todo('returns the response unchanged')
+      let response: ApiResponse;
+      beforeEach(async () => {
+        response = await request.requestWithParams(new Date(), new Date(), 2025)
+      })
+      it('returns the response unchanged', async () => {
+        const expected = await origin.requestWithParams(new Date(), new Date(), 2025)
+        expect(response).toEqual(expected)
+      })
     })
   })
   describe('given an api request that returns a response with errors', () => {
+    beforeEach(async () => {
+      const filename = 'tests/fixtures/api_football/errored-response.json';
+      origin = {
+        async requestWithParams(_start: Date, _end: Date, _season: number): Promise<ApiResponse> {
+          const raw = await readFile(filename, 'utf-8');
+          return JSON.parse(raw);
+        },
+      };
+      request = new ErrorGuardedApiRequest(origin);
+    });
     describe('when the request is executed', () => {
-      it.todo('throws an Api Request Error')
+      it('throws an Api Request Error', async () => {
+        await expect(request.requestWithParams(new Date(), new Date(), 2025)).rejects.toThrow(
+          ApiRequestError
+        );
+      })
     })
   })
 })
